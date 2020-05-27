@@ -21,30 +21,28 @@ function check_index {
     fi
 }
 
+default_docs=$(find {scripts,doc,core,applications} \( -path 'doc/mkdocs' -o -path 'applications/*/doc/ref' -o -path 'core/*/doc/ref' \) -prune -o -type f -regex ".+\.md$")
+doclist="${CHANGED_DOCS-${default_docs}}"
 docs=""
-if [ -n "$CHANGED_DOCS" ]; then
-    for file in $CHANGED_DOCS ; do
-        case $file in
-            doc/mkdocs|doc/mkdocs/*)
-                ;;
-            applications/*/doc/ref|applications/*/doc/ref/*)
-                ;;
-            core/*/doc/ref|core/*/doc/ref/*)
-                ;;
-            *.md)
-                if [ -n "$doc" ]; then
-                    docs="$doc $file"
-                else
-                    docs="$(realpath $file)"
-                fi
-                ;;
-            *)
-                ;;
-        esac
-    done
-else
-    docs=$(find {scripts,doc,core,applications} \( -path 'doc/mkdocs' -o -path 'applications/*/doc/ref' -o -path 'core/*/doc/ref' \) -prune -o -type f -regex ".+\.md$")
-fi
+for file in $doclist ; do
+    case $file in
+        doc/mkdocs|doc/mkdocs/*)
+            ;;
+        applications/*/doc/ref|applications/*/doc/ref/*)
+            ;;
+        core/*/doc/ref|core/*/doc/ref/*)
+            ;;
+        *.md)
+            if [ -n "$doc" ]; then
+                docs="$doc $file"
+            else
+                docs="$(realpath $file)"
+            fi
+            ;;
+        *)
+            ;;
+    esac
+done
 
 for doc in $docs; do
     ((doc_count+=1))
