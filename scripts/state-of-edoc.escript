@@ -45,6 +45,8 @@ get_erls([], Acc) ->
 get_erls([File|Files], Acc) ->
     get_erls(Files, [File | Acc]).
 
+state_of_edoc([], 0, _, _) ->
+    io:put_chars([$\n, $\n, "no files processed", $\n]);    
 state_of_edoc([], ErlsLength, _, {NoModule, NoFunctions}) ->
     print_no_module_summary(lists:reverse(NoModule)),
     print_no_functions(lists:sort(fun sort_no_functions/2, NoFunctions)),
