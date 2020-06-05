@@ -12,7 +12,7 @@ MORE_APPS_MK ?= $(ROOT)/make/more_apps.mk
 include $(ROOT)/make/app_urls.mk
 include $(APPS_MK)
 
--include more_apps.mk
+-include $(MORE_APPS_MK)
 # Add community deps from https://github.com/kazoo-community?utf8=%E2%9C%93&q=kazoo-&type=&language=
 # Or add your own private deps to `more_apps.mk` (which is not version-controlled)
 # DEPS += {APP1} {APP2} {APP3}
