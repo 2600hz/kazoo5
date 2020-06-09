@@ -70,6 +70,7 @@ compile_commands.json
 /make/.deps.mk.*
 /make/.core.mk.*
 /make/.apps.mk.*
+/make/.app_urls.mk.*
 /make/circleci
 
 /out/

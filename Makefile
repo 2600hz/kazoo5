@@ -22,6 +22,9 @@ DEPS_HASH_FILE := $(ROOT)/make/.deps.mk.$(DEPS_HASH)
 APPS_HASH := $(shell md5sum $(ROOT)/make/apps.mk | cut -d' ' -f1)
 APPS_HASH_FILE := $(ROOT)/make/.apps.mk.$(APPS_HASH)
 
+APP_URLS_HASH := $(shell md5sum $(ROOT)/make/app_urls.mk | cut -d' ' -f1)
+APP_URLS_HASH_FILE := $(ROOT)/make/.app_urls.mk.$(APP_URLS_HASH)
+
 CORE_HASH := $(shell md5sum $(ROOT)/make/Makefile.core | cut -d' ' -f1)
 CORE_HASH_FILE := $(ROOT)/make/.core.mk.$(CORE_HASH)
 
@@ -106,6 +109,7 @@ clean-kazoo: stop-if-changed
 	@$(rm -rf $(CORE_DIR))
 	@$(if $(wildcard $(CORE_HASH_FILE)), rm -rf $(CORE_HASH_FILE))
 	@$(if $(wildcard $(APPS_HASH_FILE)), rm -rf $(APPS_HASH_FILE))
+	@$(if $(wildcard $(APP_URLS_HASH_FILE)), rm -rf $(APP_URLS_HASH_FILE))
 
 .PHONY: clean
 clean: clean-core clean-apps
@@ -260,7 +264,7 @@ $(CORE_DIR)/Makefile: $(DOT_ERLANG_MK)
 apps: core fetch-apps
 	@ROOT=$(ROOT) $(MAKE) -j$(JOBS) -C $(APPS_DIR) all
 
-fetch-apps: $(APPS_HASH_FILE) $(APPS_DIR)/Makefile
+fetch-apps: $(APPS_HASH_FILE) $(APP_URLS_HASH_FILE) $(APPS_DIR)/Makefile
 	@NO_AUTOPATCH_ERLANG_MK=1 ROOT=$(ROOT) $(MAKE) -f $(ROOT)/make/Makefile.apps -C $(APPS_DIR) fetch-deps
 
 # Target: apps hash file
@@ -268,6 +272,9 @@ fetch-apps: $(APPS_HASH_FILE) $(APPS_DIR)/Makefile
 # Once satisfied, create the applications directory and the apps hash file
 $(APPS_HASH_FILE): $(DOT_ERLANG_MK) make/more_apps.mk
 	@touch $(APPS_HASH_FILE)
+
+$(APP_URLS_HASH_FILE):
+	@touch $(APP_URLS_HASH_FILE)
 
 # Bootstrap more_apps.mk with kazoo_properly and kazoo_ast
 make/more_apps.mk:
