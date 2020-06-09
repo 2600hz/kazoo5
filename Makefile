@@ -42,7 +42,7 @@ endif
 
 STATUS = $($(ROOT)/scripts/check-git-status.bash $(ROOT) $(CORE_DIR) $(APPS))
 
-CHANGED_SWAGGER ?= $(shell git -C $(APPS_DIR)/crossbar --no-pager diff --name-only HEAD $(BASE_BRANCH) -- priv/api/swagger.json)
+CHANGED_SWAGGER ?= $(shell $(ROOT)/kgit -kapps crossbar git --no-pager diff --name-only HEAD $(BASE_BRANCH) -- priv/api/swagger.json)
 CHANGED_ERL=$(filter %.hrl %.erl %.escript,$(CHANGED))
 CHANGED_JSON=$(filter %.json,$(CHANGED))
 CHANGED_YML=$(filter %.yml,$(CHANGED))
