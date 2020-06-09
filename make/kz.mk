@@ -57,53 +57,40 @@ APPS_MK = $(CURDIR)/apps.mk
 APPS_DIR = $(ROOT)/applications
 DOT_ERLANG_MK = $(ROOT)/.erlang.mk
 
-.PHONY: deps
-ifneq (,$(wildcard $(DEPS_MK)))
-# Track app's dependencies, if any
-DEPS_HASH := $(shell [ -f $(DEPS_MK) ] && md5sum $(DEPS_MK) | cut -d' ' -f1)
-DEPS_HASH_FILE := .deps.mk.$(DEPS_HASH)
+ifeq ($(wildcard $(DEPS_MK)),)
+    $(shell touch $(DEPS_MK))
+endif
 
-deps: $(DOT_ERLANG_MK) $(DEPS_MK) $(DEPS_HASH_FILE)
+ifeq ($(wildcard $(APPS_MK)),)
+    $(shell touch $(APPS_MK))
+endif
+
+DEPS_HASH := $(shell md5sum $(DEPS_MK) | cut -d' ' -f1)
+DEPS_HASH_FILE := .deps.mk.$(DEPS_HASH)
+APPS_HASH := $(shell md5sum $(APPS_MK) | cut -d' ' -f1)
+APPS_HASH_FILE := .apps.mk.$(APPS_HASH)
+
+.PHONY: deps
+deps: $(DOT_ERLANG_MK) $(DEPS_HASH_FILE)
 
 $(DEPS_HASH_FILE):
 	@if [ -s $(DEPS_MK) ]; then \
-		DEPS_MK="$(DEPS_MK)" ROOT=$(ROOT) $(MAKE) -C $(ROOT)/deps/ all ;\
-	fi
-
-else
-deps: $(DEPS_MK)
-
-$(DEPS_MK):
-	@touch $(DEPS_MK)
+	    DEPS_MK="$(DEPS_MK)" $(MAKE) -C $(ROOT)/deps all; \
+	 fi
 	@touch .deps.mk.$(shell md5sum $(DEPS_MK) | cut -d' ' -f1)
-endif
 
 .PHONY: apps
-ifneq (,$(wildcard $(APPS_MK)))
-# Track app's kazoo apps, if any
-APPS_HASH := $(shell [ -f $(APPS_MK) ] && md5sum $(APPS_MK) | cut -d' ' -f1)
-APPS_HASH_FILE := .apps.mk.$(APPS_HASH)
-
-include $(APPS_MK)
-
-apps: $(DOT_ERLANG_MK) $(APPS_MK) $(APPS_HASH_FILE)
-# Make sure the applications/Makefile exists
-	@$(MAKE) -C $(ROOT) apps-makefile
-	@if [ ! -z "$(DEPS)" ]; then \
-		ROOT=$(ROOT) MAKEDIRS="$(DEPS)" $(MAKE) -C $(ROOT)/applications all ;\
-	fi
+apps: $(DOT_ERLANG_MK) $(APPS_HASH_FILE)
+    $(MAKE) -C $(ROOT) apps-makefile
+	@if [ -s $(APPS_MK) ]; then \
+        APPS_MK="$(APPS_MK)" $(MAKE) -C $(ROOT)/applications all ;\
+    fi
 
 $(APPS_HASH_FILE):
-	@if [ -s $(APPS_MK) ]; then \
+	if [ -s $(APPS_MK) ]; then \
 		ROOT="$(ROOT)" APPS_MK="$(APPS_MK)" MORE_APPS_MK="" DEPS_DIR="$(APPS_DIR)" $(MAKE) -f $(ROOT)/make/Makefile.apps fetch-deps ;\
 	fi
-else
-apps: $(APPS_MK)
-
-$(APPS_MK):
-	@touch $(APPS_MK)
 	@touch .apps.mk.$(shell md5sum $(APPS_MK) | cut -d' ' -f1)
-endif
 
 $(DOT_ERLANG_MK):
 	@ROOT=$(ROOT) $(MAKE) -C $(ROOT) dot_erlang_mk
