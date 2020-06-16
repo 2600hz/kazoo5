@@ -30,7 +30,14 @@ DEPS ?= amqp_client \
 	reloader \
 	syslog \
 	yamerl \
-	zucchini
+	zucchini \
+	trie \
+	esaml \
+	gun \
+	folsom \
+	apns \
+	fcm \
+	hep
 
 # BUILD_DEPS = parse_trans
 IGNORE_DEPS = hamcrest
@@ -151,3 +158,25 @@ dep_yamerl = git https://github.com/2600hz/erlang-yamerl v0.7.0
 dep_zucchini = git https://github.com/2600hz/erlang-zucchini 0.1.0
 # INI file parser
 # used by kazoo_config_init
+
+dep_trie = git https://github.com/2600hz/erlang-trie v1.7.5
+# used by hotornot
+
+
+dep_esaml = git $(FETCH_AS)2600hz/erlang-esaml.git master
+
+dep_gun = git https://github.com/ninenines/gun 1.2.0
+
+dep_folsom = git https://github.com/2600hz/erlang-folsom 0.8.2
+# used by hangups
+
+dep_apns = git https://github.com/2600hz/erlang-apns4erl.git aba1fa96a4abbbb2c1628ad5d604f482aad4d12f # latest commit SHA to 2600hz branch
+
+dep_fcm = git https://github.com/2600hz/erlang-fcm.git b2f68a4c6f0f59475597a35e2dc9be13d9ba2910
+# Firebase cloud messaging
+# used by pusher
+
+dep_hep = git https://github.com/2600hz/hep-erlang 5f18e91e45d49d3d7013fc93897d5c12441d86d8
+# Homer encapsulation protocol
+# merged lazedo/hep changes
+# added specs for dialyzer happiness
