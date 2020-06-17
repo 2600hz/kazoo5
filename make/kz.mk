@@ -66,7 +66,9 @@ DEPS_HASH_FILE := .deps.mk.$(DEPS_HASH)
 deps: $(DOT_ERLANG_MK) $(DEPS_MK) $(DEPS_HASH_FILE)
 
 $(DEPS_HASH_FILE):
-	@[ -s $(DEPS_MK) ] && DEPS_MK="$(DEPS_MK)" $(MAKE) -C $(ROOT)/deps/ all || true
+	@if [ -s $(DEPS_MK) ]; then \
+		DEPS_MK="$(DEPS_MK)" ROOT=$(ROOT) $(MAKE) -C $(ROOT)/deps/ all ;\
+	fi
 
 else
 deps: $(DEPS_MK)
@@ -87,11 +89,14 @@ include $(APPS_MK)
 apps: $(DOT_ERLANG_MK) $(APPS_MK) $(APPS_HASH_FILE)
 # Make sure the applications/Makefile exists
 	@$(MAKE) -C $(ROOT) apps-makefile
-	@[ ! -z "$(DEPS)" ] && MAKEDIRS="$(DEPS)" $(MAKE) -C $(ROOT)/applications all || true
+	@if [ ! -z "$(DEPS)" ]; then \
+		ROOT=$(ROOT) MAKEDIRS="$(DEPS)" $(MAKE) -C $(ROOT)/applications all ;\
+	fi
 
 $(APPS_HASH_FILE):
-	@[ -s $(APPS_MK) ] && ROOT="$(ROOT)" APPS_MK="$(APPS_MK)" MORE_APPS_MK="" $(MAKE) -f $(ROOT)/make/Makefile.apps -C $(APPS_DIR) fetch-deps || true
-
+	@if [ -s $(APPS_MK) ]; then \
+		ROOT="$(ROOT)" APPS_MK="$(APPS_MK)" MORE_APPS_MK="" DEPS_DIR="$(APPS_DIR)" $(MAKE) -f $(ROOT)/make/Makefile.apps fetch-deps ;\
+	fi
 else
 apps: $(APPS_MK)
 
@@ -101,13 +106,13 @@ $(APPS_MK):
 endif
 
 $(DOT_ERLANG_MK):
-	@$(MAKE) -C $(ROOT) dot_erlang_mk
+	@ROOT=$(ROOT) $(MAKE) -C $(ROOT) dot_erlang_mk
 
 .PHONY: clean-deps clean-deps-hash
 clean-deps: clean-deps-hash
 
 clean-deps-hash:
-	$(if $(wildcard .deps.mk.*), rm .deps.mk.*)
+	@$(if $(wildcard .deps.mk.*), rm .deps.mk.*)
 
 comma := ,
 empty :=
@@ -163,7 +168,6 @@ $(DEPS_RULES):
 app_src:
 	@ERL_LIBS=$(ROOT)/deps:$(ROOT)/core:$(ROOT)/applications $(ROOT)/scripts/apps_of_app.escript -a $(ROOT)/applications/$(PROJECT)/src/$(PROJECT).app.src
 
-
 .PHONY: json
 json: JSON = $(shell find . -name '*.json')
 json:
@@ -175,7 +179,7 @@ compile-test: deps $(TEST_DEPS) compile-test-kz-deps compile-test-direct json
 compile-test-direct: deps $(COMPILE_MOAR) test/$(PROJECT).app
 
 $(TEST_DEPS): apps
-	 @ERL_LIBS=$(ROOT)/deps:$(ROOT)/core:$(ROOT)/applications $(ROOT)/scripts/calculate-dep-targets.escript $(ROOT) $(PROJECT) > $(TEST_DEPS)
+	@ERL_LIBS=$(ROOT)/deps:$(ROOT)/core:$(ROOT)/applications $(ROOT)/scripts/calculate-dep-targets.escript $(ROOT) $(PROJECT) > $(TEST_DEPS)
 
 ifeq (,$(wildcard $(TEST_DEPS)))
 KZ_DEPS_TARGETS =
@@ -191,7 +195,7 @@ else
 compile-test-kz-deps: $(KZ_DEPS_TARGETS)
 
 compile-test-core-%:
-	@$(MAKE) compile-test-direct -C $(ROOT)/core/$*
+	@ROOT=$(ROOT) $(MAKE) compile-test-direct -C $(ROOT)/core/$*
 endif
 
 test/$(PROJECT).app: ERLC_OPTS += -DTEST
@@ -257,7 +261,7 @@ compile-proper: clean-test compile-test
 
 PLT ?= $(ROOT)/.kazoo.plt
 $(PLT):
-	$(MAKE) -C $(ROOT) build-plt
+	@$(MAKE) -C $(ROOT) build-plt
 
 .PHONY: dialyze dialyze-hard
 dialyze: TO_DIALYZE ?= $(abspath ebin)

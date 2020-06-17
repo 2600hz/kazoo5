@@ -84,9 +84,9 @@ make-dependency-check:
 compile-lean: ACTION = compile-lean
 compile-lean: deps compile-lean-core compile-lean-apps
 compile-lean-core:
-	@$(MAKE) -j$(JOBS) -C core/ compile-lean
+	@ROOT=$(ROOT) $(MAKE) -j$(JOBS) -C core/ compile-lean
 compile-lean-apps:
-	@$(MAKE) -j$(JOBS) -C applications/ compile-lean
+	@ROOT=$(ROOT) $(MAKE) -j$(JOBS) -C applications/ compile-lean
 
 .PHONY: compile
 compile: ACTION = all
@@ -115,22 +115,22 @@ clean: clean-core clean-apps
 
 .PHONY: clean-core
 clean-core:
-	@$(if $(wildcard $(CORE_DIR)),$(MAKE) -j$(JOBS) -C $(CORE_DIR) clean)
+	@$(if $(wildcard $(CORE_DIR)),ROOT=$(ROOT) $(MAKE) -j$(JOBS) -C $(CORE_DIR) clean)
 
 .PHONY: clean-apps
 clean-apps:
-	@$(if $(wildcard $(APPS_DIR)/Makefile),$(MAKE) -j$(JOBS) -C $(APPS_DIR) clean)
+	@$(if $(wildcard $(APPS_DIR)/Makefile),ROOT=$(ROOT) $(MAKE) -j$(JOBS) -C $(APPS_DIR) clean)
 
 .PHONY: clean-test
 clean-test: clean-test-core clean-test-apps
 
 .PHONY: clean-test-core
 clean-test-core:
-	@$(MAKE) -j$(JOBS) -C $(CORE_DIR) clean-test
+	@ROOT=$(ROOT) $(MAKE) -j$(JOBS) -C $(CORE_DIR) clean-test
 
 .PHONY: clean-test-apps
 clean-test-apps:
-	@$(MAKE) -j$(JOBS) -C $(APPS_DIR) clean-test
+	@ROOT=$(ROOT) $(MAKE) -j$(JOBS) -C $(APPS_DIR) clean-test
 
 .PHONY: compile-proper
 compile-proper: ERLC_OPTS += -DPROPER
@@ -142,22 +142,22 @@ compile-test: compile-test-core compile-test-apps
 
 .PHONY: compile-test-core
 compile-test-core: deps fetch-core
-	@$(MAKE) -j$(JOBS) -C $(CORE_DIR) compile-test-direct
+	@ROOT=$(ROOT) $(MAKE) -j$(JOBS) -C $(CORE_DIR) compile-test-direct
 
 .PHONY: compile-test-apps
 compile-test-apps: deps fetch-apps
-	@$(MAKE) -j$(JOBS) -C $(APPS_DIR) compile-test-direct
+	@ROOT=$(ROOT) $(MAKE) -j$(JOBS) -C $(APPS_DIR) compile-test-direct
 
 .PHONY: eunit
 eunit: eunit-core eunit-apps
 
 .PHONY: eunit-core
 eunit-core: deps $(CORE_HASH_FILE)
-	@$(MAKE) -j$(JOBS) -C $(CORE_DIR) eunit
+	@ROOT=$(ROOT) $(MAKE) -j$(JOBS) -C $(CORE_DIR) eunit
 
 .PHONY: eunit-apps
 eunit-apps: deps fetch-apps
-	@$(MAKE) -j$(JOBS) -C $(APPS_DIR) eunit
+	@ROOT=$(ROOT) $(MAKE) -j$(JOBS) -C $(APPS_DIR) eunit
 
 .PHONY: proper
 proper: ERLC_OPTS += -DPROPER
@@ -165,11 +165,11 @@ proper: proper-core proper-apps
 
 .PHONY: proper-core
 proper-core: deps $(CORE_HASH_FILE)
-	@$(MAKE) -j$(JOBS) -C $(CORE_DIR) proper
+	@ROOT=$(ROOT) $(MAKE) -j$(JOBS) -C $(CORE_DIR) proper
 
 .PHONY: proper-apps
 proper-apps: deps fetch-apps
-	@$(MAKE) -j$(JOBS) -C $(APPS_DIR) proper
+	@ROOT=$(ROOT) $(MAKE) -j$(JOBS) -C $(APPS_DIR) proper
 
 .PHONY: test
 test: ERLC_OPTS += -DPROPER
@@ -178,11 +178,11 @@ test: test-core test-apps
 
 .PHONY: test-core
 test-core: deps $(CORE_HASH_FILE)
-	@$(MAKE) -j$(JOBS) -C $(CORE_DIR) test
+	@ROOT=$(ROOT) $(MAKE) -j$(JOBS) -C $(CORE_DIR) test
 
 .PHONY: test-apps
 test-apps: deps fetch-apps
-	@$(MAKE) -j$(JOBS) -C $(APPS_DIR) test
+	@ROOT=$(ROOT) $(MAKE) -j$(JOBS) -C $(APPS_DIR) test
 
 .PHONY: coverage-report
 coverage-report:
@@ -218,7 +218,7 @@ deps: $(DEPS_HASH_FILE)
 $(DEPS_HASH_FILE):
 	@$(MAKE) clean-deps
 	@$(MAKE) $(DEPS_DIR)/Makefile
-	@$(MAKE) -C $(DEPS_DIR)/ all
+	@ROOT=$(ROOT) $(MAKE) -C $(DEPS_DIR)/ all
 	touch $(DEPS_HASH_FILE)
 
 $(DEPS_DIR)/Makefile: $(DOT_ERLANG_MK) clean-plt
@@ -232,7 +232,7 @@ $(DEPS_DIR)/Makefile: $(DOT_ERLANG_MK) clean-plt
 # Once satisfied, compile all the dirs under core/
 .PHONY: core
 core: deps fetch-core
-	@$(MAKE) -j$(JOBS) -C $(CORE_DIR) all
+	@ROOT=$(ROOT) $(MAKE) -j$(JOBS) -C $(CORE_DIR) all
 
 # Target: fetch-core
 # Alias for $(CORE_DIR)Makefile to fetch the core apps
@@ -258,10 +258,10 @@ $(CORE_DIR)/Makefile: $(DOT_ERLANG_MK)
 # Once satisfied, use erlang.mk to fetch the apps (via the erlang.mk deps target), and compile all the apps
 .PHONY: apps
 apps: core fetch-apps
-	@$(MAKE) -j$(JOBS) -C $(APPS_DIR) all
+	@ROOT=$(ROOT) $(MAKE) -j$(JOBS) -C $(APPS_DIR) all
 
 fetch-apps: $(APPS_HASH_FILE) $(APPS_DIR)/Makefile
-	@NO_AUTOPATCH_ERLANG_MK=1 $(MAKE) -f $(ROOT)/make/Makefile.apps -C $(APPS_DIR) fetch-deps
+	@NO_AUTOPATCH_ERLANG_MK=1 ROOT=$(ROOT) $(MAKE) -f $(ROOT)/make/Makefile.apps -C $(APPS_DIR) fetch-deps
 
 # Target: apps hash file
 # 1. Make sure elrang.mk is setup
@@ -277,8 +277,8 @@ make/more_apps.mk:
 apps-makefile: $(APPS_DIR)/Makefile
 
 $(APPS_DIR)/Makefile:
-	@$(shell mkdir -p $(APPS_DIR))
-	@cp $(ROOT)/make/Makefile.applications $(APPS_DIR)/Makefile
+	$(shell mkdir -p $(APPS_DIR))
+	cp $(ROOT)/make/Makefile.applications $(APPS_DIR)/Makefile
 
 .PHONY: kazoo
 kazoo: deps apps $(TAGS)
@@ -529,7 +529,7 @@ schemas: $(KAST)
 	@$(ROOT)/scripts/format-json.py $(shell find $(APPS_DIR) $(CORE_DIR) -wholename '*/schemas/*.json')
 
 $(KAST):
-	@DEPS=ast $(MAKE) -f $(ROOT)/make/Makefile.apps -C $(APPS_DIR)
+	@DEPS=ast ROOT=$(ROOT) $(MAKE) -f $(ROOT)/make/Makefile.apps -C $(APPS_DIR)
 
 .PHONY: fs-headers
 fs-headers:

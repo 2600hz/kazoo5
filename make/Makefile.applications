@@ -1,9 +1,6 @@
 ## Makefile that goes in applications/
-
-ROOT = ..
-
-MAKEFILES := $(sort $(wildcard */Makefile))
-MAKEDIRS ?= $(MAKEFILES:/Makefile=)
+MS = $(sort $(wildcard */Makefile))
+MAKEDIRS ?= $(MS:/Makefile=)
 
 .PHONY: all
 all: compile
@@ -42,11 +39,4 @@ test: $(MAKEDIRS)
 
 .PHONY: $(MAKEDIRS)
 $(MAKEDIRS):
-	$(MAKE) -C $@ $(ACTION)
-
-
-.PHONY: Makefile
-# Ignore Makefile from catch-all target below
-
-%: %
-	@$(MAKE) -C $@ $(ACTION)
+	@ROOT=$(ROOT) $(MAKE) -C $(ROOT)/applications/$@ $(ACTION)

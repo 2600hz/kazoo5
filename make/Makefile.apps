@@ -1,13 +1,12 @@
 # Executed from the applications/ directory so all paths are relative to that
 
-ROOT ?= ..
 ERLANG_MK_FILENAME = $(wildcard $(ROOT)/erlang.mk)
 
-DEPS_DIR = $(CURDIR)
+DEPS_DIR ?= $(CURDIR)
 APPS_MK ?= $(ROOT)/make/apps.mk
 MORE_APPS_MK ?= $(ROOT)/make/more_apps.mk
 
-.DEFAULT_GOAL := all
+.DEFAULT_GOAL := fetch-deps
 
 include $(ROOT)/make/app_urls.mk
 include $(APPS_MK)
@@ -27,4 +26,4 @@ include $(APPS_MK)
 NO_AUTOPATCH_ERLANG_MK = 1
 NO_AUTOPATCH = $(DEPS)
 
-include $(ROOT)/erlang.mk
+include $(ERLANG_MK_FILENAME)
