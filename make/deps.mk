@@ -19,7 +19,6 @@ DEPS ?= amqp_client \
 	lager \
 	lager_syslog \
 	meck \
-	meta \
 	nklib \
 	plists \
 	poolboy \
@@ -32,7 +31,6 @@ DEPS ?= amqp_client \
 	yamerl \
 	zucchini \
 	trie \
-	esaml \
 	gun \
 	folsom \
 	apns \
@@ -120,9 +118,6 @@ dep_lager_syslog = git https://github.com/2600hz/erlang-lager_syslog 3.0.3
 dep_meck = git https://github.com/2600hz/erlang-meck 0.8.13
 # used in tests for kazoo_voicemail, crossbar, teletype, and other deps
 
-dep_meta = git https://github.com/2600hz/erlang-meta 0.1.3
-# appears unused
-
 dep_nklib = git https://github.com/2600hz/erlang-nklib v0.4.1
 # used by kzsip_uri and cb_registrations
 
@@ -162,8 +157,6 @@ dep_zucchini = git https://github.com/2600hz/erlang-zucchini 0.1.0
 dep_trie = git https://github.com/2600hz/erlang-trie v1.7.5
 # used by hotornot
 
-
-dep_esaml = git $(FETCH_AS)2600hz/erlang-esaml.git master
 
 dep_gun = git https://github.com/ninenines/gun 1.2.0
 
