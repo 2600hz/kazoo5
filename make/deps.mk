@@ -48,7 +48,7 @@ endif
 
 dep_amqp_client = git https://github.com/2600hz/erlang-amqp_client.git v3.7.14
 
-dep_amqp_dist = git https://github.com/2600hz/erlang-amqp_dist.git 53761754b936471b01d24cddec198715fc36c02d
+dep_amqp_dist = git https://github.com/2600hz/erlang-amqp_dist.git bd97a806a10bd16d97bf0be0d4676cf9fec047e6
 
 # dep_certifi = hex 0.3.0
 # Used by hackney, let it pull in certifi
