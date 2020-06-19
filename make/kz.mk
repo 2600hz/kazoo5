@@ -81,10 +81,10 @@ $(DEPS_HASH_FILE):
 
 .PHONY: apps
 apps: $(DOT_ERLANG_MK) $(APPS_HASH_FILE)
-    $(MAKE) -C $(ROOT) apps-makefile
+	$(MAKE) -C $(ROOT) apps-makefile
 	@if [ -s $(APPS_MK) ]; then \
-        APPS_MK="$(APPS_MK)" $(MAKE) -C $(ROOT)/applications all ;\
-    fi
+		APPS_MK="$(APPS_MK)" $(MAKE) -C $(ROOT)/applications all ;\
+	fi
 
 $(APPS_HASH_FILE):
 	if [ -s $(APPS_MK) ]; then \

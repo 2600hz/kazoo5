@@ -1,6 +1,12 @@
 ## Makefile that goes in applications/
 MS = $(sort $(wildcard */Makefile))
-MAKEDIRS ?= $(MS:/Makefile=)
+
+ifeq ($(strip $(APPS_MK)),)
+	MAKEDIRS ?= $(MS:/Makefile=)
+else
+	include $(APPS_MK)
+	MAKEDIRS = $(CHANGED)
+endif
 
 .PHONY: all
 all: compile
