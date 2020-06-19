@@ -133,7 +133,7 @@ dep_proper = git https://github.com/2600hz/erlang-proper v1.3
 
 dep_recon = git https://github.com/2600hz/erlang-recon 2.4.0
 
-dep_ra = git https://github.com/2600hz/erlang-ra.git v1.0.4
+dep_ra = git https://github.com/2600hz/erlang-ra.git v1.1.2
 
 dep_ranch = git https://github.com/2600hz/erlang-ranch 1.7.1
 
