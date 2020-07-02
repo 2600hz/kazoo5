@@ -201,7 +201,7 @@ check_result(Result) ->
 %% %% Ag sample output:
 %% %% ```
 %% %% core/kazoo_apps/src/kapps_util.erl:313:-spec get_account_mods(kz_term:ne_binary()) -> kz_term:ne_binaries().
-%% %% core/kazoo_apps/src/kapps_util.erl:314:-spec get_account_mods(kz_term:ne_binary(), kz_util:account_format()) -> kz_term:ne_binaries().
+%% %% core/kazoo_apps/src/kapps_util.erl:314:-spec get_account_mods(kz_term:ne_binary(), kzs_util:account_format()) -> kz_term:ne_binaries().
 %% %% core/kazoo_apps/src/kapps_util.erl:608:-spec amqp_pool_request(kz_term:api_terms(), kz_amqp_worker:publish_fun(), kz_amqp_worker:validate_fun()) ->
 %% %% core/kazoo_apps/src/kapps_util.erl:609:                               kz_amqp_worker:request_return().
 %% %% core/kazoo_apps/src/kapps_util.erl:610:-spec amqp_pool_request(kz_term:api_terms(), kz_amqp_worker:publish_fun(), kz_amqp_worker:validate_fun(), timeout()) ->
