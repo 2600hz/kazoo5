@@ -554,6 +554,9 @@ sdks:
 validate-schemas:
 	@$(ROOT)/scripts/validate-schemas.py $(APPS_DIR)/crossbar/priv/couchdb/schemas
 
+whitespace:
+	@$(ROOT)/scripts/check-whitespace.sh $(CHANGED)
+
 include $(ROOT)/make/splchk.mk
 include $(ROOT)/make/ci.mk
 include $(ROOT)/make/fmt.mk
