@@ -602,11 +602,17 @@ kz_util_version() {
               bin_usage
               mem_usage
               write_pid
-              node_name
-              node_hostname
              )
     search_and_replace fs[@] kz_util kapps_util ''
 }
+
+kz_util_nodes() {
+    local fs=(node_name
+              node_hostname
+             )
+    search_and_replace fs[@] kz_util kz_nodes ''
+
+    }
 
 kz_util_api() {
     replace 'kz_util' 'get_event_type' 'kz_api' 'event_type'
