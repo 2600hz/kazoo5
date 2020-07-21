@@ -19,6 +19,6 @@ NO_AUTOPATCH = $(DEPS)
 
 FETCH_AS ?= https://github.com/
 
-dep_core = git $(FETCH_AS)2600hz/kazoo-core.git master
+dep_core = git $(FETCH_AS)2600hz/kazoo-core.git 5.0
 
 include $(ROOT)/erlang.mk

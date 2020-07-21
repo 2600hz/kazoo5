@@ -1,4 +1,4 @@
 DEPS += properly ast
 
-dep_properly = git $(FETCH_AS)2600hz/kazoo-properly.git master
-dep_ast = git $(FETCH_AS)2600hz/kazoo-ast.git master
+dep_properly = git $(FETCH_AS)2600hz/kazoo-properly.git 5.0
+dep_ast = git $(FETCH_AS)2600hz/kazoo-ast.git 5.0
