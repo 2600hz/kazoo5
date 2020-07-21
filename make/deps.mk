@@ -56,8 +56,8 @@ dep_amqp_dist = git https://github.com/2600hz/erlang-amqp_dist.git bd97a806a10bd
 # dep_chatterbox = hex 0.7.0
 # used by apns4erl
 
-dep_couchbeam = git https://github.com/2600hz/erlang-couchbeam 86d946646ad9dee1dee305b15d5c59e4c8e60cc2 # latest commit SHA to 2600hz-kazoo5 branch
-# adds _show querying
+dep_couchbeam = git https://github.com/2600hz/erlang-couchbeam 6376aac7fbedffa4e25a6cce2bcae4eb9ae98ed7 # latest commit SHA to 2600hz-kazoo5 branch
+# fix spec for couchbeam_view:all and couchbeam_view:fetch
 
 ### https://github.com/benoitc/couchbeam/pull/158 - _list functions fix
 ### https://github.com/benoitc/couchbeam/pull/164 - allow 202 in put_attachment
