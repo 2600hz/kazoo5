@@ -2,7 +2,7 @@
 version: 2.1
 
 orbs:
-  kazoo: official-2600hz/kazoo@0.2.0
+  kazoo: official-2600hz/kazoo@0.2.2
 
 workflows:
   version: 2
