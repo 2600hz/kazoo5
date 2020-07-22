@@ -1,4 +1,7 @@
 DEPS += properly ast
 
-dep_properly = git $(FETCH_AS)2600hz/kazoo-properly.git master
-dep_ast = git $(FETCH_AS)2600hz/kazoo-ast.git master
+BASE_BRANCH ?= origin/master
+BRANCH = $(subst origin/,,$(BASE_BRANCH))
+
+dep_properly = git $(FETCH_AS)2600hz/kazoo-properly.git $(BRANCH)
+dep_ast = git $(FETCH_AS)2600hz/kazoo-ast.git $(BRANCH)

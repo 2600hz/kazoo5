@@ -19,6 +19,9 @@ NO_AUTOPATCH = $(DEPS)
 
 FETCH_AS ?= https://github.com/
 
-dep_core = git $(FETCH_AS)2600hz/kazoo-core.git master
+BASE_BRANCH ?= origin/master
+BRANCH = $(subst origin/,,$(BASE_BRANCH))
+
+dep_core = git $(FETCH_AS)2600hz/kazoo-core.git $(BRANCH)
 
 include $(ROOT)/erlang.mk
