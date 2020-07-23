@@ -5,7 +5,7 @@ ifeq ($(strip $(APPS_MK)),)
 	MAKEDIRS ?= $(MS:/Makefile=)
 else
 	include $(APPS_MK)
-	MAKEDIRS = $(CHANGED)
+	MAKEDIRS = $(DEPS)
 endif
 
 .PHONY: all

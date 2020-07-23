@@ -81,9 +81,9 @@ $(DEPS_HASH_FILE):
 
 .PHONY: apps
 apps: $(DOT_ERLANG_MK) $(APPS_HASH_FILE)
-	$(MAKE) -C $(ROOT) apps-makefile
+	@$(MAKE) -C $(ROOT) apps-makefile
 	@if [ -s $(APPS_MK) ]; then \
-		APPS_MK="$(APPS_MK)" $(MAKE) -C $(ROOT)/applications all ;\
+		ROOT=$(ROOT) APPS_MK="$(APPS_MK)" $(MAKE) -C $(APPS_DIR) all ;\
 	fi
 
 $(APPS_HASH_FILE):
@@ -153,7 +153,7 @@ $(DEPS_RULES):
 
 .PHONY: app_src
 app_src:
-	@ERL_LIBS=$(ROOT)/deps:$(ROOT)/core:$(ROOT)/applications $(ROOT)/scripts/apps_of_app.escript -a $(ROOT)/applications/$(PROJECT)/src/$(PROJECT).app.src
+	@ERL_LIBS=$(ROOT)/deps:$(ROOT)/core:$(APPS_DIR) $(ROOT)/scripts/apps_of_app.escript -a $(APPS_DIR)/$(PROJECT)/src/$(PROJECT).app.src
 
 .PHONY: json
 json: JSON = $(shell find . -name '*.json')
@@ -166,7 +166,7 @@ compile-test: deps $(TEST_DEPS) compile-test-kz-deps compile-test-direct json
 compile-test-direct: deps $(COMPILE_MOAR) test/$(PROJECT).app
 
 $(TEST_DEPS): apps
-	@ERL_LIBS=$(ROOT)/deps:$(ROOT)/core:$(ROOT)/applications $(ROOT)/scripts/calculate-dep-targets.escript $(ROOT) $(PROJECT) > $(TEST_DEPS)
+	@ERL_LIBS=$(ROOT)/deps:$(ROOT)/core:$(APPS_DIR) $(ROOT)/scripts/calculate-dep-targets.escript $(ROOT) $(PROJECT) > $(TEST_DEPS)
 
 ifeq (,$(wildcard $(TEST_DEPS)))
 KZ_DEPS_TARGETS =
@@ -200,6 +200,7 @@ clean: clean-test
 	@$(if $(wildcard ebin/*), rm ebin/*)
 	@$(if $(wildcard *crash.dump), rm *crash.dump)
 	@$(if $(wildcard $(DEPS_RULES)), rm $(DEPS_RULES))
+	@rm -rf .apps.mk* .deps.mk*
 
 clean-test: $(CLEAN_MOAR)
 	@$(if $(wildcard $(TEST_DEPS)), rm $(TEST_DEPS))
@@ -253,11 +254,11 @@ $(PLT):
 .PHONY: dialyze dialyze-hard
 dialyze: TO_DIALYZE ?= $(abspath ebin)
 dialyze: $(PLT)
-	@ERL_LIBS=$(ROOT)/deps:$(ROOT)/core:$(ROOT)/applications $(ROOT)/scripts/check-dialyzer.escript $(ROOT)/.kazoo.plt $(TO_DIALYZE)
+	@ERL_LIBS=$(ROOT)/deps:$(ROOT)/core:$(APPS_DIR) $(ROOT)/scripts/check-dialyzer.escript $(ROOT)/.kazoo.plt $(TO_DIALYZE)
 
 dialyze-hard: TO_DIALYZE ?= $(abspath ebin)
 dialyze-hard: $(PLT)
-	@ERL_LIBS=$(ROOT)/deps:$(ROOT)/core:$(ROOT)/applications $(ROOT)/scripts/check-dialyzer.escript $(ROOT)/.kazoo.plt --hard $(TO_DIALYZE)
+	@ERL_LIBS=$(ROOT)/deps:$(ROOT)/core:$(APPS_DIR) $(ROOT)/scripts/check-dialyzer.escript $(ROOT)/.kazoo.plt --hard $(TO_DIALYZE)
 
 REBAR=$(ROOT)/deps/.erlang.mk/rebar/rebar
 
@@ -274,7 +275,7 @@ perf: compile-test
 		-eval 'horse:app_perf($(PROJECT)), init:stop().'
 
 fixture_shell: ERL_CRASH_DUMP = "$(ROOT)/$(shell date +%s)_ecallmgr_erl_crash.dump"
-fixture_shell: ERL_LIBS = "$(ROOT)/deps:$(ROOT)/core:$(ROOT)/applications:$(shell echo $(ROOT)/deps/rabbitmq_erlang_client-*/deps)"
+fixture_shell: ERL_LIBS = "$(ROOT)/deps:$(ROOT)/core:$(APPS_DIR):$(shell echo $(ROOT)/deps/rabbitmq_erlang_client-*/deps)"
 fixture_shell: NODE_NAME ?= fixturedb
 fixture_shell:
 	@ERL_CRASH_DUMP="$(ERL_CRASH_DUMP)" ERL_LIBS="$(ERL_LIBS)" KAZOO_CONFIG=$(ROOT)/rel/config-test.ini \
@@ -287,7 +288,7 @@ code_checks:
 	@printf "\n:: Check code\n\n"
 	@$(ROOT)/scripts/code_checks.bash $(SOURCES)
 	@printf "\n:: Check for raw JSON usage\n\n"
-	@ERL_LIBS=$(ROOT)/deps:$(ROOT)/core:$(ROOT)/applications $(ROOT)/scripts/no_raw_json.escript $(SOURCES)
+	@ERL_LIBS=$(ROOT)/deps:$(ROOT)/core:$(APPS_DIR) $(ROOT)/scripts/no_raw_json.escript $(SOURCES)
 	@printf "\n:: Check for Erlang 21 new stacktrace syntax\n\n"
 	@$(ROOT)/scripts/check-stacktrace.py $(SOURCES)
 

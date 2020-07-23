@@ -10,7 +10,6 @@
 
 main([]) ->
     print_help(1);
-main([_KazooPLT]) -> 'ok';
 main([KazooPLT | CommandLineArgs]) ->
     {'ok', Options, Args} = parse_args(CommandLineArgs),
     handle(KazooPLT, Options, Args).
@@ -38,8 +37,7 @@ print_help(Halt) ->
     getopt:usage(option_spec_list(), "ERL_LIBS=deps/:core/:applications/ " ++ Script ++ " .kazoo.plt [args] [file.beam | path/ebin/ ...]"),
     halt(Halt).
 
-handle(_KazooPLT, _Options, []) ->
-    print_help(0);
+handle(_KazooPLT, _Options, []) -> 'ok';
 handle(KazooPLT, Options, Args) ->
     ".plt" = filename:extension(KazooPLT),
 

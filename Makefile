@@ -284,8 +284,8 @@ make/more_apps.mk:
 apps-makefile: $(APPS_DIR)/Makefile
 
 $(APPS_DIR)/Makefile:
-	$(shell mkdir -p $(APPS_DIR))
-	cp $(ROOT)/make/Makefile.applications $(APPS_DIR)/Makefile
+	@$(shell mkdir -p $(APPS_DIR))
+	@cp $(ROOT)/make/Makefile.applications $(APPS_DIR)/Makefile
 
 .PHONY: kazoo
 kazoo: deps apps $(TAGS)
@@ -409,28 +409,24 @@ dialyze:       TO_DIALYZE ?= $(shell find $(APPS_DIR) -name ebin)
 dialyze: dialyze-it
 
 .PHONY: dialyze-changed
-dialyze-changed: TO_DIALYZE = $(strip $(filter %.beam %.erl %/ebin,$(CHANGED)))
+dialyze-changed: export CHECK_DIALYZER_OPTS = --bulk
 dialyze-changed: dialyze-it-changed
 
 .PHONY: dialyze-hard
-dialyze-hard: TO_DIALYZE = $(CHANGED)
-dialyze-hard: dialyze-it-hard
+dialyze-hard: export CHECK_DIALYZER_OPTS = --hard
+dialyze-hard: dialyze-it-changed
 
 .PHONY: dialyze-id
 dialyze-it: $(PLT)
 	@echo ":: dialyzing"
-	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(ROOT)/scripts/check-dialyzer.escript $(ROOT)/.kazoo.plt $(filter %.beam %.erl %/ebin,$(TO_DIALYZE)) && echo "dialyzer is happy!"
-
-.PHONY: dialyze-it-hard
-dialyze-it-hard: $(PLT)
-	@echo ":: dialyzing hard"
-	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(if $(DEBUG),time -v) $(ROOT)/scripts/check-dialyzer.escript $(ROOT)/.kazoo.plt --hard $(filter %.beam %.erl %/ebin,$(TO_DIALYZE)) && echo "dialyzer is happy!"
+	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(if $(DEBUG),time -v) $(ROOT)/scripts/check-dialyzer.escript $(ROOT)/.kazoo.plt $(CHECK_DIALYZER_OPTS) $(strip $(filter %.beam %.erl %/ebin,$(TO_DIALYZE))) && echo "dialyzer is happy!"
 
 .PHONY: dialyze-it-changed
+dialyze-it-changed: export TO_DIALYZE = $(CHANGED)
 dialyze-it-changed: $(PLT)
 	@if [ -n "$(TO_DIALYZE)" ]; then \
 		echo "dialyzing changes against $(BASE_BRANCH)" ; \
-		ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(if $(DEBUG),time -v) $(ROOT)/scripts/check-dialyzer.escript $(ROOT)/.kazoo.plt --bulk $(TO_DIALYZE) && echo "dialyzer is happy!"; \
+		$(MAKE) dialyze-it; \
 	else \
 		echo "no erlang changes to dialyze"; \
 	fi
@@ -557,6 +553,9 @@ sdks:
 .PHONY: validate-schemas
 validate-schemas:
 	@$(ROOT)/scripts/validate-schemas.py $(APPS_DIR)/crossbar/priv/couchdb/schemas
+
+whitespace:
+	@$(ROOT)/scripts/check-whitespace.sh $(CHANGED)
 
 include $(ROOT)/make/splchk.mk
 include $(ROOT)/make/ci.mk

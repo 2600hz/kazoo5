@@ -29,6 +29,7 @@ replace() {
     local F0=$2
     local M1=$3
     local F1=$4
+
     for FILE in $(grep -s -Irl $M0:$F0 $SEARCH_PATHS); do
         sed -i "s%$M0:$F0%$M1:$F1%g" "$FILE"
     done
@@ -159,6 +160,7 @@ kz_util_to_term() {
               floor
               ceiling
               iolist_join
+              pretty_print_bytes
              )
     search_and_replace fs[@] kz_util kz_term ''
 }
@@ -372,7 +374,7 @@ dedupe() {
     replace  kapps_util get_account_name kz_account fetch_name
     replace kz_services account_name     kz_account fetch_name
 
-    replace kapps_util get_event_type kz_util get_event_type
+    replace kapps_util get_event_type kz_api get_event_type
 }
 
 replace_types() {
@@ -544,11 +546,14 @@ kz_type_modules() {
     removing_kz_prefix_from_types "kz_time" kz_time[@]
 }
 
-kapps_util_amqp() {
+kapps_util_moves() {
     replace "kapps_util" "amqp_pool_send" "kz_amqp_worker" "cast"
     replace "kapps_util" "amqp_pool_collect" "kz_amqp_worker" "call_collect"
     replace "kapps_util" "amqp_pool_request_custom" "kz_amqp_worker" "call_custom"
     replace "kapps_util" "amqp_pool_request" "kz_amqp_worker" "call"
+    replace "kapps_util" "is_account_db" "kzs_util" "is_account_db"
+    replace "kapps_util" "is_account_mod" "kzs_util" "is_account_mod"
+    replace "kapps_util" "is_account_yod" "kzs_util" "is_account_yod"
 }
 
 kz_util_props() {
@@ -562,10 +567,55 @@ kz_util_uri() {
 }
 
 kz_util_processes() {
-    replace 'kz_util' 'runs_in' 'kz_process' 'runs_in'
-    replace 'kz_util' 'spawn' 'kz_process' 'spawn'
-    replace 'kz_util' 'spawn_link' 'kz_process' 'spawn_link'
-    replace 'kz_util' 'spawn_monitor' 'kz_process' 'spawn_monitor'
+    local fs=(runs_in
+              spawn
+              spawn_link
+              spawn_monitor
+              set_startup
+              startup
+             )
+    search_and_replace fs[@] kz_util kz_process ''
+}
+
+kz_util_application() {
+    local fs=(calling_app
+              calling_app_version
+              calling_process
+              get_app
+              application_version
+             )
+    search_and_replace fs[@] kz_util kz_application ''
+}
+
+kz_util_os() {
+    local fs=(write_file
+              rename_file
+              delete_file
+              delete_dir
+              make_dir
+             )
+    search_and_replace fs[@] kz_util kz_os ''
+}
+
+kz_util_version() {
+    local fs=(kazoo_version
+              bin_usage
+              mem_usage
+              write_pid
+             )
+    search_and_replace fs[@] kz_util kapps_util ''
+}
+
+kz_util_nodes() {
+    local fs=(node_name
+              node_hostname
+             )
+    search_and_replace fs[@] kz_util kz_nodes ''
+
+    }
+
+kz_util_api() {
+    replace 'kz_util' 'get_event_type' 'kz_api' 'event_type'
 }
 
 kz_util_format_ids() {
@@ -587,14 +637,14 @@ kz_util_format_ids() {
 }
 
 rename_knm_to_knums() {
-    for FILE in $(grep -s -Irl --exclude-dir='.git' kazoo_number_manager $SEARCH_PATHS); do
-        sed -i "s/kazoo_number_manager/kazoo_numbers/g" "$FILE"
+    for FILE in $(grep -s -Irl --exclude-dir='.git' kazoo_numbers $SEARCH_PATHS); do
+        sed -i "s/kazoo_numbers/kazoo_numbers/g" "$FILE"
     done
 }
 
 cb_context_rename() {
     for FILE in $(grep -s -Irl --exclude-dir='.git' "cb_context:account_db" $SEARCH_PATHS); do
-        sed -i 's/cb_context:account_db(/cb_context:db_name(/g' "$FILE"
+        sed -i 's/cb_context:db_name(/cb_context:db_name(/g' "$FILE"
     done
 }
 
@@ -632,8 +682,8 @@ echo "updating kazoo document accessors"
 kzd_accessors
 echo "updating amqp_util to kz_amqp_util"
 amqp_util_to_kz_amqp_util
-echo "updating kapps_util amqp to kz_amqp_worker"
-kapps_util_amqp
+echo "moving kapps_util functions  to better modules"
+kapps_util_moves
 echo "updating uniq usage to props module"
 kz_util_props
 echo "updating URI-related functions to kz_http_util"
@@ -642,7 +692,15 @@ echo "ensuring kz_log is used"
 kz_util_to_log
 echo "ensuring spawning is in kz_process"
 kz_util_processes
-echo "ensuring kazoo_number_manager is renamed to kazoo_numbers"
+echo "ensuring Erlang app stuff is moved"
+kz_util_application
+echo "ensuring AMQP payload event_type is moved"
+kz_util_api
+echo "ensuring file stuff is moved"
+kz_util_os
+echo "ensuring KAZOO version is moved"
+kz_util_version
+echo "ensuring kazoo_numbers is renamed to kazoo_numbers"
 rename_knm_to_knums
 echo "formatting account/resource ids to dbs moved to kzs_util"
 kz_util_format_ids

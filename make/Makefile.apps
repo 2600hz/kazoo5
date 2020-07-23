@@ -11,6 +11,9 @@ MORE_APPS_MK ?= $(ROOT)/make/more_apps.mk
 include $(ROOT)/make/app_urls.mk
 include $(APPS_MK)
 
+BASE_BRANCH ?= origin/master
+BRANCH = $(subst origin/,,$(BASE_BRANCH))
+
 -include $(MORE_APPS_MK)
 # Add community deps from https://github.com/kazoo-community?utf8=%E2%9C%93&q=kazoo-&type=&language=
 # Or add your own private deps to `more_apps.mk` (which is not version-controlled)
@@ -18,7 +21,7 @@ include $(APPS_MK)
 
 # Then add how, from where, and what branch/tag/commit SHA to use for the dep
 # See https://erlang.mk/guide/deps.html section 7.2.2 for fetch options
-# dep_{APP1} = git $(FETCH_AS)kazoo-community/kazoo-{APP1}.git master
+# dep_{APP1} = git $(FETCH_AS)kazoo-community/kazoo-{APP1}.git $(BRANCH)
 
 
 # Don't autopatch applications' Makefiles

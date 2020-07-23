@@ -2,7 +2,7 @@
 version: 2.1
 
 orbs:
-  kazoo: official-2600hz/kazoo@0.2.0
+  kazoo: official-2600hz/kazoo@0.2.3
 
 workflows:
   version: 2
@@ -41,6 +41,7 @@ workflows:
     jobs:
       - kazoo/build-preparation:
           target-type: kapp
+          for-packager: "true"
           filters:
             tags:
               only: /^\d+\.\d+\.\d+$/
