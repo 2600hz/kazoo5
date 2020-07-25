@@ -10,6 +10,7 @@ DEPS ?= amqp_client \
 	erlcloud \
 	erlsom \
 	erlydtl \
+	esaml \
 	gen_smtp \
 	getopt \
 	gproc \
@@ -49,6 +50,8 @@ endif
 dep_amqp_client = git https://github.com/2600hz/erlang-amqp_client.git v3.7.14
 
 dep_amqp_dist = git https://github.com/2600hz/erlang-amqp_dist.git bd97a806a10bd16d97bf0be0d4676cf9fec047e6
+
+dep_esaml = git https://github.com/2600hz/erlang-esaml.git master
 
 # dep_certifi = hex 0.3.0
 # Used by hackney, let it pull in certifi
@@ -158,7 +161,7 @@ dep_trie = git https://github.com/2600hz/erlang-trie v1.7.5
 # used by hotornot
 
 
-dep_gun = git https://github.com/ninenines/gun 1.2.0
+dep_gun = git https://github.com/ninenines/gun 2.0.0-pre.2
 
 dep_folsom = git https://github.com/2600hz/erlang-folsom 0.8.2
 # used by hangups
