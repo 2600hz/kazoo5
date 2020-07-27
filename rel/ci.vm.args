@@ -4,6 +4,7 @@
 -boot start_sasl
 
 -kernel inet_dist_listen_min 11500 inet_dist_listen_max 11999
+-kernel inet_dist_use_interface {127,0,0,1}
 
 # Use kernel poll functionality if supported by emulator
 +K true
