@@ -10,7 +10,7 @@ function P () {
 
 function check_andalso_orelse {
     P 'Check for andalso/orelse dropped lines'
-    ! grep -Ern '[^ %] +(andalso|orelse)' --include '*.escript' --include '*.erl' --include '*.hrl' --include '*.app.src' -- $@
+    ! grep -H -Ern '[^ %] +(andalso|orelse)' --include '*.escript' --include '*.erl' --include '*.hrl' --include '*.app.src' -- $@
 }
 
 function check_MODULE {
@@ -34,7 +34,7 @@ function check_TABs {
     P 'Check for TAB characters'
     local errors=0
     for f in "$@"; do
-        grep -Frn $'\t' --include '*.escript' --include '*.erl' --include '*.hrl' --include '*.app.src' -- "$f"
+        grep -H -Frn $'\t' --include '*.escript' --include '*.erl' --include '*.hrl' --include '*.app.src' -- "$f"
         [[ $? -ne 1 ]] && ((errors++))
     done
     return $errors
@@ -42,7 +42,7 @@ function check_TABs {
 
 function check_trailing_whitespace {
     P 'Check for trailing whitespaces'
-    ! grep -Ern '\s$' --include '*.escript' --include '*.erl' --include '*.hrl' --include '*.app.src' -- $@
+    ! grep -H -Ern '\s$' --include '*.escript' --include '*.erl' --include '*.hrl' --include '*.app.src' -- $@
 }
 
 declare -a args

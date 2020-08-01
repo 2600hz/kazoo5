@@ -254,10 +254,14 @@ filter(_W) -> 'true'.
 
 print(Beams, {Tag, {"src/" ++ _=File, Line}, _W}=Warning) ->
     Filename = filename:basename(File, ".erl"),
-    [Beam] = [Beam || Beam <- Beams, Filename =:= filename:basename(Beam, ".beam")],
-    AppDir = filename:dirname(filename:dirname(Beam)),
-    SrcFile = filename:join([AppDir, File]),
-    io:format("~s:~p: ~s~n  ~s~n", [SrcFile, Line, Tag, dialyzer:format_warning(Warning)]);
+    case [Beam || Beam <- Beams, Filename =:= filename:basename(Beam, ".beam")] of
+        [] ->
+            io:format("failed to find beam for ~s~n", [File]);
+        [Beam] ->
+            AppDir = filename:dirname(filename:dirname(Beam)),
+            SrcFile = filename:join([AppDir, File]),
+            io:format("~s:~p: ~s~n  ~s~n", [SrcFile, Line, Tag, dialyzer:format_warning(Warning)])
+    end;
 print(_Beams, {Tag, {File, Line}, _W}=Warning) ->
     io:format("~s:~p: ~s~n  ~s~n", [File, Line, Tag, dialyzer:format_warning(Warning)]);
 print(_Beams, _Err) ->

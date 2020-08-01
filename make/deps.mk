@@ -60,8 +60,8 @@ dep_esaml = git https://github.com/2600hz/erlang-esaml.git master
 # dep_chatterbox = hex 0.7.0
 # used by apns4erl
 
-dep_couchbeam = git https://github.com/2600hz/erlang-couchbeam 6376aac7fbedffa4e25a6cce2bcae4eb9ae98ed7 # latest commit SHA to 2600hz-kazoo5 branch
-# fix spec for couchbeam_view:all and couchbeam_view:fetch
+dep_couchbeam = git https://github.com/2600hz/erlang-couchbeam 086a39a29badc06849b46b82d35a220c5e141bf3 # latest commit SHA to 2600hz-kazoo5 branch
+# really fix spec for couchbeam_view:fetch
 
 ### https://github.com/benoitc/couchbeam/pull/158 - _list functions fix
 ### https://github.com/benoitc/couchbeam/pull/164 - allow 202 in put_attachment
