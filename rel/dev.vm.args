@@ -28,3 +28,4 @@
 -env ERL_CRASH_DUMP_NICE 1
 
 -s kazoo_apps_app
+-s reloader
