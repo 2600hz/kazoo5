@@ -167,6 +167,14 @@ Find git repos and accumulate changed files
 
 Check porcelain status of each repo and accumulate the results
 
+## `check-git-diff-untracked.bash`
+
+Show git diff for untracked file in directories.
+
+```shell
+./check-git-diff-untracked.bash <directories>+
+```
+
 ## check-dialyzer.escript
 
 An Erlang escript that dialyzes changed files. Run it using the Makefile target 'dialyze' with the files to dialyze:
