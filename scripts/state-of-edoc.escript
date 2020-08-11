@@ -73,7 +73,14 @@ state_of_edoc([], ErlsLength, _, {NoModule, NoFunctions}) ->
       ]
      );
 state_of_edoc([Erl|Erls], ErlsLength, Includes, Acc) ->
-    state_of_edoc(Erls, ErlsLength, Includes, edoc_state_of_file(Erl, Includes, Acc)).
+    case should_ignore(filename:basename(Erl, ".erl")) of
+        'true' -> Acc;
+        'false' ->
+            state_of_edoc(Erls, ErlsLength, Includes, edoc_state_of_file(Erl, Includes, Acc))
+    end.
+
+should_ignore("kz_json_query_lexer") -> 'true';
+should_ignore(_) -> 'false'.
 
 print_no_module_summary([]) ->
     ok;
@@ -99,7 +106,7 @@ sort_no_functions({_, _, Percentage1, _}, {_, _, Percentage2, _}) ->
     Percentage1 >= Percentage2.
 
 edoc_state_of_file(Erl, Includes, {NoModule, NoFunctions}=Acc) ->
-    io:format("."),
+    io:format("processing ~s~n", [Erl]),
     {_, #xmlElement{name = module, content = Es}} = edoc:get_doc(Erl, [{includes, Includes}, {preprocess, true}]),
     HasModuleComment = get_content(briefDescription, get_content(description, Es)) =/= []
         orelse get_content(deprecated,  Es) =/= []
