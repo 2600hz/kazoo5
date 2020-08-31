@@ -2,9 +2,10 @@
 
 # print 'Usage: ' + sys.argv[0] + ' file.json+'
 
+import os
 import sys
 import json
-import shutil
+
 
 if len(sys.argv) < 2:
     pass
@@ -19,6 +20,11 @@ for fn in sys.argv[1:]:
         except ValueError as e:
             print(fn + ": " + str(e))
             exit(1)
+
         with open(fn2, 'w') as fd2:
-            fd2.write(data2 + '\n')
-    shutil.move(fn2, fn)
+            written = fd2.write(data2 + '\n')
+            fd2.close()
+
+        fd.close()
+
+        os.replace(fn2, fn)

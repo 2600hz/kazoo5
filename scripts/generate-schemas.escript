@@ -10,7 +10,11 @@
 -include_lib("kazoo_stdlib/include/kz_log.hrl").
 
 main(Args) ->
-    Modules = [kz_term:to_atom(M, 'true') || Arg <- Args, M <- [module_name(Arg)], M =/= 'undefined'],
+    Modules = [kz_term:to_atom(M, 'true')
+               || Arg <- Args,
+                  M <- [module_name(Arg)],
+                  M =/= 'undefined'
+              ],
     lists:foreach(fun run_generator/1
                  ,[{fun cf_data_usage:to_schema_docs/1, Modules}
                   ,fun kp_data_usage:to_schema_docs/0

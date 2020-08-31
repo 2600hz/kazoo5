@@ -19,25 +19,36 @@ main(TagsFile, _File) ->
     tags:subdirs(Paths, [{'outfile', TagsFile}]).
 
 add_app_dirs(App, Dirs) ->
-    case application:load(App) of
-        'ok' -> add_app_dirs(App, Dirs, application:get_key(App, 'applications'));
+    case lists:member(App, Dirs)
+        orelse application:load(App)
+    of
+        'true' -> Dirs;
+        'ok' ->
+            add_app_dirs(App, Dirs, application:get_key(App, 'applications'));
         {'error', {'already_loaded', App}} ->
-            Dirs;
+            add_app_dirs(App, Dirs, application:get_key(App, 'applications'));
         {'error', _E} ->
             io:format("failed to load app ~p: ~p~n", [App, _E]),
             Dirs
     end.
 
 add_app_dirs(App, Dirs, {'ok', DepApps}) ->
-    _ = [application:load(DepApp)
-         || DepApp <- DepApps,
-            not lists:member(DepApp, Dirs)
-        ],
-    Dirs ++ [App | DepApps];
+    lists:usort(Dirs ++ [App | DepApps]);
 add_app_dirs(_App, Dirs, _Else) ->
     io:format("failed to list dep apps for ~s: ~p~n", [_App, _Else]),
     Dirs.
 
 app_path(App) ->
-    {'ok', [M | _]} = application:get_key(App, 'modules'),
-    filename:dirname(filename:dirname(code:which(M))).
+    case lists:keyfind(App, 1, application:loaded_applications()) of
+        {App, _, _} -> 'ok';
+        'false' -> 'ok' = application:load(App)
+    end,
+
+    case application:get_key(App, 'modules') of
+        {'ok', [M | _]} ->
+            filename:dirname(filename:dirname(code:which(M)));
+        'undefined' ->
+            AllKeys = application:get_all_key(App),
+            io:format("  failed to find modules for ~s: ~p~n", [App, AllKeys]),
+            'undefined'
+    end.

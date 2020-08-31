@@ -291,10 +291,10 @@ $(APPS_DIR)/Makefile:
 kazoo: deps apps $(TAGS)
 
 .PHONY: tags
-tags: $(TAGS)
-
-$(TAGS):
+tags:
 	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) ./scripts/tags.escript $(TAGS)
+
+$(TAGS): tags
 
 .PHONY: clean-tags
 clean-tags:

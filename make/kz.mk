@@ -156,7 +156,7 @@ app_src:
 	@ERL_LIBS=$(ROOT)/deps:$(ROOT)/core:$(APPS_DIR) $(ROOT)/scripts/apps_of_app.escript -a $(APPS_DIR)/$(PROJECT)/src/$(PROJECT).app.src
 
 .PHONY: json
-json: JSON = $(shell find . -name '*.json')
+json: JSON = $(shell find $(CWD) -name '*.json')
 json:
 	@$(ROOT)/scripts/format-json.py $(JSON)
 
