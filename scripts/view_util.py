@@ -8,6 +8,9 @@ import json
 import jsbeautifier
 import shutil
 import argparse, textwrap
+import re
+
+couch_fn_regex = re.compile(r'^function[^(]*\(')
 
 banner = '''
 ╻┏ ┏━┓╺━┓┏━┓┏━┓   ╻ ╻╻┏━╸╻ ╻
@@ -91,14 +94,15 @@ def multiline_view(data):
     opts.indent_size = 2
 
     if type(data) is str:
-        return data
+        return couch_fn_regex.sub('function(', data, count=1)
     elif type(data) is list:
         ## We split and join new lines here to flatten js code into a single line
         ## so we can test that it would evaluated to a valid js code
         ## and it doesn't missed a semicolon `;`
         ## New line in jsbeautifier is for making comment line
         ## show on their own line
-        js = jsbeautifier.beautify('\n'.join(data), opts)
+        js = couch_fn_regex.sub('function(', '\n'.join(data), count=1)
+        js = jsbeautifier.beautify(js, opts)
         multiLine = []
         for line in js.split('\n'):
             multiLine.append(line)
@@ -132,14 +136,15 @@ def read_json(file):
         print(e)
         exit(2)
 
-def save_js(js_file, data):
+def save_js(js_file, data, view_fun):
     opts = jsbeautifier.default_options()
     opts.indent_size = 4
     js = ''.join(data).strip()
     if js.startswith('function'):
         ## New line in jsbeautifier is for making comment line
         ## show on their own line
-        js = jsbeautifier.beautify('\n'.join(data), opts)
+        js = couch_fn_regex.sub('function ' + view_fun + '(', '\n'.join(data), count=1)
+        js = jsbeautifier.beautify(js, opts)
     try:
         open(js_file, 'w').write(js + '\n')
     except Exception as e:
@@ -165,7 +170,7 @@ def couchjs(js):
     ## we split and join new lines here to flatten js code into a single line
     ## so we can test that it would evaluated to a valid js code
     ## and it doesn't missed a semicolon `;`
-    JS = ''.join(js).replace('function', 'function arent_you_funny_couch', 1) + '\n'
+    JS = couch_fn_regex.sub('function couchy_couch(', ''.join(js), count=1) + '\n'
     if 'Object.keys' in JS:
         print('"Object.keys" which is not available until ECMA2015\n{}'.format(JS))
         exit(1)
@@ -192,7 +197,7 @@ def couchjs(js):
 
 ## replace
 if prog_args.action == 'replace':
-    print('Replacing {}/{}:'.format(design_name, prog_args.view_name, prog_args.view_function))
+    print('Replacing {}'.format(os.path.basename(prog_args.js_file)))
     js = read_js(prog_args.js_file)
     couchjs(js)
     design_doc = read_json(design_file)
@@ -200,18 +205,19 @@ if prog_args.action == 'replace':
     save_views(design_doc['views'])
 ## replace_all
 elif prog_args.action == 'replace_all':
-    print('Replacing all views for {}'.format(design_name))
+    print('Replacing all views in design document {}'.format(design_name))
     views = {}
     for file in os.listdir(prog_args.js_dir):
         if file.startswith(design_name + separator) and file.endswith('.js'):
+            full_path = os.path.join(prog_args.js_dir, file)
             view_name = normalize_view_name(file)
             if not view_name:
-                print('bad view name for {}'.format(file))
+                print("bad view name '{}' for '{}'".format(view_name, full_path))
                 exit(3)
             view_function = 'reduce' if is_reduce_file(file) else 'map'
 
-            print(':: replacing {}/{}:{}'.format(design_name, view_name, view_function))
-            js = read_js(file)
+            print(':: replacing {}'.format(full_path))
+            js = read_js(full_path)
             couchjs(js)
             if not view_name in views:
                 views[view_name] = {}
@@ -222,9 +228,7 @@ elif prog_args.action == 'replace_all':
         print('no javscript to replace')
 ## extract
 elif prog_args.action == 'extract':
-    print(':: extracting {}/{}:{}'\
-          .format(design_name, prog_args.view_name, prog_args.view_function)
-          )
+    print(':: extracting {}:'.format(os.path.basename(prog_args.js_file)))
     design_doc = read_json(design_file)
     if not prog_args.view_name in design_doc['views']:
         print('error: {} view not found in {}'\
@@ -236,8 +240,9 @@ elif prog_args.action == 'extract':
               .format(prog_args.view_function, design_name, prog_args.view_name)
               )
         exit(3)
-    save_js(prog_args.js_file,
-            design_doc['views'][prog_args.view_name][prog_args.view_function]
+    save_js(prog_args.js_file
+            ,design_doc['views'][prog_args.view_name][prog_args.view_function],
+            prog_args.view_function
             )
 # extract_all
 elif prog_args.action == 'extract_all':
@@ -247,12 +252,12 @@ elif prog_args.action == 'extract_all':
         os.makedirs(prog_args.js_dir)
     for view, view_funs in design_doc['views'].items():
         if 'map' in view_funs:
-            print(':: extracting {}/{}:map'.format(design_name, view))
-            save_js(os.path.join(prog_args.js_dir,
-                                 view_js_filename(view, False)), view_funs['map']
-                    )
+            file_name = view_js_filename(view, False)
+            full_path = os.path.join(prog_args.js_dir, file_name)
+            print(':: extracting to {}'.format(full_path))
+            save_js(full_path, view_funs['map'], 'map')
         if 'reduce' in view_funs:
-            print(':: extracting {}/{}:reduce'.format(design_name, view))
-            save_js(os.path.join(prog_args.js_dir,
-                                 view_js_filename(view, True)), view_funs['reduce']
-                    )
+            file_name = view_js_filename(view, True)
+            full_path = os.path.join(prog_args.js_dir, file_name)
+            print(':: extracting to {}'.format(full_path))
+            save_js(full_path, view_funs['reduce'], 'reduce')
