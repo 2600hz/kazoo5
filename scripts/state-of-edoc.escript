@@ -34,7 +34,7 @@ get_erls([], []) ->
             lists:sort(
               [F || F <- string:tokens(Changed, " "),
                     filelib:is_regular(F)
-                    andalso filename:extension(F) =:= ".erl"
+                        andalso filename:extension(F) =:= ".erl"
               ]
              )
     end;

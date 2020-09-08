@@ -1,5 +1,6 @@
 FMT = $(ROOT)/make/erlang-formatter/fmt.sh
-FMT_SHA = 4e9b3379952e0cb3319308d7bdef832eb305f816
+# v1.11.0
+FMT_SHA = c8adcbc8c3c7fedecc3621c399a1fd7afce7c9ee
 
 .PHONY: fmt fmt-all fmt-views fmt-views-all clean-fmt clean-$(FMT)
 
