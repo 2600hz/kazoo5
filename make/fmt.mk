@@ -11,7 +11,7 @@ $(FMT):
 	@ERLANG_MK_FILENAME=$(ROOT)/erlang.mk $(MAKE) -C $(DEPS_DIR)/erlfmt escript
 
 fmt-all: $(FMT)
-	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(FMT) -w $(shell find core applications scripts -name "*.erl" -or -name "*.hrl" -or -name "*.escript")
+	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(FMT) -w $(shell find core applications scripts -name "*.erl" -or -name "*.hrl" -or -name "*.escript" -or -name "*.app.src")
 
 fmt: TO_FMT ?= $(CHANGED_ERL)
 fmt: $(FMT)
