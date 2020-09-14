@@ -1,4 +1,4 @@
-ROOT = ..
+ROOT ?= ..
 ERLANG_MK_FILENAME = $(ROOT)/erlang.mk
 
 DEPS_DIR = $(CURDIR)

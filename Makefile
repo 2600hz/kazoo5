@@ -226,9 +226,9 @@ $(DEPS_HASH_FILE):
 	touch $(DEPS_HASH_FILE)
 
 $(DEPS_DIR)/Makefile: $(DOT_ERLANG_MK) clean-plt
-	mkdir -p deps
+	@mkdir -p deps
 	@$(MAKE) -f $(ERLANG_MK) deps
-	cp $(ROOT)/make/Makefile.deps $(DEPS_DIR)/Makefile
+	@cp $(ROOT)/make/Makefile.deps $(DEPS_DIR)/Makefile
 
 # Target: core
 # 1. make sure the 'deps' target is built
@@ -372,7 +372,6 @@ DIALYZER ?= dialyzer
 DIALYZER += --statistics --no_native
 
 OTP_APPS ?= erts kernel stdlib crypto public_key ssl asn1 inets xmerl
-
 
 EXCLUDE_DEPS = $(DEPS_DIR)/erlang_localtime/ebin
 $(PLT): DEPS_EBIN ?= $(filter-out $(EXCLUDE_DEPS),$(wildcard $(DEPS_DIR)/*/ebin))

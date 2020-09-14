@@ -1,19 +1,21 @@
-FMT = $(ROOT)/make/erlang-formatter/fmt.sh
+FMT = $(DEPS_DIR)/erlfmt/erlfmt
+#FMT = $(ROOT)/make/erlang-formatter/fmt.sh
 # v1.11.0
-FMT_SHA = c8adcbc8c3c7fedecc3621c399a1fd7afce7c9ee
+#FMT_SHA = c8adcbc8c3c7fedecc3621c399a1fd7afce7c9ee
 
 .PHONY: fmt fmt-all fmt-views fmt-views-all clean-fmt clean-$(FMT)
 
-$(FMT):
-	@wget -qO - 'https://codeload.github.com/fenollp/erlang-formatter/tar.gz/$(FMT_SHA)' | tar -vxz -C $(ROOT)/make/
-	@mv $(ROOT)/make/erlang-formatter-$(FMT_SHA) $(ROOT)/make/erlang-formatter
+$(FMT): $(DEPS_DIR)/Makefile
+	ROOT=$(ROOT) $(MAKE) $(DEPS_DIR)/Makefile
+	ROOT=$(ROOT) DEPS_MK=$(ROOT)/make/deps.fmt.mk $(MAKE) -C $(DEPS_DIR)/
+
 
 fmt-all: $(FMT)
-	@$(FMT) $(shell find core applications scripts -name "*.erl" -or -name "*.hrl" -or -name "*.escript")
+	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(FMT) -w $(shell find core applications scripts -name "*.erl" -or -name "*.hrl" -or -name "*.escript")
 
 fmt: TO_FMT ?= $(CHANGED_ERL)
 fmt: $(FMT)
-	@$(if $(TO_FMT), @$(FMT) $(TO_FMT))
+	@$(if $(TO_FMT), ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(FMT) -w $(TO_FMT))
 
 fmt-views-all:
 	@$(ROOT)/scripts/format-couchdb-views.py $(shell find core/kazoo_apps/priv/couchdb/account -name '*.json')
