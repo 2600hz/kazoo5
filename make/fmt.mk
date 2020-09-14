@@ -5,10 +5,10 @@ FMT = $(DEPS_DIR)/erlfmt/erlfmt
 
 .PHONY: fmt fmt-all fmt-views fmt-views-all clean-fmt clean-$(FMT)
 
-$(FMT): $(DEPS_DIR)/Makefile
-	ROOT=$(ROOT) $(MAKE) $(DEPS_DIR)/Makefile
-	ROOT=$(ROOT) DEPS_MK=$(ROOT)/make/deps.fmt.mk $(MAKE) -C $(DEPS_DIR)/
-
+$(FMT):
+	@ROOT=$(ROOT) $(MAKE) $(DEPS_DIR)/Makefile
+	@ROOT=$(ROOT) DEPS_MK=$(ROOT)/make/deps.fmt.mk $(MAKE) -C $(DEPS_DIR)/
+	@ERLANG_MK_FILENAME=$(ROOT)/erlang.mk $(MAKE) -C $(DEPS_DIR)/erlfmt escript
 
 fmt-all: $(FMT)
 	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(FMT) -w $(shell find core applications scripts -name "*.erl" -or -name "*.hrl" -or -name "*.escript")
