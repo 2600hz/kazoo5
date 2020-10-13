@@ -10,6 +10,8 @@
 -include_lib("kazoo_stdlib/include/kz_log.hrl").
 
 main(Args) ->
+    %% force load applications
+    _ = kz_ast_util:project_apps(),
     Modules = [kz_term:to_atom(M, 'true')
                || Arg <- Args,
                   M <- [module_name(Arg)],
