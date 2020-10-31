@@ -2,6 +2,7 @@
 DEPS ?= amqp_client \
 	amqp_dist \
 	couchbeam \
+	cowlib \
 	cowboy \
 	eflame \
 	eiconv \
@@ -69,7 +70,7 @@ dep_couchbeam = git https://github.com/2600hz/erlang-couchbeam b51741cba806bb075
 ### https://github.com/benoitc/couchbeam/pull/166 - no crash when getting body
 ### https://github.com/benoitc/couchbeam/pull/174 - view_cleanup content-type header
 
-dep_cowboy = git https://github.com/2600hz/erlang-cowboy 2.6.3
+dep_cowboy = git https://github.com/2600hz/erlang-cowboy 2.8.0
 
 dep_eflame = git https://github.com/slfritchie/eflame 7b0bb1a7e8c8482a59421a3a50ae69d49af59d52
 # used by kz_tracers
@@ -161,13 +162,15 @@ dep_zucchini = git https://github.com/2600hz/erlang-zucchini 0.1.0
 dep_trie = git https://github.com/2600hz/erlang-trie v1.7.5
 # used by hotornot
 
+dep_cowlib = git https://github.com/2600hz/erlang-cowlib 2600hz-2.9.1
 
-dep_gun = git https://github.com/ninenines/gun 2.0.0-pre.2
+dep_gun = git https://github.com/2600hz/erlang-gun 2600hz-2.0.0-pre.3
+
+dep_apns = git https://github.com/2600hz/erlang-apns4erl.git 2600hz-2.4.1
 
 dep_folsom = git https://github.com/2600hz/erlang-folsom 0.8.2
 # used by hangups
 
-dep_apns = git https://github.com/2600hz/erlang-apns4erl.git 20668a1f5fde5a7afd195d03a5cd30825786f2c5 # latest commit SHA to 2600hz branch
 
 dep_fcm = git https://github.com/2600hz/erlang-fcm.git b2f68a4c6f0f59475597a35e2dc9be13d9ba2910
 # Firebase cloud messaging
