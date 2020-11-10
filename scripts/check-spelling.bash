@@ -17,8 +17,8 @@ function check_spelling {
 
     while IFS= read f; do
         [ $(basename $f) = $(basename $FILE) ] && continue
-        file %f | grep -q "ASCII text" || continue
-        echo "  fixing $f with $correct"
+        file $f | grep -q "ASCII text" || continue
+        echo "  fixing $f $bad_grep with $correct"
         sed -i "s/$bad_sed/$correct/g" $f
     done < <(echo $CHANGED | xargs egrep --no-messages -lw "$bad_grep" )
 }

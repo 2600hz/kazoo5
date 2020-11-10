@@ -197,6 +197,7 @@ pages:
     - 'applications/crossbar/doc/phone_numbers.md'
     - 'applications/crossbar/doc/port_requests.md'
   - 'Misc':
+    - 'applications/crossbar/doc/call_reports.md'
     - 'applications/crossbar/doc/comments.md' ##
     - 'applications/crossbar/doc/lists.md'
     - 'applications/crossbar/doc/tasks.md'

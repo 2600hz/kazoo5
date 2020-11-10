@@ -303,6 +303,8 @@ kzd_accessors() {
     kz_util_to_kzd_accounts
     echo "  * kzd_webhook->kzd_webhooks"
     kzd_webhook_to_webhooks
+    echo "  * kzd_voicemail_box->kzd_vmboxes"
+    kzd_voicemail_box_to_kzd_vmboxes
 }
 
 kz_device_to_kzd_devices() {
@@ -332,6 +334,30 @@ kz_util_to_kzd_accounts() {
     replace $FROM_MOD "is_account_enabled" $TO_MOD "is_enabled"
     replace $FROM_MOD "account_update" $TO_MOD "save"
     replace $FROM_MOD "normalize_account_name" $TO_MOD "normalize_name"
+}
+
+# Functions merged from kzd_voicemail_box module into kzd_vmboxes module.
+kzd_voicemail_box_to_kzd_vmboxes() {
+    FROM_MOD=kzd_voicemail_box
+    TO_MOD=kzd_vmboxes
+
+    # replace FROM_MOD FROM_FUN TO_MOD TO_FUN
+    replace $FROM_MOD "new" $TO_MOD "new"
+    replace $FROM_MOD "type" $TO_MOD "type"
+    replace $FROM_MOD "announcement_only" $TO_MOD "announcement_only"
+    replace $FROM_MOD "check_if_owner" $TO_MOD "check_if_owner"
+    replace $FROM_MOD "is_setup" $TO_MOD "is_setup"
+    replace $FROM_MOD "mailbox_number" $TO_MOD "mailbox"
+    replace $FROM_MOD "media_extension" $TO_MOD "media_extension"
+    replace $FROM_MOD "notification_emails" $TO_MOD "notify_email_addresses"
+    replace $FROM_MOD "owner_id" $TO_MOD "owner_id"
+    replace $FROM_MOD "pin" $TO_MOD "pin"
+    replace $FROM_MOD "pin_required" $TO_MOD "require_pin"
+    replace $FROM_MOD "set_notification_emails" $TO_MOD "set_notify_email_addresses"
+    replace $FROM_MOD "skip_envelope" $TO_MOD "skip_envelope"
+    replace $FROM_MOD "skip_greeting" $TO_MOD "skip_greeting"
+    replace $FROM_MOD "skip_instructions" $TO_MOD "skip_instructions"
+    replace $FROM_MOD "timezone" $TO_MOD "timezone"
 }
 
 kzd_webhook_to_webhooks() {

@@ -50,6 +50,7 @@ column|colum
 coming|comming
 committed|commited comitted
 concede|conceed
+conference|conferece
 congratulate|congradulate
 conscientious|consciencious
 conscious|concious consious
