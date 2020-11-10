@@ -416,6 +416,12 @@ dialyze-changed: dialyze-it-changed
 dialyze-hard: export CHECK_DIALYZER_OPTS = --hard
 dialyze-hard: dialyze-it-changed
 
+.PHONY: dialyze-types
+dialyze-types: export TO_DIALYZE = $(CHANGED)
+dialyze-types: $(PLT)
+	@echo ":: dialyzing types"
+	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(if $(DEBUG),time -v) $(ROOT)/scripts/check-dialyzer-types.escript $(ROOT)/.kazoo.plt $(CHECK_DIALYZER_OPTS) $(strip $(filter %.beam %.erl %/ebin,$(TO_DIALYZE))) && echo "dialyzer is happy!"
+
 .PHONY: dialyze-id
 dialyze-it: $(PLT)
 	@echo ":: dialyzing"

@@ -142,16 +142,30 @@ log_work_to_do(BeamPaths, AllModules, 'true') ->
 
 find_unknown_modules(_PLT, BeamPaths, 'false') -> BeamPaths;
 find_unknown_modules(PLT, BeamPaths, 'true') ->
-    UnknownModules = [M ||
-                         {'warn_unknown', _, {'unknown_function',{M, _F, _Arity}}} <- do_scan_unknown(PLT, BeamPaths),
-                         M =/= 'localtime' % excluded cause raw dict makes dialyzer sad
-                     ],
+    handle_scan_results(BeamPaths, do_scan_unknown(PLT, BeamPaths)).
 
-    [fix_path(MPath) ||
-        M <- lists:usort(UnknownModules),
-        MPath <- [code:which(M)],
-        MPath =/= 'non_existing'
-    ] ++ BeamPaths.
+handle_scan_results(BeamPaths, ScanResults) ->
+    lists:foldl(fun maybe_add_unknown_module/2, BeamPaths, ScanResults).
+
+maybe_add_unknown_module({'warn_unknown', _, {'unknown_function',{Module, _Function, _Arity}}}
+                        ,BeamPaths
+                        ) ->
+    maybe_add_unknown_module(Module, BeamPaths);
+maybe_add_unknown_module({'warn_unknown',_,{'unknown_type',{Module,_Type,_Arity}}}
+                        ,BeamPaths
+                        ) ->
+    maybe_add_unknown_module(Module, BeamPaths);
+maybe_add_unknown_module({_Warning, _, _}, BeamPaths) -> BeamPaths;
+
+maybe_add_unknown_module('localtime', BeamPaths) -> BeamPaths;
+maybe_add_unknown_module(Module, BeamPaths) when is_atom(Module) ->
+    maybe_add_unknown_module(Module, BeamPaths, code:which(Module)).
+
+
+maybe_add_unknown_module(_Module, BeamPaths, 'non_existing') ->
+    BeamPaths;
+maybe_add_unknown_module(_Module, BeamPaths, MPath) ->
+    [fix_path(MPath) | BeamPaths].
 
 get_beam_path(Path, {BPs, GoHard}) ->
     {maybe_fix_path(Path, BPs, GoHard), GoHard}.
@@ -217,8 +231,8 @@ maybe_separate_step(Beam, {Apps, Beams}, _InBulk) ->
 %% functions and if we don't add `kz_types' here, Dialyzer thinks their types are `any()' and will warn about it.
 ensure_kz_types(Beams) ->
     case lists:any(fun(F) -> filename:basename(F, ".beam") =:= "kz_types" end, Beams) of
-        'true' -> Beams;
-        'false' -> [code:which('kz_types') | Beams]
+        'true' -> lists:usort(Beams);
+        'false' -> lists:usort([code:which('kz_types') | Beams])
     end.
 
 do_warn_path({_, []}, Acc) -> Acc;

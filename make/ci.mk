@@ -78,6 +78,7 @@ ci-unstaged:
 ci-dialyze: build-plt
 ci-dialyze:
 	@TO_DIALYZE="$(CHANGED)" $(MAKE) dialyze-it
+	@TO_DIALYZE="$(CHANGED)" $(MAKE) dialyze-types
 
 .PHONY: ci-release
 ci-release:

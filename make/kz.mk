@@ -251,14 +251,21 @@ PLT ?= $(ROOT)/.kazoo.plt
 $(PLT):
 	@$(MAKE) -C $(ROOT) build-plt
 
-.PHONY: dialyze dialyze-hard
+.PHONY: dialyze dialyze-hard dialyze-types
 dialyze: TO_DIALYZE ?= $(abspath ebin)
 dialyze: $(PLT)
-	@ERL_LIBS=$(ROOT)/deps:$(ROOT)/core:$(APPS_DIR) $(ROOT)/scripts/check-dialyzer.escript $(ROOT)/.kazoo.plt $(TO_DIALYZE)
+	@echo ":: dialyzing"
+	@ERL_LIBS=$(ROOT)/deps:$(ROOT)/core:$(APPS_DIR) $(ROOT)/scripts/check-dialyzer.escript $(PLT) $(TO_DIALYZE)
 
 dialyze-hard: TO_DIALYZE ?= $(abspath ebin)
 dialyze-hard: $(PLT)
-	@ERL_LIBS=$(ROOT)/deps:$(ROOT)/core:$(APPS_DIR) $(ROOT)/scripts/check-dialyzer.escript $(ROOT)/.kazoo.plt --hard $(TO_DIALYZE)
+	@echo ":: dialyzing"
+	@ERL_LIBS=$(ROOT)/deps:$(ROOT)/core:$(APPS_DIR) $(ROOT)/scripts/check-dialyzer.escript $(PLT) --hard $(TO_DIALYZE)
+
+dialyze-types: TO_DIALYZE ?= $(abspath ebin)
+dialyze-types: $(PLT)
+	@echo ":: dialyzing types"
+	@ERL_LIBS=$(ROOT)/deps:$(ROOT)/core:$(APPS_DIR) $(ROOT)/scripts/check-dialyzer-types.escript $(PLT) $(TO_DIALYZE)
 
 REBAR=$(ROOT)/deps/.erlang.mk/rebar/rebar
 

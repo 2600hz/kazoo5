@@ -189,6 +189,18 @@ Typically \`TO\_DIALYZE\` would be a generated list of files.
 
 Do note: this will only check the file itself for issues. To really leverage Dialyzer, you'll want to include remote project modules for Dialyzer to use as well.
 
+## check-dialyzer-types.escript
+
+Reads arguments, finds unknown remote types, and checks if those types exist in the remote module.
+
+```shell
+TO_DIALYZE=path/to/ebin/module.beam make dialyze-types
+
+:: dialyzing types
+dialyze paths: ["path/to/ebin/module.beam"]
+Failed to find type kz_term:objects/0
+```
+
 ## check-loglines.bash
 
 Checks code for log lines that start with a capital letter.
