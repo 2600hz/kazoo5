@@ -336,13 +336,21 @@ fi
 if [ -f "${NODE_STARTUP_FILE_PATH}/${KAZOO_NODE}.vm.args" ]; then
     VM_ARGS_FILE="${NODE_STARTUP_FILE_PATH}/${KAZOO_NODE}.vm.args"
 else
-    VM_ARGS_FILE="$VMARGS_PATH"
+    if [ -f "${NODE_STARTUP_FILE_PATH}/vm.args" ]; then
+        VM_ARGS_FILE="${NODE_STARTUP_FILE_PATH}/vm.args"
+    else
+        VM_ARGS_FILE="$VMARGS_PATH"
+    fi
 fi
 
 if [ -f "${NODE_STARTUP_FILE_PATH}/${KAZOO_NODE}.sys.config" ]; then
     SYS_CONFIG_FILE="${NODE_STARTUP_FILE_PATH}/${KAZOO_NODE}.sys.config"
 else
-    SYS_CONFIG_FILE="$RELX_CONFIG_PATH"
+    if [ -f "${NODE_STARTUP_FILE_PATH}/sys.config" ]; then
+        SYS_CONFIG_FILE="${NODE_STARTUP_FILE_PATH}/sys.config"
+    else
+        SYS_CONFIG_FILE="$RELX_CONFIG_PATH"
+    fi
 fi
 
 cd "$ROOTDIR"
@@ -555,10 +563,10 @@ case "$1" in
 
         # Dump environment info for logging purposes
         echo "Exec: $@" -- ${1+$ARGS}
-        echo "Root: $ROOTDIR"
+        # echo "Root: $ROOTDIR"
 
         # Log the startup
-        echo "$RELEASE_ROOT_DIR"
+        # echo "$RELEASE_ROOT_DIR"
         logger -t "$REL_NAME[$$]" "Starting up $NAME ($REL_NAME-$REL_VSN - Erts $ERTS_VSN)"
 
         # Start the VM
