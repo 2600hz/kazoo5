@@ -41,7 +41,7 @@ endif
 .PHONY: ci-docs
 ci-docs:
 	@./scripts/state-of-docs.py || true
-	@$(ROOT)/scripts/state-of-edoc.escript
+	@CHANGED="$(CHANGED_ERL)" $(ROOT)/scripts/state-of-edoc.escript
 	@$(MAKE) apis
 	@$(MAKE) docs
 

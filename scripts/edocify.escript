@@ -3,8 +3,6 @@
 %% -*- coding: utf-8 -*-
 
 -mode(compile).
--compile(nowarn_unused_function).
--compile(nowarn_unused_vars).
 
 -export([main/1]).
 
@@ -33,9 +31,9 @@ main(_) ->
     _ = io:setopts(user, [{encoding, unicode}]),
     check_ag_available(),
     ScriptsDir = filename:dirname(escript:script_name()),
-    ok = file:set_cwd(filename:absname(ScriptsDir ++ "/..")),
+    'ok' = file:set_cwd(filename:absname(ScriptsDir ++ "/..")),
 
-    {Year, _, _} = erlang:date(),
+    {_Year, _, _} = erlang:date(),
 
     io:format("Edocify Kazoo...~n~n"),
 
@@ -122,13 +120,13 @@ main(_) ->
           ],
     edocify(Run, 0).
 
-regex_find(Folder, Regex, {'unix', 'darwin'}) ->
-    "find -E " ++ Folder ++ " -regex " ++ Regex;
-regex_find(Folder, Regex, {'unix', 'linux'}) ->
-    "find " ++ Folder ++ " -regextype egrep -regex " ++ Regex;
-regex_find(Folder, Regex, _) ->
-    io:format("Unplanned OS type, expect Darwin or Linux."),
-    error.
+%% regex_find(Folder, Regex, {'unix', 'darwin'}) ->
+%%     "find -E " ++ Folder ++ " -regex " ++ Regex;
+%% regex_find(Folder, Regex, {'unix', 'linux'}) ->
+%%     "find " ++ Folder ++ " -regextype egrep -regex " ++ Regex;
+%% regex_find(Folder, Regex, _) ->
+%%     io:format("Unplanned OS type, expect Darwin or Linux."),
+%%     error.
 
 check_ag_available() ->
     case os:find_executable("ag") of
@@ -348,87 +346,6 @@ move_file_specs(Lines, LinesAdded, [#{fun_pos := Pos, spec := Spec, spec_length 
                    ,<<"core/kazoo_ast/src/kz_edoc_layout.erl">>
                    ]).
 
-bump_copyright(Result, Y) ->
-    Year = integer_to_binary(Y),
-    Files = [F
-             || F <- binary:split(Result, <<"\n">>, [global]),
-                F =/= <<>>,
-                not lists:member(F, ?DONT_BUMP)
-            ],
-    Bumped = [bump_copyright_file(F, Year) || F <- Files],
-    case [OkBump || OkBump <- Bumped, OkBump =:= ok] of
-        [] -> 0;
-        _ -> 1
-    end.
-
-bump_copyright_file(File, Year) ->
-    Lines = read_lines(File, false),
-    {Module, Header, OtherLines} = get_module_header_comments(Lines, [], []),
-    case re:run(iolist_to_binary(Header), "2600[Hh]z", [global]) of
-        {match, _} ->
-            bump_copyright_file(File, Module, Header, OtherLines, Year);
-        _ ->
-            case re:run(iolist_to_binary(Header), "@copyright", [global]) of
-                {match, _} -> ignore;
-                _ ->
-                    bump_copyright_file(File, Module, Header, OtherLines, Year)
-            end
-    end.
-
-bump_copyright_file(File, Module, Header, OtherLines, Year) ->
-    MaybeBumped = bump_copyright(Module, Header, [], [], Year),
-    case is_bumped(Header, MaybeBumped, Module) of
-        true -> ignore;
-        false ->
-            io:format("processing ~s~n", [File]),
-            save_lines(File,  MaybeBumped ++ OtherLines)
-    end.
-
-is_bumped(OldHeader, NewHeader, Module) ->
-    OldHeader ++ Module =:= [strip_comment(H) || H <- NewHeader].
-
-bump_copyright(Module, [], Copyright, [], Year) ->
-    bump_copyright(Module, [], Copyright, [<<"%%% @doc">>], Year);
-
-bump_copyright(Module, [], [], Header, Year) ->
-    bump_copyright(Module, [], generate_copyright_line(Year, <<>>), Header, Year);
-
-bump_copyright(Module, [], Copyright, Header, _) ->
-    [?SEP(3, <<$->>, 77)] ++ Copyright ++ Header ++ [<<"%%% @end">>, ?SEP(3, <<$->>, 77)] ++ Module;
-
-bump_copyright(Module, [<<"@copyright", Rest/binary>>|T], _, Header, Year) ->
-    bump_copyright(Module, T, do_bump_copyright(Rest, Year), Header, Year);
-
-bump_copyright(Module, [H|T], Copyright, Header, Year) ->
-    Striped = strip_right_spaces(strip_left_spaces(H)),
-    case Striped =/= <<"@end">>
-        andalso is_separator_chars(Striped, [<<$=>>, <<$->>])
-    of
-        false ->
-            %% removing end tag to add it later
-            bump_copyright(Module, T, Copyright, Header, Year);
-        {true, _} ->
-            %% removing separator to replace later
-            bump_copyright(Module, T, Copyright, Header, Year);
-        {false, _} when H =:= <<>> ->
-            %% to avoid add whitespace if it is an empty comment line.
-            bump_copyright(Module, T, Copyright, Header ++ [<<"%%%">>], Year);
-        {false, _} ->
-            bump_copyright(Module, T, Copyright, Header ++ [<<"%%% ", H/binary>>], Year)
-    end.
-
-do_bump_copyright(C, Year) ->
-    Nums = re:replace(C, "([^0-9\\-]*|2600)", <<>>, [global, {return, binary}]),
-    case lists:usort([B || B <- binary:split(Nums, <<"-">>, [global]), B =/= <<>>]) of
-        [Year] -> generate_copyright_line(Year, <<>>);
-        [<<"20", _:2/binary>> = Y] -> generate_copyright_line(Y, Year);
-        [<<"20", _:2/binary>> = Y, Year] -> generate_copyright_line(Y, Year);
-        [<<"20", _:2/binary>> = Y, _] -> generate_copyright_line(Y, Year);
-        _ -> generate_copyright_line(Year, <<>>)
-    end.
-
-generate_copyright_line(StartY, EndY) ->
-    [<<"%%% @copyright (C) ", StartY/binary, "-", EndY/binary, ", 2600Hz">>].
 
 %%------------------------------------------------------------------------------
 %% @doc
@@ -779,69 +696,6 @@ do_increase_sep_length([{LN, Line}|Lines], Positions, Separator, Formatted) ->
 
 %%------------------------------------------------------------------------------
 %% @doc
-%% Move first comment line to the same line as `@doc'. So EDoc is not
-%% adding extra new line character and spaces to beginning of the
-%% paragraph. (Not particularly necessary but it makes better
-%% looking HTML code at the end).
-%%
-%% CAUTION: This code also makes sure there is no empty comment line
-%% between `@doc' line and separator to avoid inclusion of separator line
-%% in the documentation.
-%%
-%%  %% Ag sample output:
-%%  %% ``
-%%  %% applications/konami/src/konami_listener.erl:3:%%% @doc
-%%  %% applications/konami/src/konami_listener.erl:4:%%%
-%%  %% applications/konami/src/konami_listener.erl:149:%% @doc
-%%  %% applications/konami/src/konami_listener.erl:150:%% Initializes the server
-%%  %% applications/konami/src/konami_listener.erl:164:%% @doc
-%%  %% applications/konami/src/konami_listener.erl:165:%% Handling call messages
-%%  %% '''
-%%  %%
-%%  %% Expected outcome:
-%%  %% * for example,
-%%  %% %% @doc Initializes the server.
-%%  %% * also removes empty comment lines after `@doc' and before first non empty comment line
-%% @end
-%%------------------------------------------------------------------------------
-move_to_doc_line(Result) ->
-    Positions = collect_positions_per_file([Line || Line <- binary:split(Result, <<"\n">>, [global]), Line =/= <<>>], #{}),
-    _ = maps:map(fun move_to_doc_line/2, Positions),
-    'ok'.
-
-move_to_doc_line(File, Positions) ->
-    io:format("processing ~s~n", [File]),
-    Lines = read_lines(File, true),
-    save_lines(File, do_move_to_doc_line(Lines, Positions, [])).
-
-do_move_to_doc_line([], _, Formatted) ->
-    Formatted;
-do_move_to_doc_line([{LN, Line}|Lines], Positions, Formatted) ->
-    case lists:member(LN, Positions)
-        andalso strip_right_spaces(strip_left_spaces(strip_comment(Line)))
-    of
-        false ->
-            do_move_to_doc_line(Lines, Positions, Formatted ++ [Line]);
-        <<>> ->
-            %% remove empty comment line
-            do_move_to_doc_line(Lines, Positions, Formatted);
-        <<"@doc">> ->
-            PerCount = count_percent(Line),
-            %% add doc tag in case there is no non-empty comment lines so we don't loose the doc tag
-            do_move_to_doc_line(Lines, Positions, Formatted ++ [<<(binary:copy(<<$%>>, PerCount))/binary, " @doc">>]);
-        Rest ->
-            %% this clause should only match once for the first non empty comment line
-            PerCount = count_percent(Line),
-            DocTagLine = <<(binary:copy(<<$%>>, PerCount))/binary, " @doc">>,
-            NewForm = case lists:last(Formatted) of
-                          DocTagLine -> lists:droplast(Formatted);
-                          _ -> Formatted
-                      end,
-            do_move_to_doc_line(Lines, Positions, NewForm ++ [<<(DocTagLine)/binary, " ", Rest/binary>>])
-    end.
-
-%%------------------------------------------------------------------------------
-%% @doc
 %% Remove empty comment lines after `@doc' to avoid empty paragraph
 %% or dot in summary. Regex only returns the line with `@doc' and
 %% empty comment line.
@@ -956,12 +810,6 @@ is_spec_line(_) -> false.
 strip_comment(<<$%, B/binary>>) -> strip_comment(B);
 strip_comment(<<$\s, B/binary>>) -> B;
 strip_comment(A) -> A.
-
-count_percent(A) ->
-    count_percent(A, 0).
-
-count_percent(<<$%, B/binary>>, Count) -> count_percent(B, Count + 1);
-count_percent(_, Count) -> Count.
 
 strip_left_spaces(<<$\s, B/binary>>) -> strip_left_spaces(B);
 strip_left_spaces(A) -> A.

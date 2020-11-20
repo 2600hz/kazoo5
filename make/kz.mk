@@ -109,6 +109,7 @@ KZ_VERSION ?= $(shell $(ROOT)/scripts/next_version)
 
 ## SOURCES provides a way to specify compilation order (left to right)
 SOURCES     ?= $(wildcard src/*.erl) $(wildcard src/*/*.erl)
+SOURCES_FULL_PATH = $(realpath $(SOURCES))
 MODULE_NAMES := $(sort $(foreach module,$(SOURCES),$(shell basename $(module) .erl)))
 MODULES := $(shell echo $(MODULE_NAMES) | sed 's/ /,/g')
 BEAMS := $(sort $(foreach module,$(SOURCES),ebin/$(shell basename $(module) .erl).beam))
@@ -289,7 +290,7 @@ fixture_shell:
 		erl -name '$(NODE_NAME)' -s reloader "$$@"
 
 .PHONY: code_checks apps_of_app
-code_checks:
+code_checks: edoc
 	@printf ":: Check for copyright year\n\n"
 	@$(ROOT)/scripts/bump-copyright-year.py $(SOURCES)
 	@printf "\n:: Check code\n\n"
@@ -298,6 +299,12 @@ code_checks:
 	@ERL_LIBS=$(ROOT)/deps:$(ROOT)/core:$(APPS_DIR) $(ROOT)/scripts/no_raw_json.escript $(SOURCES)
 	@printf "\n:: Check for Erlang 21 new stacktrace syntax\n\n"
 	@$(ROOT)/scripts/check-stacktrace.py $(SOURCES)
+
+.PHONY: edoc
+edoc:
+	@printf "\n:: Check for Edoc\n\n"
+	@CHANGED_ERL="$(SOURCES_FULL_PATH)" $(ROOT)/scripts/edocify.escript
+	@CHANGED="$(SOURCES_FULL_PATH)" $(ROOT)/scripts/state-of-edoc.escript
 
 DOCS_INDEX ?= doc/dev.yml
 docs_index:

@@ -97,6 +97,10 @@ This is a great option if you have a beefier computer available. It will take th
 
 Dialyzes all the changed files (compared to the parent branch) in a batch (vs 5 at a time like CI does) but doesn't pull in unknown modules like `dialyze-hard` does. Still memory/CPU intensive but not as bad as `hard` mode.
 
+### `make dialyze-types`
+
+Takes changed files and dialyzes them for the remote types they use. The script then checks the remote modules to see if the type exists and reports any that are unexported (or the module is missing/misspelled).
+
 ### Scripts
 
 There's also a couple scripts which are nice:
@@ -253,7 +257,7 @@ Run EUnit tests and PropEr tests with optional coverage reports.
 
 `dialyze` runs a Dialyzer pass on the application's BEAM files.
 
-`dialyze-hard` runs a Dialzyzer pass on the applications' BEAM files and any other modules called from the application are included.
+`dialyze-hard` runs a Dialyzer pass on the applications' BEAM files and any other modules called from the application are included.
 
 ### `make xref`, `make fmt`, `make perf`
 
