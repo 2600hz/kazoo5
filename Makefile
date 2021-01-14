@@ -35,7 +35,11 @@ KAST = $(APPS_DIR)/ast
 
 ## list files changed for more focused checks
 ifeq ($(strip $(CHANGED)),)
+ifeq ($(CIRCLECI),)
 	CHANGED := $(strip $(shell $(ROOT)/scripts/check-changed.bash $(ROOT) $(CORE) $(APPS)))
+else
+    CHANGED := $(CHANGED)
+endif
 else
 	CHANGED := $(CHANGED)
 endif
