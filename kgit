@@ -323,7 +323,9 @@ action_changed() {
         fi
     done
 
-    echo "$changed"
+    for FF in $changed; do
+        echo $FF
+    done
 }
 
 check_action() {
