@@ -27,6 +27,7 @@
 .settings
 .idea/
 **/.vscode/
+**/*.code-workspace
 
 sup.bash
 

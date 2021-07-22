@@ -1,0 +1,81 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run kazoo_apps release",
+            "type": "erlang",
+            "request": "launch",
+            "runinterminal": [
+                "make",
+                "release"
+            ],
+            "projectnode": "kazoo_apps",
+            "cookie": "change_me",
+            "timeout": 300,
+            "use_long_names": true,
+            "cwd": "${workspaceRoot}"
+        },
+        {
+            "name": "Attach kazoo_apps",
+            "type": "erlang",
+            "request": "attach",
+            "projectnode": "kazoo_apps",
+            "cookie": "change_me",
+            "timeout": 300,
+            "use_long_names": true,
+            "cwd": "${workspaceRoot}"
+        },
+        {
+            "name": "Run ecallmgr release",
+            "type": "erlang",
+            "request": "launch",
+            "runinterminal": [
+                "make",
+                "release",
+                "REL=ecallmgr"
+            ],
+            "projectnode": "ecallmgr",
+            "cookie": "change_me",
+            "timeout": 300,
+            "use_long_names": true,
+            "cwd": "${workspaceRoot}"
+        },
+        {
+            "name": "Attach ecallmgr",
+            "type": "erlang",
+            "request": "attach",
+            "projectnode": "ecallmgr",
+            "cookie": "change_me",
+            "timeout": 300,
+            "use_long_names": true,
+            "cwd": "${workspaceRoot}"
+        },
+        {
+            "name": "Run kazoo_fixturedb",
+            "type": "erlang",
+            "request": "launch",
+            "runinterminal": [
+                "make",
+                "fixture_shell"
+            ],
+            "projectnode": "fixturedb",
+            "cookie": "change_me",
+            "timeout": 300,
+            "use_long_names": true,
+            "cwd": "${workspaceRoot}"
+        },
+        {
+            "name": "Attach kazoo_fixturedb",
+            "type": "erlang",
+            "request": "attach",
+            "projectnode": "fixturedb",
+            "cookie": "change_me",
+            "timeout": 300,
+            "use_long_names": true,
+            "cwd": "${workspaceRoot}"
+        }
+    ]
+}

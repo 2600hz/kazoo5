@@ -8,6 +8,8 @@ RELX = $(DEPS_DIR)/relx
 ELVIS = $(DEPS_DIR)/elvis
 TAGS = $(ROOT)/TAGS
 ERLANG_LS = $(ROOT)/erlang_ls.config
+KZ_VSCODE = $(ROOT)/kazoo.code-workspace
+KZ_VSCODE_DEBUGGER = $(ROOT)/.vscode/launch.json
 PLT = $(ROOT)/.kazoo.plt
 
 ERLANG_MK = $(ROOT)/erlang.mk
@@ -339,6 +341,24 @@ $(ERLANG_LS):
 
 clean-erlang-ls:
 	@rm $(ERLANG_LS)
+
+kazoo-code-workspace: $(KZ_VSCODE) $(KZ_VSCODE_DEBUGGER)
+
+$(KZ_VSCODE):
+	@touch $(KZ_VSCODE)
+	@echo '{"folders": [' > $(KZ_VSCODE)
+	@for app in $(APPS) ; do echo "{ \"name\": \"kapp/$$(basename $${app})\", \"path\": \"applications/$$(basename $${app})\" }," >> $(KZ_VSCODE); done
+	@echo '{"name": "core", "path": "core" },' >> $(KZ_VSCODE)
+	@echo '{"name": "kazoo (root)", "path": "." }],' >> $(KZ_VSCODE)
+	@echo '"settings": {"files.exclude": {"/applications/": true,"/core/": true}' >> $(KZ_VSCODE)
+	@echo '}}' >> $(KZ_VSCODE)
+	@$(ROOT)/scripts/format-json.py $(KZ_VSCODE)
+	@echo "generated $(KZ_VSCODE)"
+
+$(KZ_VSCODE_DEBUGGER):
+	@mkdir $(ROOT)/.vscode
+	@cp $(ROOT)/.vscode_launch.json $(ROOT)/.vscode/launch.json
+	@echo "generated $(KZ_VSCODE_DEBUGGER)"
 
 $(RELX):
 	wget 'https://erlang.mk/res/relx-v3.27.0' -O $@
