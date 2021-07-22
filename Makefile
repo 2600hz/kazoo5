@@ -391,7 +391,7 @@ fixture_shell: ERL_LIBS = "$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR):$(shell echo $(DE
 fixture_shell: NODE_NAME ?= fixturedb
 fixture_shell:
 	@ERL_CRASH_DUMP="$(ERL_CRASH_DUMP)" ERL_LIBS="$(ERL_LIBS)" KAZOO_CONFIG=$(ROOT)/rel/config-test.ini \
-		erl -name '$(NODE_NAME)' -s reloader "$$@"
+		erl -setcookie change_me -name '$(NODE_NAME)' -s reloader "$$@"
 
 DIALYZER ?= dialyzer
 DIALYZER += --statistics --no_native

@@ -299,7 +299,7 @@ fixture_shell: ERL_LIBS = "$(ROOT)/deps:$(ROOT)/core:$(APPS_DIR):$(shell echo $(
 fixture_shell: NODE_NAME ?= fixturedb
 fixture_shell:
 	@ERL_CRASH_DUMP="$(ERL_CRASH_DUMP)" ERL_LIBS="$(ERL_LIBS)" KAZOO_CONFIG=$(ROOT)/rel/config-test.ini \
-		erl -name '$(NODE_NAME)' -s reloader "$$@"
+		erl -setcookie change_me -name '$(NODE_NAME)' -s reloader "$$@"
 
 .PHONY: code_checks apps_of_app
 code_checks: edoc
