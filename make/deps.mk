@@ -6,6 +6,7 @@ DEPS ?= amqp_client \
 	cowboy \
 	eflame \
 	eiconv \
+	epgsql \
 	erlang_localtime \
 	erlazure \
 	erlcloud \
@@ -77,6 +78,9 @@ dep_eflame = git https://github.com/slfritchie/eflame 7b0bb1a7e8c8482a59421a3a50
 
 dep_eiconv = git https://github.com/zotonic/eiconv 1.0.0
 # used by gen_smtp
+
+dep_epgsql = git https://github.com/epgsql/epgsql 4.5.0
+# used to store tabulator events
 
 dep_erlang_localtime = git https://github.com/2600hz/erlang-localtime 2600hz
 # used by kazoo_documents, teletype, notify, crossbar, callflow
