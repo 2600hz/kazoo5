@@ -1,0 +1,95 @@
+{
+    "adapters": {
+        "erlang": {
+            "command": "/usr/local/bin/els_dap",
+            "type": "erlang"
+        }
+    },
+    "configurations": {
+        "launch kazoo_apps": {
+            "adapter": "erlang",
+            "configuration": {
+                "type": "erlang",
+                "request": "launch",
+                "runinterminal": [
+                    "make",
+                    "release"
+                ],
+                "projectnode": "kazoo_apps",
+                "cookie": "change_me",
+                "timeout": 300,
+                "use_long_names": true,
+                "cwd": "${workspaceRoot}"
+            }
+        },
+        "attach kazoo_apps": {
+            "adapter": "erlang",
+            "configuration": {
+                "type": "erlang",
+                "request": "attach",
+                "projectnode": "kazoo_apps",
+                "cookie": "change_me",
+                "timeout": 300,
+                "use_long_names": true,
+                "cwd": "${workspaceRoot}"
+            }
+        },
+        "run ecallmgr": {
+            "adapter": "erlang",
+            "configuration": {
+                "type": "erlang",
+                "request": "launch",
+                "runinterminal": [
+                    "make",
+                    "release",
+                    "REL=ecallmgr"
+                ],
+                "projectnode": "ecallmgr",
+                "cookie": "change_me",
+                "timeout": 300,
+                "use_long_names": true,
+                "cwd": "${workspaceRoot}"
+            }
+        },
+        "attach ecallmgr": {
+            "adapter": "erlang",
+            "configuration": {
+                "type": "erlang",
+                "request": "attach",
+                "projectnode": "ecallmgr",
+                "cookie": "change_me",
+                "timeout": 300,
+                "use_long_names": true,
+                "cwd": "${workspaceRoot}"
+            }
+        },
+        "run fixture_shell": {
+            "adapter": "erlang",
+            "configuration": {
+                "type": "erlang",
+                "request": "launch",
+                "runinterminal": [
+                    "make",
+                    "fixture_shell"
+                ],
+                "projectnode": "fixturedb",
+                "cookie": "change_me",
+                "timeout": 300,
+                "use_long_names": true,
+                "cwd": "${workspaceRoot}"
+            }
+        },
+        "attach fixture_shell": {
+            "adapter": "erlang",
+            "configuration": {
+                "type": "erlang",
+                "request": "attach",
+                "projectnode": "fixturedb",
+                "cookie": "change_me",
+                "timeout": 300,
+                "use_long_names": true,
+                "cwd": "${workspaceRoot}"
+            }
+        }
+    }
+}

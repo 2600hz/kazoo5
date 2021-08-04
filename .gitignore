@@ -28,6 +28,7 @@
 .idea/
 **/.vscode/
 **/*.code-workspace
+**/.vimspector.json
 
 sup.bash
 
