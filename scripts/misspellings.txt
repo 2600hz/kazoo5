@@ -146,7 +146,6 @@ potatoes|potatos
 preferred|prefered
 precede|preceed
 presence|presance
-principle|principal
 privilege|privelege priviledge
 professor|professer
 promise|promiss
