@@ -62,14 +62,8 @@ dep_esaml = git https://github.com/2600hz/erlang-esaml.git master
 # dep_chatterbox = hex 0.7.0
 # used by apns4erl
 
-dep_couchbeam = git https://github.com/2600hz/erlang-couchbeam b51741cba806bb0758840f82f0be0678be601e0a # latest commit SHA to 2600hz-kazoo5 branch
-# add startkey_docid and endkey_docid to view options
-
-### https://github.com/benoitc/couchbeam/pull/158 - _list functions fix
-### https://github.com/benoitc/couchbeam/pull/164 - allow 202 in put_attachment
-### https://github.com/benoitc/couchbeam/pull/165 - fetch couchdb config
-### https://github.com/benoitc/couchbeam/pull/166 - no crash when getting body
-### https://github.com/benoitc/couchbeam/pull/174 - view_cleanup content-type header
+# PRs merged! Based off latest master commit
+dep_couchbeam = git https://github.com/2600hz/erlang-couchbeam 8dcba7209b040d7225aceddc2956680340937790
 
 dep_cowboy = git https://github.com/2600hz/erlang-cowboy 2.8.0
 
