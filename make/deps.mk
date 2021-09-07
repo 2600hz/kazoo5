@@ -62,8 +62,9 @@ dep_esaml = git https://github.com/2600hz/erlang-esaml.git master
 # dep_chatterbox = hex 0.7.0
 # used by apns4erl
 
-# PRs merged! Based off latest master commit + Ming's _show work
-dep_couchbeam = git https://github.com/2600hz/erlang-couchbeam 4d2ffa6938accaa225377267bb27dd81954cca30
+# PRs merged!
+#Based off latest master commit + Ming's _show work, _find, and a couple more commits
+dep_couchbeam = git https://github.com/2600hz/erlang-couchbeam b355ae69064d5425c9ee5582e1933f5945ee9c18
 
 dep_cowboy = git https://github.com/2600hz/erlang-cowboy 2.8.0
 
