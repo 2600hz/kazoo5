@@ -4,7 +4,6 @@ DEPS_DIR = $(ROOT)/deps
 CORE_DIR = $(ROOT)/core
 APPS_DIR = $(ROOT)/applications
 
-RELX = $(DEPS_DIR)/relx
 ELVIS = $(DEPS_DIR)/elvis
 TAGS = $(ROOT)/TAGS
 ERLANG_LS = $(ROOT)/erlang_ls.config
@@ -313,51 +312,6 @@ $(TAGS): tags
 clean-tags:
 	$(if $(wildcard $(TAGS)), rm $(TAGS))
 
-$(RELX):
-	wget 'https://erlang.mk/res/relx-v3.27.0' -O $@
-	chmod +x $@
-
-.PHONY: clean-release
-clean-release:
-	$(if $(wildcard _rel/), rm -r _rel/)
-
-.PHONY: build-release
-build-release: $(RELX) clean-release rel/relx.config rel/relx.config.script rel/sys.config rel/vm.args
-	$(RELX) --config rel/relx.config -V 2 release --relname 'kazoo'
-
-.PHONY: build-dev-release
-build-dev-release: $(RELX) clean-release rel/dev.relx.config rel/dev.relx.config.script rel/dev.vm.args rel/dev.sys.config
-	$(RELX) --dev-mode true --config rel/dev.relx.config -V 2 release --relname 'kazoo'
-
-.PHONY: build-ci-release
-build-ci-release: $(RELX) clean-release rel/ci.relx.config rel/ci.relx.config.script rel/ci.sys.config rel/ci.vm.args
-	$(RELX) --config rel/ci.relx.config -V 2 release --relname 'kazoo'
-
-.PHONY: build-dist-release
-build-dist-release: $(RELX) clean-release rel/dist.relx.config rel/dist.relx.config.script rel/dist.vm.args rel/dist.sys.config
-	$(RELX) --config rel/dist.relx.config -V 2 release --relname 'kazoo'
-
-.PHONY: tar-release
-tar-release: $(RELX) rel/relx.config rel/relx.config.script rel/sys.config rel/vm.args
-	$(RELX) --config rel/relx.config -V 2 release tar --relname 'kazoo'
-
-## More ACTs at //github.com/erlware/relx/priv/templates/extended_bin
-.PHONY: release
-release: ACT ?= console # start | attach | stop | console | foreground
-release: REL ?= kazoo_apps # kazoo_apps | ecallmgr | …
-release: COOKIE ?= change_me
-release:
-	NODE_NAME="$(REL)" COOKIE="$(COOKIE)" $(ROOT)/scripts/dev/kazoo.sh $(ACT) "$$@"
-
-.PHONY: install
-install: compile build-release
-	cp -a _rel/kazoo /opt
-
-.PHONY: read-release-cookie
-read-release-cookie: REL ?= kazoo_apps
-read-release-cookie:
-	@NODE_NAME='$(REL)' _rel/kazoo/bin/kazoo escript lib/kazoo_config-*/priv/read-cookie.escript "$$@"
-
 .PHONY: fixture_shell
 fixture_shell: ERL_CRASH_DUMP = "$(ROOT)/$(shell date +%s)_ecallmgr_erl_crash.dump"
 fixture_shell: ERL_LIBS = "$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR):$(shell echo $(DEPS_DIR)/rabbitmq_erlang_client-*/deps)"
@@ -365,8 +319,6 @@ fixture_shell: NODE_NAME ?= fixturedb
 fixture_shell:
 	@ERL_CRASH_DUMP="$(ERL_CRASH_DUMP)" ERL_LIBS="$(ERL_LIBS)" KAZOO_CONFIG=$(ROOT)/rel/config-test.ini \
 		erl -setcookie change_me -name '$(NODE_NAME)' -s reloader "$$@"
-
-
 
 .PHONY: xref
 xref: TO_XREF ?= $(shell find $(APPS_DIR) $(CORE_DIR) $(DEPS_DIR) -name ebin)
@@ -499,6 +451,7 @@ include $(ROOT)/make/editor.mk
 include $(ROOT)/make/fmt.mk
 include $(ROOT)/make/hank.mk
 include $(ROOT)/make/pest.mk
+include $(ROOT)/make/releases.mk
 include $(ROOT)/make/splchk.mk
 
 circle: ci
