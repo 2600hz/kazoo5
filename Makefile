@@ -10,7 +10,7 @@ TAGS = $(ROOT)/TAGS
 ERLANG_LS = $(ROOT)/erlang_ls.config
 KZ_VSCODE = $(ROOT)/kazoo.code-workspace
 KZ_VSCODE_DEBUGGER = $(ROOT)/.vscode/launch.json
-PLT = $(ROOT)/.kazoo.plt
+
 
 ERLANG_MK = $(ROOT)/erlang.mk
 ERLANG_MK_COMMIT = 89f2eca925b3f19b2409f9d0e71cf8108e5bd5eb
@@ -313,7 +313,6 @@ $(TAGS): tags
 clean-tags:
 	$(if $(wildcard $(TAGS)), rm $(TAGS))
 
-
 $(RELX):
 	wget 'https://erlang.mk/res/relx-v3.27.0' -O $@
 	chmod +x $@
@@ -367,80 +366,7 @@ fixture_shell:
 	@ERL_CRASH_DUMP="$(ERL_CRASH_DUMP)" ERL_LIBS="$(ERL_LIBS)" KAZOO_CONFIG=$(ROOT)/rel/config-test.ini \
 		erl -setcookie change_me -name '$(NODE_NAME)' -s reloader "$$@"
 
-DIALYZER ?= dialyzer
-DIALYZER += --statistics --no_native
 
-OTP_APPS ?= erts kernel stdlib crypto public_key ssl asn1 inets xmerl
-
-
-EXCLUDE_DEPS = $(DEPS_DIR)/erlang_localtime/ebin
-$(PLT): DEPS_EBIN ?= $(filter-out $(EXCLUDE_DEPS),$(wildcard $(DEPS_DIR)/*/ebin))
-# $(PLT): CORE_EBINS ?= $(shell find $(CORE_DIR) -name ebin)
-$(PLT):
-	@-$(DIALYZER) --build_plt --output_plt $(PLT) \
-	     --apps $(OTP_APPS) \
-	     -r $(DEPS_EBIN)
-	@for ebin in $(CORE_EBINS); do \
-	     $(DIALYZER) --add_to_plt --plt $(PLT) --output_plt $(PLT) -r $$ebin; \
-	 done
-
-.PHONY: build-plt
-build-plt: $(PLT)
-
-.PHONY: clean-plt
-clean-plt:
-	@rm -f $(PLT)
-
-.PHONY: dialyze-kazoo
-dialyze-kazoo: TO_DIALYZE  = $(shell find $(APPS_DIR) $(CORE_DIR) -name ebin)
-dialyze-kazoo: dialyze
-
-.PHONY: dialzye-apps
-dialyze-apps:  TO_DIALYZE  = $(shell find $(APPS_DIR) -name ebin)
-dialyze-apps: dialyze
-
-.PHONY: dialyze-core
-dialyze-core:  TO_DIALYZE  = $(shell find $(CORE_DIR)         -name ebin)
-dialyze-core: dialyze-it
-
-.PHONY: dialyze
-dialyze:       TO_DIALYZE ?= $(shell find $(APPS_DIR) -name ebin)
-dialyze: dialyze-it
-
-.PHONY: dialyze-changed
-dialyze-changed: export CHECK_DIALYZER_OPTS = --bulk
-dialyze-changed: dialyze-it-changed
-
-.PHONY: dialyze-hard
-dialyze-hard: export CHECK_DIALYZER_OPTS = --hard
-dialyze-hard: dialyze-it-changed
-
-.PHONY: dialyze-types-kazoo
-dialyze-types-kazoo: TO_DIALYZE  = $(shell find $(APPS_DIR) $(CORE_DIR) -name ebin)
-dialyze-types-kazoo: dialyze-types-it
-
-.PHONY: dialyze-types
-dialyze-types: TO_DIALYZE = $(CHANGED)
-dialyze-types: $(PLT) dialyze-types-it
-
-dialyze-types-it:
-	@echo ":: dialyzing types"
-	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(if $(DEBUG),time -v) $(ROOT)/scripts/check-dialyzer-types.escript $(ROOT)/.kazoo.plt $(CHECK_DIALYZER_OPTS) $(strip $(filter %.beam %.erl %/ebin,$(TO_DIALYZE))) && echo "dialyzer is happy!"
-
-.PHONY: dialyze-it
-dialyze-it: $(PLT)
-	@echo ":: dialyzing"
-	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(if $(DEBUG),time -v) $(ROOT)/scripts/check-dialyzer.escript $(ROOT)/.kazoo.plt $(CHECK_DIALYZER_OPTS) $(strip $(filter %.beam %.erl %/ebin,$(TO_DIALYZE))) && echo "dialyzer is happy!"
-
-.PHONY: dialyze-it-changed
-dialyze-it-changed: export TO_DIALYZE = $(CHANGED)
-dialyze-it-changed: $(PLT)
-	@if [ -n "$(TO_DIALYZE)" ]; then \
-		echo "dialyzing changes against $(BASE_BRANCH)" ; \
-		$(MAKE) dialyze-it; \
-	else \
-		echo "no erlang changes to dialyze"; \
-	fi
 
 .PHONY: xref
 xref: TO_XREF ?= $(shell find $(APPS_DIR) $(CORE_DIR) $(DEPS_DIR) -name ebin)
@@ -469,10 +395,6 @@ elvis: $(ELVIS)
 
 .PHONY: ci
 ci: clean compile xref build-plt diff sup_completion build-ci-release compile-test eunit elvis
-
-.PHONY: diff
-diff: export TO_DIALYZE = $(CHANGED)
-diff: dialyze-it
 
 .PHONY: bump-copyright
 bump-copyright:
@@ -571,6 +493,7 @@ whitespace:
 	@$(ROOT)/scripts/check-whitespace.sh $(CHANGED)
 
 include $(ROOT)/make/ci.mk
+include $(ROOT)/make/dialyzer.mk
 include $(ROOT)/make/docs.mk
 include $(ROOT)/make/editor.mk
 include $(ROOT)/make/fmt.mk
