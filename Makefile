@@ -352,10 +352,6 @@ schemas: $(KAST)
 $(KAST):
 	@DEPS=ast ROOT=$(ROOT) $(MAKE) -f $(ROOT)/make/Makefile.apps -C $(APPS_DIR)
 
-.PHONY: fs-headers
-fs-headers:
-	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(ROOT)/scripts/generate-fs-headers-hrl.escript
-
 .PHONY: validate-swagger
 validate-swagger:
 	@$(ROOT)/scripts/validate-swagger.py
