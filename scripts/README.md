@@ -271,6 +271,51 @@ Check for TAB characters
 Check for trailing whitespaces
 ```
 
+## `checkout_kapps_latest_tag.sh`
+
+This is script is helper in CI to check all Kapps for their latest tag and checkout that tag when are building releases.
+
+For this script to work you need have `BASE_BRANCH` variable exported (with value like `origin/5.0`) and all Kapps are checked out to a release branch.
+A Release branch is like `{MAJOR}.{MINOR}` for example: `5.0`.
+
+```shell
+$ # this variable is required
+$ export BASE_BRANCH=origin/5.0
+$ # next line is to simulate situation when the CI release build is running for `kazoo-call-inspector` repo.
+$ export CIRCLE_PROJECT_REPONAME=kazoo-call-inspector
+$ # if you need to checkout all repos to their release branch
+$ # ./kgit git checkout 5.0
+$ ./scripts/checkout_kapps_latest_tag.sh
+BASE_BRANCH: origin/5.0
+Base major version: 5
+Base minor version: 0
+
+:: Checking ast repo for its latest tag...
+found latest tag '5.0.7', checking out
+Note: switching to '5.0.7'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at bdd79a6 [5.0] PROD-199: handle generic IDs (#13)
+Removing ebin/
+.....
+.....
+.....
+```
+
 ## `code_checks.bash`
 
 Checks source code for various style requirements of the project
