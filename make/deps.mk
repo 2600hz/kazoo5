@@ -66,7 +66,8 @@ dep_esaml = git https://github.com/2600hz/erlang-esaml.git master
 #Based off latest master commit + Ming's _show work, _find, and a couple more commits
 dep_couchbeam = git https://github.com/2600hz/erlang-couchbeam b355ae69064d5425c9ee5582e1933f5945ee9c18
 
-dep_cowboy = git https://github.com/2600hz/erlang-cowboy 2.8.0
+# 2.9.0 tagged commit
+dep_cowboy = git https://github.com/2600hz/erlang-cowboy 04ca4c5d31a92d4d3de087bbd7d6021dc4a6d409
 
 dep_eflame = git https://github.com/slfritchie/eflame 7b0bb1a7e8c8482a59421a3a50ae69d49af59d52
 # used by kz_tracers
@@ -86,31 +87,36 @@ dep_erlazure = git https://github.com/2600hz/erlang-erlazure.git 88e0417251983ab
 dep_erlcloud = git https://github.com/2600hz/erlang-erlcloud 3.2.7
 # used by kazoo_attachments and a crossbar test (cb_storage_tests)
 
-dep_ersip = git https://github.com/2600hz/erlang-ersip master
+# latest master commit
+dep_ersip = git https://github.com/2600hz/erlang-ersip 3548962b87a51c733680cd2e3cefd6a0ec1d3f42
 # used by properly, webhooks
 
 ## Code reloaders for dev VMs, uncomment if desired
 # dep_fs_event = git https://github.com/jamhed/fs_event 783400da08c2b55c295dbec81df0d926960c0346
 # dep_fs_sync = git https://github.com/jamhed/fs_sync 2cf85cf5861221128f020c453604d509fd37cd53
 
-dep_gen_smtp = git https://github.com/2600hz/erlang-gen_smtp 3f80bfcd4fd8704739d264eb4d5005d4392f2a35
+# 1.1.1 tagged commit
+dep_gen_smtp = git https://github.com/2600hz/erlang-gen_smtp 410557a4b52cbabc99062e2196fa0ec16c3c03a7
 # used by teletype, notify, and fax
-# latest commit to origin/2600Hz: Fixes for encoding email address in a single comma separated header line
 
-dep_getopt = git https://github.com/2600hz/erlang-getopt v1.0.1
+# 1.0.2 tagged commit
+dep_getopt = git https://github.com/2600hz/erlang-getopt 1c963cecd75cb5f7b37f28737abb120e61390c62
 # used in some scripts/ and sup
 
-dep_gproc = git https://github.com/2600hz/erlang-gproc 0.8.0
+# latest master commit
+dep_gproc = git https://github.com/2600hz/erlang-gproc 3737f2b958a5908d7a3870046ae162c5b9bf971c
 # used by kazoo_events, webseq, konami, acdc, ecallmgr, callflow
 
 # dep_horse = git https://github.com/ninenines/horse 4dc81d47c3116b38af673481402f34ce03f8936b
 # used by kazoo_stdlib in some test modules
 # uncomment if you want to do simple perf testing of code
 
-dep_inet_cidr = git https://github.com/2600hz/erlang-inet_cidr.git 1.0.2
+# latest master commit
+dep_inet_cidr = git https://github.com/2600hz/erlang-inet_cidr.git d776fb22dd43441e9011bd52f9b4b78116c26ab9
 # used by kz_network_utils
 
-dep_jesse = git https://github.com/2600hz/jesse 1.5-rc13
+# 1.6.1 tagged commit
+dep_jesse = git https://github.com/2600hz/erlang-jesse ef0e038a0efa27c7e42fc6cfd963d06eec7c33d8
 # used by kazoo_schemas primarily
 
 dep_jiffy = git https://github.com/2600hz/erlang-jiffy 313d591cbda0fad5109fa8c049093984e54893a1
@@ -118,13 +124,14 @@ dep_jiffy = git https://github.com/2600hz/erlang-jiffy 313d591cbda0fad5109fa8c04
 # includes changes from lazedo/utf8
 # used by kz_json, nklib, jesse, lager, maybe couchbeam if compiled
 
-dep_lager = git https://github.com/2600hz/erlang-lager 91575d4479c897451edf138c10fa86c3125ec52e
-# 3.8.1
+# 3.9.2 tagged commit
+dep_lager = git https://github.com/2600hz/erlang-lager 459a3b2cdd9eadd29e5a7ce5c43932f5ccd6eb88
 # used everywhere
 
 dep_lager_syslog = git https://github.com/2600hz/erlang-lager_syslog 3.0.3
 
-dep_meck = git https://github.com/2600hz/erlang-meck 0.8.13
+# 0.9.2 tagged commit
+dep_meck = git https://github.com/2600hz/erlang-meck 5aaa24886db404f995c9a91b421367f6bfe6e566
 # used in tests for kazoo_voicemail, crossbar, teletype, and other deps
 
 dep_nklib = git https://github.com/2600hz/erlang-nklib v0.4.1
@@ -136,15 +143,18 @@ dep_nklib = git https://github.com/2600hz/erlang-nklib v0.4.1
 dep_plists = git https://github.com/2600hz/erlang-plists 1.0.0
 # used by a handful of core apps
 
-dep_proper = git https://github.com/2600hz/erlang-proper v1.3
+# v1.4 tagged commit
+dep_proper = git https://github.com/2600hz/erlang-proper 1daf130b0dfaea1f867751e43d82d7be7ebaa457
 # used by kazoo_proper, knm, kazoo_caches, kazoo_bindings, kz_util_tests, kazoo_token_buckets, kazoo_stdlib
 # used by apps hotornot and callflow
 
-dep_recon = git https://github.com/2600hz/erlang-recon 2.4.0
+# 2.5.2 (latest tag)
+dep_recon = git https://github.com/2600hz/erlang-recon 34194da6d9f8ed25f274e0ebb098dc9e95bcf547
 
 dep_ra = git https://github.com/2600hz/erlang-ra.git v1.1.2
 
-dep_ranch = git https://github.com/2600hz/erlang-ranch 1.7.1
+# 1.8.0 tagged commit
+dep_ranch = git https://github.com/2600hz/erlang-ranch a692f44567034dacf5efcaa24a24183788594eb7
 
 dep_reloader = git https://github.com/2600hz/erlang-reloader de1e6c74204b61ccf3b3652f05c6a7dec9e8257d
 # Development-related for reloading beam files
@@ -156,19 +166,20 @@ dep_syslog = git https://github.com/2600hz/erlang-syslog bbad537a1cb5e4f37e672d2
 # dep_wsock = git https://github.com/madtrick/wsock 1.1.7
 # appears unused
 
-dep_yamerl = git https://github.com/2600hz/erlang-yamerl v0.7.0
-# used by kazoo_ast to create OpenAPI 3
+# v0.8.1 tagged commit
+dep_yamerl = git https://github.com/2600hz/erlang-yamerl 5a4bff28e4651b1fdb333e4c5c16fa44fb0e1b1f
+# ref'd in kazoo_stdlib / kz_yaml.erl and used by kazoo_ast to create OpenAPI 3
 
 dep_zucchini = git https://github.com/2600hz/erlang-zucchini 0.1.0
 # INI file parser
 # used by kazoo_config_init
 
-dep_trie = git https://github.com/2600hz/erlang-trie v1.7.5
+# 2.0.2 tagged commit
+dep_trie = git https://github.com/2600hz/erlang-trie f5b0628ddaf9ee2e4510a4986570794e3ca313f0
 # used by hotornot
 
-dep_cowlib = git https://github.com/2600hz/erlang-cowlib 2600hz-2.9.1
-
-dep_gun = git https://github.com/2600hz/erlang-gun 2600hz-2.0.0-pre.3
+# 2.11.0 tagged commit
+dep_cowlib = git https://github.com/2600hz/erlang-cowlib e9448e5628c8c1d9083223ff973af8de31a566d1
 
 dep_apns = git https://github.com/2600hz/erlang-apns4erl.git 2600hz-2.4.1
 
