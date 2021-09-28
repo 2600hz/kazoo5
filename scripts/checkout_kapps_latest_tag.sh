@@ -80,8 +80,11 @@ for app in `ls ${ROOT}/applications` ; do
         exit 1
     fi
     echo "found latest tag '${_latest_tag}', checking out"
-    git checkout ${_latest_tag}
-    # echo "make a pristine environment for the ${app}"
-    git clean -x -d -f
+    git checkout ${_latest_tag} >/dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        echo "command 'git checkout ${_latest_tag}' failed"
+    fi
+    echo "make a pristine environment for the ${app}"
+    git clean -x -d -f >/dev/null 2>&1
     popd > /dev/null
 done
