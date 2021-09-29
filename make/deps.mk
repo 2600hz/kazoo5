@@ -95,8 +95,8 @@ dep_ersip = git https://github.com/2600hz/erlang-ersip 3548962b87a51c733680cd2e3
 # dep_fs_event = git https://github.com/jamhed/fs_event 783400da08c2b55c295dbec81df0d926960c0346
 # dep_fs_sync = git https://github.com/jamhed/fs_sync 2cf85cf5861221128f020c453604d509fd37cd53
 
-# 1.1.1 tagged commit
-dep_gen_smtp = git https://github.com/2600hz/erlang-gen_smtp 410557a4b52cbabc99062e2196fa0ec16c3c03a7
+# Latest upstream master + 2600Hz branch changes
+dep_gen_smtp = git https://github.com/2600hz/erlang-gen_smtp 5effb9ad8327f023a0766f335aded7dcba1338db
 # used by teletype, notify, and fax
 
 # 1.0.2 tagged commit
