@@ -96,7 +96,7 @@ dep_ersip = git https://github.com/2600hz/erlang-ersip 3548962b87a51c733680cd2e3
 # dep_fs_sync = git https://github.com/jamhed/fs_sync 2cf85cf5861221128f020c453604d509fd37cd53
 
 # Latest upstream master + 2600Hz branch changes
-dep_gen_smtp = git https://github.com/2600hz/erlang-gen_smtp 5effb9ad8327f023a0766f335aded7dcba1338db
+dep_gen_smtp = git https://github.com/2600hz/erlang-gen_smtp 6eea1172a761ba490ea87f76ef804c2d9fa92719
 # used by teletype, notify, and fax
 
 # 1.0.2 tagged commit
@@ -115,8 +115,8 @@ dep_gproc = git https://github.com/2600hz/erlang-gproc 3737f2b958a5908d7a3870046
 dep_inet_cidr = git https://github.com/2600hz/erlang-inet_cidr.git d776fb22dd43441e9011bd52f9b4b78116c26ab9
 # used by kz_network_utils
 
-# 1.6.1 tagged commit
-dep_jesse = git https://github.com/2600hz/erlang-jesse ef0e038a0efa27c7e42fc6cfd963d06eec7c33d8
+# 1.6.1 tagged commit = upstream 1.6.1 + 2600Hz patches from 1.5-rc13
+dep_jesse = git https://github.com/2600hz/erlang-jesse 11af7fcc0803e99a9c3977699336b26be9442558
 # used by kazoo_schemas primarily
 
 dep_jiffy = git https://github.com/2600hz/erlang-jiffy 313d591cbda0fad5109fa8c049093984e54893a1
