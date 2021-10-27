@@ -12,6 +12,7 @@ DEPS ?= amqp_client \
 	erlsom \
 	erlydtl \
 	esaml \
+	ersip \
 	gen_smtp \
 	getopt \
 	gproc \
@@ -86,6 +87,9 @@ dep_erlazure = git https://github.com/2600hz/erlang-erlazure.git 88e0417251983ab
 
 dep_erlcloud = git https://github.com/2600hz/erlang-erlcloud 3.2.7
 # used by kazoo_attachments and a crossbar test (cb_storage_tests)
+
+dep_ersip = git https://github.com/2600hz/erlang-ersip master
+# used by properly, webhooks
 
 ## Code reloaders for dev VMs, uncomment if desired
 # dep_fs_event = git https://github.com/jamhed/fs_event 783400da08c2b55c295dbec81df0d926960c0346
