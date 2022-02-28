@@ -44,4 +44,15 @@ APPS = [begin
            not lists:member(App, ToFilterOut)
        ],
 
-CONFIG ++ BASE ++ APPS.
+Overlay = proplists:get_value(overlay, CONFIG, []),
+OTP_VERSON_FILE = filename:join([code:root_dir(), "releases", erlang:system_info(otp_release), "OTP_VERSION"]),
+OUT_OTP_VERSION_FILE = filename:join(["{{output_dir}}", "releases", "OTP_VERSION"]),
+CONFIG_1 = case filelib:is_regular(OTP_VERSON_FILE) of
+               'true' ->
+                   [{overlay, [{copy, OTP_VERSON_FILE, OUT_OTP_VERSION_FILE} | Overlay]}
+                   | [Prop || {K, _}=Prop <- CONFIG, K =/= overlay]
+                   ];
+               'false' -> CONFIG
+           end,
+
+CONFIG_1 ++ BASE ++ APPS.
