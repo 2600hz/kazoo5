@@ -8,7 +8,8 @@ ELVIS = $(ROOT)/elvis
 
 FETCH_AS ?= https://github.com/
 
-$(ELVIS_DEP_DIR): $(DEPS_DIR)/Makefile
+$(ELVIS_DEP_DIR): $(DEPS_HASH_FILE)
+	@echo creating elvis dir $(ELVIS_DEP_DIR)
 	@mkdir -p $(ELVIS_DEP_DIR)
 	ROOT=$(ROOT) DEPS_MK="$(ROOT)/make/elvis.mk" $(MAKE) -C $(DEPS_DIR)/ all
 

@@ -170,10 +170,12 @@ $(DEPS_HASH_FILE):
 	@ROOT=$(ROOT) $(MAKE) -C $(DEPS_DIR)/ all
 	touch $(DEPS_HASH_FILE)
 
-$(DEPS_DIR)/Makefile: $(DOT_ERLANG_MK) clean-plt
-	mkdir -p deps
+$(DEPS_DIR)/Makefile: $(DOT_ERLANG_MK) $(DEPS_DIR) clean-plt
 	@$(MAKE) -f $(ERLANG_MK) deps
 	cp $(ROOT)/make/Makefile.deps $(DEPS_DIR)/Makefile
+
+$(DEPS_DIR):
+	@mkdir -p $(DEPS_DIR)
 
 # Target: core
 # 1. make sure the 'deps' target is built
