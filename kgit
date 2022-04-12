@@ -366,6 +366,7 @@ run_git() {
     declare -A netops
     netops["fetch"]=1
     netops["push"]=1
+    netops["pull"]=1
 
     if [ -n "$on_changed" ]; then
         if [ -n "$(git -C "$dir" status --short --untracked-files=no 2>&1)" ]; then
