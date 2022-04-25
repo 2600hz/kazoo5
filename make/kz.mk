@@ -193,12 +193,12 @@ json:
 compile-test: deps $(TEST_DEPS) compile-test-kz-deps compile-test-direct json $(TEST_BEAMS)
 
 compile-test-direct: ERLC_OPTS += -DTEST
-compile-test-direct: deps apps-test $(COMPILE_MOAR) test/$(PROJECT).app  $(TEST_BEAMS)
+compile-test-direct: deps apps-test $(COMPILE_MOAR) test/$(PROJECT).app $(TEST_BEAMS)
 
 $(TEST_DEPS):
 	@ERL_LIBS=$(ROOT)/deps:$(ROOT)/core:$(APPS_DIR) $(ROOT)/scripts/calculate-dep-targets.escript $(ROOT) $(PROJECT) > $(TEST_DEPS)
 
-ifeq (,$(wildcard $(TEST_DEPS)))
+ifeq ($(wildcard $(TEST_DEPS)),)
 KZ_DEPS_TARGETS =
 else
 KZ_DEPS = $(filter kazoo%,$(shell cat $(TEST_DEPS)))
