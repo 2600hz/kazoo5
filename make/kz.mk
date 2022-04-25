@@ -35,14 +35,15 @@ FETCH_AS ?= https://github.com/
 
 BASE_BRANCH := $(shell cat $(ROOT)/.base_branch)
 
+ERLC_OPTS += -Iinclude -Isrc -I../ +'{parse_transform, lager_transform}'
+## Use pedantic flags when compiling apps from applications/ & core/
+ERLC_OPTS += +warn_export_all +warn_unused_import +warn_unused_vars +warn_missing_spec -Werror
+
 ifndef ERLC_OPTS_SUPERSECRET
     ERLC_OPTS += +debug_info
 else
     ERLC_OPTS += $(ERLC_OPTS_SUPERSECRET)
 endif
-ERLC_OPTS += -Iinclude -Isrc -I../ +'{parse_transform, lager_transform}'
-## Use pedantic flags when compiling apps from applications/ & core/
-ERLC_OPTS += +warn_export_all +warn_unused_import +warn_unused_vars +warn_missing_spec -Werror
 
 ELIBS ?= $(if $(ERL_LIBS),$(ERL_LIBS):)$(ROOT)/deps:$(ROOT)/core:$(ROOT)/applications
 
@@ -218,7 +219,7 @@ endif
 test/$(PROJECT).app:
 	@mkdir -p test/
 	@mkdir -p ebin/
-	ERL_LIBS=$(ELIBS) erlc -v +nowarn_missing_spec $(ERLC_OPTS) $(TEST_PA) $(APPS_PA) -o ebin/ $(TEST_SOURCES)
+	ERL_LIBS=$(ELIBS) erlc -v +nowarn_missing_spec  $(filter-out +warn_missing_specs,$(ERLC_OPTS)) $(TEST_PA) $(APPS_PA) -o ebin/ $(TEST_SOURCES)
 
 	@sed "s/{modules,[[:space:]]*\[\]}/{modules,\[$(TEST_MODULES)\]}/" src/$(PROJECT).app.src > $@
 	@sed "s/{modules,[[:space:]]*\[\]}/{modules,\[$(TEST_MODULES)\]}/" src/$(PROJECT).app.src > ebin/$(PROJECT).app
