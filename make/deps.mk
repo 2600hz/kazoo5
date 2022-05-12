@@ -51,7 +51,7 @@ endif
 
 dep_amqp_client = hex 3.8.14
 
-dep_amqp_dist = git https://github.com/2600hz/erlang-amqp_dist.git d3fc050b283295976e4168cb16acedea14b5e3e0
+dep_amqp_dist = git https://github.com/2600hz/erlang-amqp_dist.git 581d4b53e1fb3e8247ad856bef106015304d1906
 
 dep_esaml = git https://github.com/2600hz/erlang-esaml.git master
 
