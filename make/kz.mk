@@ -32,6 +32,7 @@ endif
 SHELL := /bin/bash -o pipefail
 
 FETCH_AS ?= https://github.com/
+JOBS ?=
 
 BASE_BRANCH := $(shell cat $(ROOT)/.base_branch)
 
@@ -99,7 +100,7 @@ $(DEPS_HASH_FILE):
 apps: $(DOT_ERLANG_MK) $(APPS_HASH_FILE)
 	@$(MAKE) -C $(ROOT) apps-makefile
 	@if [ -s $(APPS_MK) ]; then \
-		ROOT=$(ROOT) APPS_MK="$(APPS_MK)" $(MAKE) -C $(APPS_DIR) all ;\
+		ROOT=$(ROOT) APPS_MK="$(APPS_MK)" $(MAKE) -j$(JOBS) -C $(APPS_DIR) all ;\
 	fi
 
 .PHONY:
