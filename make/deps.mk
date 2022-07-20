@@ -62,8 +62,8 @@ dep_esaml = git https://github.com/2600hz/erlang-esaml.git master
 # used by apns4erl
 
 # PRs merged!
-#Based off latest master commit + Ming's _show work, _find, and a couple more commits
-dep_couchbeam = git https://github.com/2600hz/erlang-couchbeam b355ae69064d5425c9ee5582e1933f5945ee9c18
+#Based off latest commit on 'show' branch: "fix fetch, all, stream, show and view ddoc types"
+dep_couchbeam = git https://github.com/2600hz/erlang-couchbeam 2d29971cbb4da822da9bc14113e3045bc1e08c6e
 
 dep_cowboy = git https://github.com/2600hz/erlang-cowboy 2.8.0
 
