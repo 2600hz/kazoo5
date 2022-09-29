@@ -11,15 +11,15 @@ erls=""
 
 # grep for lager:[word]("[A-Z][a-z]...
 # ignores log lines with a first word in all caps like HELO or EHLO in fax_smtp
-echo "lager $1"
 if [ -z "$1" ]; then
-    lager_files=$ROOT/core $ROOT/applications
+    echo "no files to check for logging"
+    exit 0
 else
-    lager_files=$1
+    lager_files="$1"
 fi
 
 #for ERL in $(egrep -rl "lager:\w+\(\"[A-Z]{1}[a-z]" $lager_files); do
-for ERL in $(egrep -rl "lager:\w+\(\"[A-Z]{1}[a-z]" $ROOT/core $ROOT/applications); do
+for ERL in $(egrep -rl "lager:\w+\(\"[A-Z]{1}[a-z]" $lager_files); do
     # sed captures lager:[word](" as \1
     # captures A-Z as \2
     # captures the rest of the line as \3
