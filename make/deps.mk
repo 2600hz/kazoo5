@@ -82,7 +82,7 @@ dep_erlang_localtime = git https://github.com/2600hz/erlang-localtime 2600hz
 dep_erlazure = git https://github.com/2600hz/erlang-erlazure.git 88e0417251983ab4d8a2a2606c732906eecd5007
 # used by kazoo_attachments, merged in lazedo/erlazure add-start-link changes
 
-dep_erlcloud = git https://github.com/2600hz/erlang-erlcloud 3.2.7
+dep_erlcloud = git https://github.com/2600hz/erlang-erlcloud 3.5.16
 # used by kazoo_attachments and a crossbar test (cb_storage_tests)
 
 dep_ersip = git https://github.com/2600hz/erlang-ersip master
