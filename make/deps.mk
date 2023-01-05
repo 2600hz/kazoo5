@@ -118,7 +118,8 @@ dep_jiffy = git https://github.com/2600hz/erlang-jiffy 313d591cbda0fad5109fa8c04
 dep_lager = git https://github.com/2600hz/erlang-lager 3.9.2
 # used everywhere
 
-dep_lager_syslog = git https://github.com/2600hz/erlang-lager_syslog 3.0.3
+dep_lager_syslog = git https://github.com/2600hz/erlang-lager_syslog e230b3d
+# 3.0.4
 
 dep_meck = git https://github.com/2600hz/erlang-meck 0.8.13
 # used in tests for kazoo_voicemail, crossbar, teletype, and other deps
