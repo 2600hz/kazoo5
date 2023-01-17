@@ -286,9 +286,9 @@ kapps_speech_to_kazoo_speech() {
     search_and_replace_prefix asrs[@] kapps_speech kazoo_asr asr_
 }
 
-kz_media_recording_to_kzc_recording() {
-    FROM=kz_media_recording
-    TO=kzc_recording
+kapps_call_recording() {
+    FROM=$1
+    TO=kapps_call_recording
     for FILE in $(grep -s -Irl $FROM: $SEARCH_PATHS); do
             replace_call $FROM $TO '' '' "$FILE"
     done
@@ -705,8 +705,10 @@ echo "ensuring props to_querystring is moved to kz_http_util"
 props_to_kz_http
 echo "ensuring kapps_speech to kazoo_speech"
 kapps_speech_to_kazoo_speech
-echo "ensuring kz_media_recording to kzc_recording"
-kz_media_recording_to_kzc_recording
+echo "ensuring kz_media_recording to kapps_call_recording"
+kapps_call_recording "kz_media_recording"
+echo "ensuring kzc_recording to kapps_call_recording"
+kapps_call_recording "kzc_recording"
 echo "ensuring includes from kazoo are moved to kazoo_stdlib"
 kz_includes
 echo 'ensuring utility calls are not duplicated all over the place'
