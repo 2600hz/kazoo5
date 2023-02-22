@@ -62,8 +62,9 @@ dep_esaml = git https://github.com/2600hz/erlang-esaml.git master
 # used by apns4erl
 
 # PRs merged!
-#Based off latest commit on 'show' branch: "fix fetch, all, stream, show and view ddoc types"
-dep_couchbeam = git https://github.com/2600hz/erlang-couchbeam 2d29971cbb4da822da9bc14113e3045bc1e08c6e
+# Based off latest commit on 'show' branch: "fix fetch, all, stream, show and view ddoc types" 2d29971cbb4da822da9bc14113e3045bc1e08c6e
+# Karl updated the 'show' branch to add X-Kazoo-Applications on commit a3d6f12ac186e4ef67731ed4b78d1a879c2b9701
+dep_couchbeam = git https://github.com/2600hz/erlang-couchbeam a3d6f12ac186e4ef67731ed4b78d1a879c2b9701
 
 dep_cowboy = git https://github.com/2600hz/erlang-cowboy 2.8.0
 
