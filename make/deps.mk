@@ -65,7 +65,7 @@ dep_esaml = git https://github.com/2600hz/erlang-esaml.git master
 #Based off latest commit on 'show' branch: "fix fetch, all, stream, show and view ddoc types"
 dep_couchbeam = git https://github.com/2600hz/erlang-couchbeam 2d29971cbb4da822da9bc14113e3045bc1e08c6e
 
-dep_cowboy = git https://github.com/2600hz/erlang-cowboy 2.8.0
+dep_cowboy = git https://github.com/2600hz/erlang-cowboy 2600hz
 
 dep_eflame = git https://github.com/slfritchie/eflame 7b0bb1a7e8c8482a59421a3a50ae69d49af59d52
 # used by kz_tracers
