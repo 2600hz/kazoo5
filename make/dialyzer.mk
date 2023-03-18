@@ -11,7 +11,7 @@ CHECK_DIALYZER_OPTS =
 ifneq ($(DIALYZER_OUTPUT),)
 	CHECK_DIALYZER_OPTS := --output-file $(DIALYZER_OUTPUT)
 else
-ifeq ($(CIRCLECI),)
+ifneq ($(CIRCLECI),)
 	CHECK_DIALYZER_OPTS := --output-file $(CI_DIALYZER_OUTPUT)
 endif
 endif
