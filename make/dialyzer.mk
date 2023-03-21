@@ -77,13 +77,7 @@ dialyze-it: $(PLT)
 
 .PHONY: dialyze-it-changed
 dialyze-it-changed: export TO_DIALYZE = $(CHANGED)
-dialyze-it-changed: $(PLT)
-	@if [ -n "$(TO_DIALYZE)" ]; then \
-		echo "dialyzing changes against $(BASE_BRANCH)" ; \
-		$(MAKE) dialyze-it; \
-	else \
-		echo "no erlang changes to dialyze"; \
-	fi
+dialyze-it-changed: dialyze-it
 
 .PHONY: diff
 diff: export TO_DIALYZE = $(CHANGED)
