@@ -12,7 +12,18 @@ main([]) ->
     print_help(1);
 main([KazooPLT | CommandLineArgs]) ->
     {'ok', Options, Args} = parse_args(CommandLineArgs),
-    handle(KazooPLT, Options, Args).
+
+    %% Dialyzer being Dialyzer and is not writing the output to the provided output file
+    %% when it is called programmatically. It always returns the warning. So we need to do
+    %% it manually and print the output ourself.
+    %%
+    %% Just fyi, calling dialyzer directly from CLI works, it just calling
+    %% `dialyzer:run/1' won't.
+    {OutFilename, OutFile} = init_output(Options),
+    WarnResult = handle(KazooPLT, Options, OutFile, Args),
+    log_warn_result(OutFile, WarnResult),
+    maybe_close_output_file(OutFilename, OutFile),
+    WarnResult.
 
 parse_args(CommandLineArgs) ->
     case getopt:parse(option_spec_list(), CommandLineArgs) of
@@ -38,36 +49,23 @@ print_help(Halt) ->
     getopt:usage(option_spec_list(), "ERL_LIBS=deps/:core/:applications/ " ++ Script ++ " .kazoo.plt [args] [file.beam | path/ebin/ ...]"),
     halt(Halt).
 
-handle(_KazooPLT, _Options, []) -> 'ok';
-handle(KazooPLT, Options, Args) ->
+handle(KazooPLT, Options, OutFile, Args) ->
     ".plt" = filename:extension(KazooPLT),
 
     Env = string:tokens(os:getenv("TO_DIALYZE", ""), " "),
 
     handle_paths(KazooPLT
                 ,Options
+                ,OutFile
                 ,filter_for_erlang_files(lists:usort(Env ++ Args))
                 ).
 
-handle_paths(_KazooPLT, _Options, []) ->
-    io:format("No Erlang files found to process\n"),
-    print_help(0);
-handle_paths(KazooPLT, Options, Paths) ->
-    %% Dialyzer being Dialyzer and is not writing the output to the provided output file
-    %% when it is called programmatically. It always returns the warning. So we need to do
-    %% it manually and print the output ourself.
-    %%
-    %% Just fyi, calling dialyzer directly from CLI works, it just calling
-    %% `dialyzer:run/1' won't.
-    {OutFilename, OutFile} = init_output(Options),
+handle_paths(_KazooPLT, _Options, OutFile, []) ->
+    output_write(OutFile, io_lib:format("No Erlang files found to process\n", [])),
+    0;
+handle_paths(KazooPLT, Options, OutFile, Paths) ->
+    warn(KazooPLT, Options, Paths, OutFile).
 
-    WarnResult = warn(KazooPLT, Options, Paths, OutFile),
-    log_warn_result(OutFile, WarnResult),
-    maybe_close_output_file(OutFilename, OutFile),
-    halt(WarnResult).
-
-log_warn_result('standard_io', 0) ->
-    ok;
 log_warn_result(OutFile, 1) ->
     output_write(OutFile, io_lib:format("1 Dialyzer warning~n", []));
 log_warn_result(OutFile, Count) ->
@@ -82,6 +80,7 @@ init_output(Options) ->
                 {ok, IoFile} ->
                     %% Warnings and errors can include Unicode characters.
                     ok = io:setopts(IoFile, [{encoding, unicode}]),
+                    io:format("saving dialyzer output to ~ts~n", [OutFile]),
                     {OutFile, IoFile};
                 {error, Reason} ->
                     io:format("could not open output file ~tp, Reason: ~p\n", [OutFile, Reason]),
