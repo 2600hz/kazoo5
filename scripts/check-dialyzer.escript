@@ -29,6 +29,7 @@ option_spec_list() ->
     [{'help', $?, "help", 'undefined', "Show the program options"}
     ,{'hard', $h, "hard", {'boolean', 'false'}, "Include remote modules called by the supplied modules"}
     ,{'bulk', $b, "bulk", {'boolean', 'false'}, "Dialyze all files together (requires more memory/CPU)"}
+    ,{'output_file', $o, "output-file", {'string', 'undefined'}, "Also write the Dialyzer analysis results to the specified outfile."}
     ].
 
 -spec print_help(integer()) -> no_return().
@@ -52,15 +53,47 @@ handle_paths(_KazooPLT, _Options, []) ->
     io:format("No Erlang files found to process\n"),
     print_help(0);
 handle_paths(KazooPLT, Options, Paths) ->
-    case warn(KazooPLT, Options, Paths) of
-        0 -> halt(0);
-        1 ->
-            io:format("1 Dialyzer warning~n"),
-            halt(1);
-        Count ->
-            io:format("~p Dialyzer warnings~n", [Count]),
-            halt(Count)
+    %% Dialyzer being Dialyzer and is not writing the output to the provided output file
+    %% when it is called programmatically. It always returns the warning. So we need to do
+    %% it manually and print the output ourself.
+    %%
+    %% Just fyi, calling dialyzer directly from CLI works, it just calling
+    %% `dialyzer:run/1' won't.
+    {OutFilename, OutFile} = init_output(Options),
+
+    WarnResult = warn(KazooPLT, Options, Paths, OutFile),
+    log_warn_result(OutFile, WarnResult),
+    maybe_close_output_file(OutFilename, OutFile),
+    halt(WarnResult).
+
+log_warn_result('standard_io', 0) ->
+    ok;
+log_warn_result(OutFile, 1) ->
+    output_write(OutFile, io_lib:format("1 Dialyzer warning~n", []));
+log_warn_result(OutFile, Count) ->
+    output_write(OutFile, io_lib:format("~p Dialyzer warnings~n", [Count])).
+
+init_output(Options) ->
+    case props:get_value('output_file', Options) of
+        'undefined' ->
+            {'standard_io', 'standard_io'};
+        OutFile ->
+            case file:open(OutFile, [write]) of
+                {ok, IoFile} ->
+                    %% Warnings and errors can include Unicode characters.
+                    ok = io:setopts(IoFile, [{encoding, unicode}]),
+                    {OutFile, IoFile};
+                {error, Reason} ->
+                    io:format("could not open output file ~tp, Reason: ~p\n", [OutFile, Reason]),
+                    halt(1)
+            end
     end.
+
+maybe_close_output_file(_, 'standard_io') -> 'ok';
+maybe_close_output_file(OutFilename, File) ->
+    io:format("~n~ncheck output file `~ts' for details~n", [OutFilename]),
+    _ = file:close(File),
+    'ok'.
 
 filter_for_erlang_files(Files) ->
     [Arg || Arg <- Files,
@@ -110,7 +143,7 @@ file_exists(Filename) ->
         _ -> 'false'
     end.
 
-warn(PLT, Options, Paths) ->
+warn(PLT, Options, Paths, OutFile) ->
     GoHard = props:get_value('hard', Options),
     Bulk = GoHard
         orelse props:get_value('bulk', Options),
@@ -122,27 +155,26 @@ warn(PLT, Options, Paths) ->
 
     AllModules = find_unknown_modules(PLT, BeamPaths, GoHard),
 
-    log_work_to_do(BeamPaths, AllModules, GoHard),
+    log_work_to_do(BeamPaths, AllModules, GoHard, OutFile),
+    do_warn(PLT, AllModules, Bulk, OutFile).
 
-    do_warn(PLT, AllModules, Bulk).
-
-log_work_to_do([BeamPath], _AllModules, 'false') ->
-    io:format("analyzing 1 path...~n~p~n~n", [BeamPath]);
-log_work_to_do(BeamPaths, _AllModules, 'false') ->
-    io:format("analyzing ~p paths...~n", [length(BeamPaths)]),
-    _ = [log_file_to_do(File) || File <- lists:usort(BeamPaths)],
-    io:format("~n");
-log_work_to_do(BeamPaths, AllModules, 'true') ->
+log_work_to_do([BeamPath], _AllModules, 'false', OutFile) ->
+    output_write(OutFile, io_lib:format("analyzing 1 path...~n~tp~n~n", [BeamPath]));
+log_work_to_do(BeamPaths, _AllModules, 'false', OutFile) ->
+    output_write(OutFile, io_lib:format("analyzing ~tp paths...~n", [length(BeamPaths)])),
+    _ = [log_file_to_do(File, OutFile) || File <- lists:usort(BeamPaths)],
+    output_write(OutFile, io_lib:format("~n", []));
+log_work_to_do(BeamPaths, AllModules, 'true', OutFile) ->
     Len = length(BeamPaths),
-    io:format("analyzing ~p paths + ~p called modules...~n~n", [Len, length(AllModules)-Len]),
-    _ = [io:format("~s~n", [File]) || File <- lists:usort(BeamPaths ++ AllModules)],
-    io:format("\n"),
+    output_write(OutFile, io_lib:format("analyzing ~tp paths + ~tp called modules...~n~n", [Len, length(AllModules)-Len])),
+    _ = [output_write(OutFile, io_lib:format("~ts~n", [File])) || File <- lists:usort(BeamPaths ++ AllModules)],
+    output_write(OutFile, io_lib:format("\n", [])),
     'ok'.
 
-log_file_to_do({'app', Files}) ->
-    [log_file_to_do(File) || File <- Files];
-log_file_to_do(File) ->
-    io:format("~s~n", [File]).
+log_file_to_do({'app', Files}, OutFile) ->
+    [log_file_to_do(File, OutFile) || File <- Files];
+log_file_to_do(File, OutFile) ->
+    output_write(OutFile, io_lib:format("~ts~n", [File])).
 
 find_unknown_modules(_PLT, BeamPaths, 'false') -> BeamPaths;
 find_unknown_modules(PLT, BeamPaths, 'true') ->
@@ -209,13 +241,13 @@ fix_path(Path, CWD) ->
         _ -> Path
     end.
 
-do_warn(PLT, Paths, InBulk) ->
+do_warn(PLT, Paths, InBulk, OutFile) ->
     {Apps, Beams} = maybe_separate_steps(Paths, InBulk),
 
-    {N, _PLT, InBulk} = lists:foldl(fun do_warn_path/2
-                                   ,{0, PLT, InBulk}
-                                   ,[{'beams', Beams} | Apps]
-                                   ),
+    {N, _PLT, InBulk, _} = lists:foldl(fun do_warn_path/2
+                                      ,{0, PLT, InBulk, OutFile}
+                                      ,[{'beams', Beams} | Apps]
+                                      ),
     N.
 
 maybe_separate_steps(Paths, InBulk) ->
@@ -243,22 +275,22 @@ ensure_kz_types(Beams) ->
     end.
 
 do_warn_path({_, []}, Acc) -> Acc;
-do_warn_path({_, Beams}, {N, PLT, 'true'}) ->
-    {N + scan_and_print(PLT, Beams), PLT, 'true'};
-do_warn_path({Type, Beams}, {N, PLT, 'false'}) ->
+do_warn_path({_, Beams}, {N, PLT, 'true', OutFile}) ->
+    {N + scan_and_print(PLT, Beams, OutFile), PLT, 'true', OutFile};
+do_warn_path({Type, Beams}, {N, PLT, 'false', OutFile}) ->
     try lists:split(5, Beams) of
         {Ten, Rest} ->
             do_warn_path({Type, Rest}
-                        ,{N + scan_and_print(PLT, Ten), PLT, 'false'}
+                        ,{N + scan_and_print(PLT, Ten, OutFile), PLT, 'false', OutFile}
                         )
     catch
         'error':'badarg' ->
-            {N + scan_and_print(PLT, Beams), PLT, 'false'}
+            {N + scan_and_print(PLT, Beams, OutFile), PLT, 'false', OutFile}
     end.
 
-scan_and_print(PLT, Bs) ->
+scan_and_print(PLT, Bs, OutFile) ->
     Beams = ensure_kz_types(Bs),
-    length([print(Beams, W)
+    length([print(Beams, W, OutFile)
             || W <- scan(PLT, Beams),
                filter(W)
            ]).
@@ -273,20 +305,26 @@ filter({'warn_return_no_exit',      _, {'no_return',['only_normal','kz_log_md_cl
 filter({'warn_failing_call',        _, {'call',['lager','md',"([])" | _]}}) -> 'false';
 filter(_W) -> 'true'.
 
-print(Beams, {Tag, {"src/" ++ _=File, Line}, _W}=Warning) ->
+print(Beams, {Tag, {"src/" ++ _=File, Line}, _W}=Warning, OutFile) ->
     Filename = filename:basename(File, ".erl"),
     case [Beam || Beam <- Beams, Filename =:= filename:basename(Beam, ".beam")] of
         [] ->
-            io:format("failed to find beam for ~s~n", [File]);
+            output_write(OutFile, io_lib:format("failed to find beam for ~ts~n", [File]));
         [Beam] ->
             AppDir = filename:dirname(filename:dirname(Beam)),
             SrcFile = filename:join([AppDir, File]),
-            io:format("~s:~p: ~s~n  ~s~n", [SrcFile, Line, Tag, dialyzer:format_warning(Warning)])
+            output_write(OutFile, io_lib:format("~ts:~tp: ~ts~n  ~ts~n", [SrcFile, Line, Tag, dialyzer:format_warning(Warning)]))
     end;
-print(_Beams, {Tag, {File, Line}, _W}=Warning) ->
-    io:format("~s:~p: ~s~n  ~s~n", [File, Line, Tag, dialyzer:format_warning(Warning)]);
-print(_Beams, _Err) ->
-    io:format("error: ~p~n", [_Err]).
+print(_Beams, {Tag, {File, Line}, _W}=Warning, OutFile) ->
+    output_write(OutFile, io_lib:format("~ts:~tp: ~ts~n  ~ts~n", [File, Line, Tag, dialyzer:format_warning(Warning)]));
+print(_Beams, _Err, OutFile) ->
+    output_write(OutFile, io_lib:format("error: ~tp~n", [_Err])).
+
+output_write('standard_io', Msg) ->
+    io:format(Msg);
+output_write(OutFile, Msg) ->
+    io:format(Msg),
+    io:format(OutFile, "~ts", [Msg]).
 
 scan(PLT, Things) ->
     try do_scan(PLT, Things) of

@@ -5,6 +5,17 @@ DIALYZER += --statistics --no_native
 
 OTP_APPS ?= erts kernel stdlib crypto public_key ssl asn1 inets xmerl
 
+CI_DIALYZER_OUTPUT ?= dialyzer_output.log
+CHECK_DIALYZER_OPTS =
+
+ifneq ($(DIALYZER_OUTPUT),)
+	CHECK_DIALYZER_OPTS := --output-file $(DIALYZER_OUTPUT)
+else
+ifneq ($(CIRCLECI),)
+	CHECK_DIALYZER_OPTS := --output-file $(CI_DIALYZER_OUTPUT)
+endif
+endif
+
 EXCLUDE_DEPS = $(DEPS_DIR)/erlang_localtime/ebin
 $(PLT): DEPS_EBIN ?= $(filter-out $(EXCLUDE_DEPS),$(wildcard $(DEPS_DIR)/*/ebin))
 # $(PLT): CORE_EBINS ?= $(shell find $(CORE_DIR) -name ebin)
@@ -40,11 +51,11 @@ dialyze:       TO_DIALYZE ?= $(shell find $(APPS_DIR) -name ebin)
 dialyze: dialyze-it
 
 .PHONY: dialyze-changed
-dialyze-changed: export CHECK_DIALYZER_OPTS = --bulk
+dialyze-changed: CHECK_DIALYZER_OPTS += --bulk
 dialyze-changed: dialyze-it-changed
 
 .PHONY: dialyze-hard
-dialyze-hard: export CHECK_DIALYZER_OPTS = --hard
+dialyze-hard: CHECK_DIALYZER_OPTS += --hard
 dialyze-hard: dialyze-it-changed
 
 .PHONY: dialyze-types-kazoo
