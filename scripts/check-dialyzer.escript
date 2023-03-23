@@ -23,7 +23,7 @@ main([KazooPLT | CommandLineArgs]) ->
     WarnResult = handle(KazooPLT, Options, OutFile, Args),
     log_warn_result(OutFile, WarnResult),
     maybe_close_output_file(OutFilename, OutFile),
-    WarnResult.
+    halt(WarnResult).
 
 parse_args(CommandLineArgs) ->
     case getopt:parse(option_spec_list(), CommandLineArgs) of
