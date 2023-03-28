@@ -19,6 +19,7 @@
 *.pid
 *.dump
 *.swp
+rebar3.crashdump
 
 *.coverdata
 
@@ -56,6 +57,7 @@ erlang.mk
 /deps/
 /core/
 /applications/*/
+/_build/
 
 /TAGS
 
@@ -78,6 +80,7 @@ compile_commands.json
 /make/.core.mk.*
 /make/.apps.mk.*
 /make/.app_urls.mk.*
+/make/.rebar.config.script.*
 /make/circleci
 
 /out/

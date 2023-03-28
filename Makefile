@@ -150,9 +150,18 @@ clean: clean-core clean-apps
 clean-core:
 	@$(if $(wildcard $(CORE_DIR)),ROOT=$(ROOT) $(MAKE) -j$(CLEAN_JOBS) -C $(CORE_DIR) clean)
 
+.PHONY: clean-core-hash
+clean-core-hash:
+	$(if $(wildcard $(ROOT)/make/.core.mk.*), rm $(ROOT)/make/.core.mk.*)
+
 .PHONY: clean-apps
 clean-apps:
 	@$(if $(wildcard $(APPS_DIR)/Makefile),ROOT=$(ROOT) $(MAKE) -j$(CLEAN_JOBS) -C $(APPS_DIR) clean)
+
+.PHONY: clean-apps-hash
+clean-apps-hash:
+	$(if $(wildcard $(ROOT)/make/.apps.mk.*), rm $(ROOT)/make/.apps.mk.*)
+	rm -f $(ROOT)/make/.rebar.config.script.*
 
 .PHONY: clean-deps
 clean-deps: clean-deps-hash
@@ -207,7 +216,7 @@ fetch-core: $(CORE_HASH_FILE) $(CORE_DIR)/Makefile
 # 1. Make sure erlang.mk is setup
 # 2. Make sure core/Makefile exists
 # Once satisfied, create the core hash file
-$(CORE_HASH_FILE): $(CORE_DIR)/Makefile
+$(CORE_HASH_FILE): clean-core-hash $(CORE_DIR)/Makefile
 	@touch $(CORE_HASH_FILE)
 
 # Target: core/Makefile
@@ -232,7 +241,7 @@ fetch-apps: $(APPS_HASH_FILE) $(APP_URLS_HASH_FILE) $(APPS_DIR)/Makefile
 # Target: apps hash file
 # 1. Make sure elrang.mk is setup
 # Once satisfied, create the applications directory and the apps hash file
-$(APPS_HASH_FILE): $(DOT_ERLANG_MK) $(MORE_APPS_MK)
+$(APPS_HASH_FILE): clean-apps-hash $(DOT_ERLANG_MK) $(MORE_APPS_MK)
 	@touch $(APPS_HASH_FILE)
 
 $(APP_URLS_HASH_FILE):

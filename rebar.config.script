@@ -1,0 +1,110 @@
+%% -*- mode: erlang; -*-
+%% vim: set ft=erlang:
+
+RelxConfig = fun() ->
+                     ToFilterOut = ["rabbitmq_codegen"
+                                   ,".erlang.mk"
+                                   ,"ci.erlang.mk"
+                                   ,".settings"
+                                   ,".git"
+                                   ,".circleci"
+                                   ,"skel"
+                                   ,"parse_trans"
+                                   ,"meck"
+                                   ,"escalus"
+                                   ,"ananke"
+                                   ,"amqp_cron"
+                                   ,"amqp_leader"
+                                   ,"elvis_mk"
+                                   ],
+                     Base = [runtime_tools
+                            ,tools
+                            ,wx
+                            ,observer
+                            ,debugger
+                            ,sasl
+                            ,eunit
+                            ,common_test
+                            ],
+                     ProjectApps = [{list_to_atom(App), 'load'}
+                                    || TopDir <- ["applications", "core"],
+                                       Dir <- filelib:wildcard(filename:join([TopDir, "*"])),
+                                       App <- [filename:basename(Dir)],
+                                       filelib:is_dir(Dir),
+                                       filelib:is_dir(filename:join([Dir, "ebin"])),
+                                       not lists:member(App, ToFilterOut)
+                                   ],
+                     APPS = Base ++ ProjectApps,
+                     {relx, Releases} = case lists:keyfind(relx, 1, CONFIG) of
+                                            'false' ->
+                                                {relx, []};
+                                            Relx -> Relx
+                                        end,
+
+                     lists:foldr(fun({release, Name, Apps}, Acc) ->
+                                         [{release, Name, Apps ++ APPS}|Acc];
+                                    ({release, Name, Apps, RelConfig}, Acc) ->
+                                         [{release, Name, Apps ++ APPS, RelConfig}|Acc];
+                                    (Other, Acc) ->
+                                         [Other|Acc]
+                                 end
+                                ,[]
+                                ,Releases
+                                )
+             end,
+
+AppsHash = case filelib:wildcard("make/.apps.mk.*") of
+               [] -> undefined;
+               [AppsHashFile] ->
+                   "."++Hash = filename:extension(AppsHashFile),
+                   Hash
+           end,
+
+case AppsHash of
+    undefined ->
+        io:format("You must run 'make fetch-core fetch-apps' first"),
+        halt(1);
+    _ ->
+        ok
+end,
+
+%% this doesn't really work good, we need at least to hash of:
+%% - make/.core.mk.*
+%% - make/.more_apps.mk.*
+%% - rebar3.config
+%% otherwise we have to delete the rebar has file everytime.
+%% RebarHashFile = "make/.rebar.config.script."++AppsHash,
+
+%% add your config here, this dynamic config will be get cached
+%% in rebar script hash file.
+DynamicConfig =
+fun() ->
+        [{relx, RelxConfig()}
+        ]
+end,
+
+PrepareRebarConfig = fun(MyConfig) ->
+                             lists:foldl(fun({Key, Value}, Acc) ->
+                                                 lists:keystore(Key, 1, Acc, {Key, Value})
+                                         end
+                                        ,CONFIG
+                                        ,MyConfig
+                                        )
+                     end,
+
+%% This doesn't work, see note above about hash file
+%% To speed up, either use cache if exists or create and cache a new dynamic config
+%% then merge to rebar CONFIG.
+%% case file:read_file(RebarHashFile) of
+%%     {ok, Bin} ->
+%%         PrepareRebarConfig(erlang:binary_to_term(Bin));
+%%     {error, _} ->
+%%         NewConfig = DynamicConfig(),
+%%         ok = file:write_file(RebarHashFile, erlang:term_to_binary(NewConfig)),
+%%         PrepareRebarConfig(NewConfig)
+%% end.
+
+
+%% Hopefuly temporary, see note above hash file
+NewConfig = DynamicConfig(),
+PrepareRebarConfig(NewConfig).
