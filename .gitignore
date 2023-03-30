@@ -30,6 +30,8 @@
 **/*.code-workspace
 **/.vimspector.json
 
+erlang_ls.config
+
 sup.bash
 
 _rel/
@@ -88,6 +90,5 @@ compile_commands.json
 /todo.org
 /make/pest-*
 # asdf-vm "local" versions handler
-/erlang_ls.config
 /make/more_apps.mk
 /applications/Makefile
