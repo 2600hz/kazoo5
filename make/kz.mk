@@ -212,7 +212,7 @@ json:
 	@$(ROOT)/scripts/format-json.py $(JSON)
 
 .PHONY: compile-test compile-test-direct
-compile-test: deps $(TEST_DEPS) compile-test-kz-deps compile-test-direct json $(TEST_BEAMS)
+compile-test: deps $(TEST_DEPS) compile-test-kz-deps compile-test-direct json
 
 compile-test-direct: ERLC_OPTS += -DTEST
 compile-test-direct: deps apps-test $(COMPILE_MOAR) test/$(PROJECT).app $(TEST_BEAMS)
@@ -240,7 +240,7 @@ endif
 test/$(PROJECT).app:
 	@mkdir -p test/
 	@mkdir -p ebin/
-	ERL_LIBS=$(ELIBS) erlc -v +nowarn_missing_spec  $(filter-out +warn_missing_specs,$(ERLC_OPTS)) $(TEST_PA) $(APPS_PA) -o ebin/ $(TEST_SOURCES)
+	ERL_LIBS=$(ELIBS) erlc -v +nowarn_missing_spec $(filter-out +warn_missing_specs,$(ERLC_OPTS)) $(TEST_PA) $(APPS_PA) -o ebin/ $(TEST_SOURCES)
 
 	@sed "s/{modules,[[:space:]]*\[\]}/{modules,\[$(TEST_MODULES)\]}/" src/$(PROJECT).app.src > $@
 	@sed "s/{modules,[[:space:]]*\[\]}/{modules,\[$(TEST_MODULES)\]}/" src/$(PROJECT).app.src > ebin/$(PROJECT).app
@@ -296,7 +296,7 @@ $(ROOT)/make/core.mk:
 proper: compile-proper eunit-run
 
 compile-proper: ERLC_OPTS += -DPROPER
-compile-proper: clean-test compile-test
+compile-proper: clean-test compile-test-direct
 
 compile-perf: ERLC_OPTS += -pa $(DEPS_DIR)/horse/ebin -DPERF +'{parse_transform, horse_autoexport}'
 compile-perf: clean-test compile-test-direct
@@ -366,11 +366,23 @@ edoc:
 	@CHANGED="$(SOURCES_FULL_PATH)" $(ROOT)/scripts/state-of-edoc.escript
 
 DOCS_INDEX ?= doc/dev.yml
-docs_index:
+docs_index: pr_template
 	@ERL_LIBS="$(DEPS_DIR):$(CORE_DIR)" $(ROOT)/scripts/build-application-doc-index.escript $(ROOT) $(CURDIR)
 
-$(DOCS_INDEX):
+$(DOCS_INDEX): pr_template
 	@ERL_LIBS="$(DEPS_DIR):$(CORE_DIR)" $(ROOT)/scripts/build-application-doc-index.escript $(ROOT) $(CURDIR)
+
+PR_TEMPLATE = .github/pull_request_template.md
+
+.PHONY: pr-template clean-pr-template
+pr-template: clean-pr-template $(PR_TEMPLATE)
+
+clean-pr-template:
+	@rm -f $(PR_TEMPLATE)
+
+$(PR_TEMPLATE):
+	@mkdir -p $(dir $(PR_TEMPLATE))
+	@cp -a $(ROOT)/make/pull_request_template.md $(PR_TEMPLATE)
 
 hank:
 	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(ROOT)/scripts/hank.escript $(wildcard src/*.[h|e]rl) $(wildcard src/*/*.[h|e]rl) $(wildcard include/*.hrl)
