@@ -193,7 +193,7 @@ ebin/%.beam: src/*/%.erl
 	ERL_LIBS=$(ELIBS) erlc -v $(ERLC_OPTS) $(PA) $(APPS_PA) -o ebin/ $<
 
 ebin/%.beam: test/%.erl
-	ERL_LIBS=$(ELIBS) erlc -v $(filter-out +warn_missing_spec,$(ERLC_OPTS)) $(PA) $(APPS_PA) -o ebin/ $<
+	ERL_LIBS=$(ELIBS) erlc -v $(ERLC_OPTS) $(PA) $(APPS_PA) -o ebin/ $<
 
 .PHONY: depend
 depend: $(DEPS_RULES) $(TEST_DEPS)
@@ -214,7 +214,7 @@ json:
 .PHONY: compile-test compile-test-direct
 compile-test: deps $(TEST_DEPS) compile-test-kz-deps compile-test-direct json
 
-compile-test-direct: ERLC_OPTS += -DTEST
+compile-test-direct: ERLC_OPTS := -DTEST $(filter-out +warn_missing_spec,$(ERLC_OPTS))
 compile-test-direct: deps apps-test $(COMPILE_MOAR) test/$(PROJECT).app $(TEST_BEAMS)
 
 $(TEST_DEPS):
