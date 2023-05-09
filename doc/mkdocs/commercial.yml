@@ -5,7 +5,7 @@
 site_name: Kazoo API Reference
 site_description: 'REST API Reference for Kazoo Crossbar API'
 
-pages:
+nav:
 - 'index.md'
 - 'The Basics':
   - 'Quick Start':
