@@ -93,7 +93,16 @@ changed_swagger:
 	@echo "$(CHANGED_SWAGGER)"
 
 .PHONY: prerequisites
-prerequisites: make-dependency-check
+prerequisites: make-dependency-check rebar
+
+REBAR=$(ROOT)/.rebar/rebar
+
+.PHONY: rebar
+rebar: $(REBAR)
+
+$(REBAR):
+	curl https://github.com/2600hz/erlang-rebar/wiki/rebar --create-dirs --location -o $(REBAR)
+	chmod +x $(REBAR)
 
 .PHONY: make-dependency-check
 make-dependency-check:
