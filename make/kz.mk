@@ -321,7 +321,7 @@ dialyze-types: $(PLT)
 	@echo ":: dialyzing types"
 	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(ROOT)/scripts/check-dialyzer-types.escript $(PLT) $(TO_DIALYZE)
 
-REBAR=$(DEPS_DIR)/.erlang.mk/rebar/rebar
+REBAR ?= $(ROOT)/.rebar/rebar
 
 .PHONY: xref fmt perf fixture_shell
 xref: compile
