@@ -18,25 +18,26 @@ set -e -o pipefail
 
 # TODO: we need to run this either on fetch-apps or compile to support all old branches
 # when fixing otherwise we must update orbs in those branches
-# TODO: if this is circleci then create a lock file to avoid re-run of this script
-# maybe orb is running this on tag and we may run this in compile/fetch-apps
-# TODO: make sure we run this on fix PRs, release should be okay tho
-# TODO: make sure this runs properly on fix prs
-# TODO: checkout core too if CIRCLE_PROJECT_REPONAME is not core
+#     - FIXME: but also check if this is a tag or not? we don't want to checkout to latest
+#     tag if this is not a tag:
+#       - orb is already running this _WHEN_ tag/release
+#     - but if this is not a tag, and branch name starts with a fix format we need to
+#     resolve the version from naifest and checkout all apps to their versions from
+#     manifest
+#     - TODO: if this is circleci then create a lock file to avoid re-run of this script
+#     maybe orb is running this on tag and we may run this in compile/fetch-apps
+#     - TODO: make sure we run this on fix PRs, release should be okay tho
+#     - TODO: make sure this runs properly on fix prs
 
 pushd "$(dirname "$0")/.." > /dev/null || exit 1
 ROOT="$(pwd -P)"
 export ROOT
 
-if [ -z "${BASE_BRANCH}" ]; then
-    BASE_BRANCH="$(cat "${ROOT}"/.base_branch 2>/dev/null || true)"
-fi
-
+# option vars
 _base_branch=
-_manifests_root_path=
-_src_repo=
-_src_vsn=
-_project_type=
+_manifests_root_path="${ROOT}/../manifests"
+_repo_name="${CIRCLE_PROJECT_REPONAME}"
+_repo_commitish="${CIRCLE_TAG}"
 while [ $# -gt 0 ]; do
     arg="${1}"
     case ${arg} in
@@ -52,21 +53,15 @@ while [ $# -gt 0 ]; do
                 shift
             fi
             ;;
-        -s|src-name)
+        -r|repo-name)
             if [ -n "$2" ]; then
-                _src_repo="${2}"
+                _repo_name="${2}"
                 shift
             fi
             ;;
-        -t|-project-type)
+        -v|repo-version)
             if [ -n "$2" ]; then
-                _project_type="${2}"
-                shift
-            fi
-            ;;
-        -v|src-version)
-            if [ -n "$2" ]; then
-                _src_vsn="${2}"
+                _repo_commitish="${2}"
                 shift
             fi
             ;;
@@ -77,36 +72,43 @@ while [ $# -gt 0 ]; do
 done
 unset arg
 
-_manifests_root_path="${_manifests_root_path:-${ROOT}/../manifests}"
-_base_branch="${_base_branch:-${BASE_BRANCH}}"
-_release_branch="${_base_branch#origin/}"
-_release_major=$(echo "${_release_branch}" | grep -Eo '^[0-9]+\.' | sed 's/\.//g' || true)
-_release_minor=$(echo "${_release_branch}" | grep -Eo '^[0-9]+\.[0-9]+' | sed -E 's/^[0-9]+\.//g' || true)
+# main global vars
+_release_branch=
+_release_major=
+_release_minor=
+
+_project_type=
+_apps_dir="${ROOT}/applications"
+_pkg_name=
+_meta_pkg=
 
 # override vars if src options are used
-_src_repo="${_src_repo:-${CIRCLE_PROJECT_REPONAME}}"
-_src_vsn="${_src_vsn:-${CIRCLE_TAG}}"
-if [ -n "${_src_repo}" ] && [ -n "${_src_vsn}" ]; then
-    echo "${_src_vsn}" | grep -Eo '^[0-9]+\.[0-9]+\.[0-9]+' >/dev/null || { echo "Invalid semver for source version: ${_src_vsn}"; exit 1; }
-    _release_major="$(echo "${_src_vsn}" | grep -Eo '^[0-9]+\.' | sed 's/\.//g')"
-    _release_minor="$(echo "${_src_vsn}" | grep -Eo '^[0-9]+\.[0-9]+' | sed -E 's/^[0-9]+\.//g')"
+if [ -n "${_repo_name}" ] && [ -n "${_repo_commitish}" ]; then
+    echo "=== Setting up variables to checkout apps to version/branch suitable for repository ${_repo_name} ref ${_repo_commitish}"
+    if ! echo "${_repo_commitish}" | grep -Eo '^[0-9]+\.[0-9]+\.[0-9]+' >/dev/null; then
+        echo "Invalid semver for project ${_repo_name} version."
+        echo "Expected the version to start with Major.Minor.Patch, for example: 5.1.100"
+        echo "but got ${_repo_commitish}"
+        exit 1
+    fi
+    _release_major="$(echo "${_repo_commitish}" | grep -Eo '^[0-9]+\.' | sed 's/\.//g')"
+    _release_minor="$(echo "${_repo_commitish}" | grep -Eo '^[0-9]+\.[0-9]+' | sed -E 's/^[0-9]+\.//g')"
     _base_branch="origin/${_release_major}.${_release_minor}"
     _release_branch="${_release_major}.${_release_minor}"
-fi
 
-[ -z "${_base_branch}" ] && { echo "BASE_BRANCH is required but is not set in environment."; exit 1; }
-echo "${_release_branch}" | grep -Eo '^[0-9]+\.[0-9]+' >/dev/null || { echo "Invalid semver for base branch: ${_base_branch}"; exit 1; }
-[ -z "${_release_minor}" ] && { echo "Could not determined release major/minor from ${_src_vsn:-${_base_branch}}"; exit 1; }
-
-if [ -n "${_src_repo}" ] ; then
-    case "${_src_repo}" in
+    case "${_repo_name}" in
         kazoo-ui-phone)
-            echo "Not supported repo ${_src_repo}"
+            echo "Not supported repo ${_repo_name}"
             exit 1
             ;;
         kazoo-configs-*)
-            echo "Not supported repo ${_src_repo}"
+            echo "Not supported repo ${_repo_name}"
             exit 1
+            ;;
+        kazoo5)
+            _project_type=kazoo5
+            _apps_dir="${ROOT}/applications"
+            _meta_pkg=meta-kazoo-applications
             ;;
         kazoo-core)
             _project_type=kazoo-core
@@ -117,9 +119,9 @@ if [ -n "${_src_repo}" ] ; then
         kazoo-*)
             _project_type=kazoo-application
             _apps_dir="${ROOT}/applications"
-            _src_appname="${_src_repo#kazoo-}"
+            _src_appname="${_repo_name#kazoo-}"
             _src_appname="${_src_appname//-/_}"
-            _pkg_name="kazoo-application-${_src_repo#kazoo-}"
+            _pkg_name="kazoo-application-${_repo_name#kazoo-}"
             _meta_pkg=meta-kazoo-applications
             ;;
         monster-ui)
@@ -131,8 +133,8 @@ if [ -n "${_src_repo}" ] ; then
         monster-ui-*)
             _project_type=monster-ui-application
             _apps_dir="${ROOT}/src/apps"
-            _src_appname="${_src_repo#monster-ui-}"
-            _pkg_name="monster-ui-application-${_src_repo#monster-ui-}"
+            _src_appname="${_repo_name#monster-ui-}"
+            _pkg_name="monster-ui-application-${_repo_name#monster-ui-}"
             _meta_pkg=meta-monster-ui
             ;;
         commland-core)
@@ -144,17 +146,41 @@ if [ -n "${_src_repo}" ] ; then
         commland-*)
             _project_type=commland-application
             _apps_dir="${ROOT}/applications"
-            _src_appname="${_src_repo#commland-}"
-            _pkg_name="commland-application-${_src_repo#commland-}"
+            _src_appname="${_repo_name#commland-}"
+            _pkg_name="commland-application-${_repo_name#commland-}"
             _meta_pkg=meta-commland
             ;;
         *)
-            echo "Not supported repo ${_src_repo}"
+            echo "Not supported repo ${_repo_name}"
             exit 1
             ;;
     esac
+else
+    echo "=== Setting up the variables to checkout apps to their latest tag in base branch since no repository name was given"
+
+    if [ -z "${BASE_BRANCH}" ] && [ -f "${ROOT}"/.base_branch ]; then
+        BASE_BRANCH="$(cat "${ROOT}"/.base_branch)"
+    fi
+    _base_branch="${_base_branch:-${BASE_BRANCH}}"
+    _release_branch="${_base_branch#origin/}"
+    _release_major=$(echo "${_release_branch}" | grep -Eo '^[0-9]+\.' | sed 's/\.//g' || true)
+    _release_minor=$(echo "${_release_branch}" | grep -Eo '^[0-9]+\.[0-9]+' | sed -E 's/^[0-9]+\.//g' || true)
 fi
-_apps_dir="${_apps_dir:-${ROOT}/applications}"
+
+if [ -z "${_base_branch}" ]; then
+    echo "BASE_BRANCH is required but is not set in environment or .base_branch file."
+    echo "Check you have '.base_branch' file at the root of your project source code"
+    echo "Base branch starts with 'origin/' like: 'origin/5.1'"
+    exit 1
+fi
+if ! echo "${_release_branch}" | grep -Eo '^[0-9]+\.[0-9]+' >/dev/null; then
+    echo "Invalid semver for base branch: ${_base_branch}"
+    exit 1
+fi
+if [ -z "${_release_minor}" ]; then
+    echo "Could not determined release major/minor from ${_repo_commitish:-${_base_branch}}"
+    exit 1
+fi
 
 if [ ! -d "${_apps_dir}" ]; then
     echo "Applications directory ${_apps_dir} does not exists"
@@ -165,20 +191,23 @@ echo "Project type: ${_project_type:-N/A}"
 echo "Applications directory: ${_apps_dir}"
 echo "Base branch: ${_base_branch}"
 echo "Release branch: ${_release_branch}"
-echo "Source repository name: ${_src_repo:-N/A}"
-echo "Source repository version: ${_src_vsn:-N/A}"
+echo "Project repository name: ${_repo_name:-N/A}"
+echo "Project repository version: ${_repo_commitish:-N/A}"
 echo
 
+echo ":: Searching for apps in directory ${_apps_dir}/"
+_apps=
 if [ -n "${_src_appname}" ]; then
     _apps="$(find "${_apps_dir}"/ -maxdepth 1 -type d -not -name '.erlang.mk' -not -name "${_apps_dir//*\//}" -not -name "${_src_appname}" -printf '%f ')"
 else
     _apps="$(find "${_apps_dir}"/ -maxdepth 1 -type d -not -name '.erlang.mk' -not -name "${_apps_dir//*\//}" -printf '%f ')"
 fi
+echo
 
 # 1) What if we get no src repo/vsn option and we have to find out the latest tag from git describe
 # and the latest tag in 5.2 branch was a fix branch/pr/tag for one of app?
 # 2) What if this happens when there is src repo/vsn?
-# 3) can we extend this to support master or non-release branches? like dependent PRs?
+# 3) can we extend this to support master or non-release branches? Like dependent PRs?
 is_fix_branch() {
     if echo "${1}" | grep -Eo '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' >/dev/null; then
         echo true
@@ -188,82 +217,125 @@ is_fix_branch() {
 checkout_repo() {
     set -e -o pipefail
 
-    local _app="${1}"
-    local _app_tag="${2}"
+    local _repo="${1}"
+    local _path="${2}"
+    local _semver_commitish="${3}"
     local _output_log=
     _output_log="$(mktemp)"
 
-    _path="${_apps_dir}/${_app}"
-
-    # skip non app directories
-    [ ! -d "${_path}/.git" ] && return
-    # skip current ci building repo
-    [ -n "${_src_appname}" ] && [ "${_app}" = "${_src_appname}" ] && return
-
-    echo ":: processing ${_app}"
-
-    if [ -z "${_app_tag}" ]; then
-        echo "finding latest tag"
+    if [ -z "${_semver_commitish}" ]; then
+        echo "finding latest tag from origin/${_release_branch} branch"
 
         # we need to add origin so _commitish_ will still works by checking the origin and
         # not local
-        _app_tag="$(git -C "${_path}" describe --tags --abbrev=0 "origin/${_release_branch}" 2>"${_output_log}" || true)"
-        if [ -z "${_app_tag}" ]; then
-            echo "no tag found for release branch '${_release_branch}' pretending this is the first tag of this branch"
+        _semver_commitish="$(git -C "${_path}" describe --tags --abbrev=0 "origin/${_release_branch}" 2>"${_output_log}" || true)"
+        if [ -z "${_semver_commitish}" ]; then
+            echo "no tag found in branch '${_release_branch}' not going to git checkout,"
+            echo "pretending this is the first tag of this branch and use latest changes in the branch"
             if [ -f "${_output_log}" ]; then
-                echo
-                echo "git checkout log:"
-                cat "${_output_log}"
+                # echo "git describe log:"
+                # cat "${_output_log}"
                 rm "${_output_log}"
             fi
             return
         fi
-        if [ -n "$(is_fix_branch "${_app_tag}")" ] && [ -z "${_src_repo}" ] && [ -z "${_src_vsn}" ]; then
-            echo "latest tag ${_app_tag} look like a fix tag, but the build is not specified"
-            echo "a source repository to resolve version using build-manifest-overrides"
+        if [ -n "$(is_fix_branch "${_semver_commitish}")" ] && [ -z "${_repo_name}" ] && [ -z "${_repo_commitish}" ]; then
+            echo "latest tag ${_semver_commitish} look like a fix tag, but the build is not specified"
+            echo "a Project repository to resolve version using build-manifest-overrides"
             exit 1
         fi
     fi
 
-    echo "checking out to tag ${_app_tag}"
+    echo "git checkout ${_semver_commitish}"
 
     # Historically, some repos have mismatched their branch name and .base_branch
-    # or even have mistmatch tags in their release branch, like 4.3.1 in a 5.0 branch.
+    # or even have mismatch tags in their release branch, like 4.3.1 in a 5.0 branch.
     # Here we check that given tag is really matching the given base branch and avoid failures
     # and bad builds
-    _tag_major=$(echo "${_app_tag}" | grep -Eo '^[0-9]+')
-    _tag_minor=$(echo "${_app_tag}" | grep -Eo '^[0-9]+\.[0-9]+' | sed -E 's/^[0-9]+\.//g')
+    _tag_major=$(echo "${_semver_commitish}" | grep -Eo '^[0-9]+')
+    _tag_minor=$(echo "${_semver_commitish}" | grep -Eo '^[0-9]+\.[0-9]+' | sed -E 's/^[0-9]+\.//g')
     if [ -z "${_tag_major}" ] || [ -z "${_tag_minor}" ]; then
-        echo "could not determined major or minor version from tag ${_app_tag} in ${_app}."
-        echo "tag name MUST start with Major.Minor format"
+        echo "could not determined major or minor version from ref ${_semver_commitish} in ${_repo}."
+        echo "tag name or branch name MUST at least start with Major.Minor format"
         exit 1
     fi
     if [ "${_tag_major}" -lt "${_release_major}" ]; then
-        echo "tag ${_app}:${_app_tag} major version ${_tag_major} is not greater than base branch ${_base_branch} release major ${_release_major}"
+        echo "tag ${_repo}:${_semver_commitish} major version ${_tag_major} is not greater than base branch ${_base_branch} release major ${_release_major}"
         exit 1
     fi
     if [ "${_tag_minor}" -lt "${_release_minor}" ]; then
-        echo "latest ${_app}:${_app_tag} minor version ${_tag_minor} is not greater than base branch ${_base_branch} release minor ${_release_minor}"
+        echo "latest ${_repo}:${_semver_commitish} minor version ${_tag_minor} is not greater than base branch ${_base_branch} release minor ${_release_minor}"
         exit 1
     fi
 
     # now actually checkout out
+    ## FIXME: dev time, uncomment this
     # don't use origin/, tags don't need them
-    if ! git -C "${_path}" checkout "${_app_tag}" >/dev/null  2>"${_output_log}"; then
-        echo "git checkout ${_app_tag} failed"
-        if [ -f "${_output_log}" ]; then
-            echo
-            echo "git checkout log:"
-            cat "${_output_log}"
-            rm "${_output_log}"
-        fi
-        ## TODO: dev
-        return
-        # exit 1
-    fi
-    git -C "${_path}" clean -x -d -f >/dev/null 2>&1
+    # if ! git -C "${_path}" checkout "${_semver_commitish}" >/dev/null 2>"${_output_log}"; then
+    #     echo "git checkout ${_semver_commitish} failed"
+    #     if [ -f "${_output_log}" ]; then
+    #         echo "git checkout log:"
+    #         cat "${_output_log}"
+    #         rm "${_output_log}"
+    #     fi
+    #     # exit 1
+    # fi
+
+    # Can't really clean if this is mui or commland core since it would also deletes the
+    # cloned apps!
+    # git -C "${_path}" clean -x -d -f >/dev/null 2>&1
 
     [ -f "${_output_log}" ] && rm "${_output_log}"
+}
+
+checkout_app_repo() {
+    set -e -o pipefail
+
+    local _repo="${1}"
+    local _semver_commitish="${2}"
+
+    _path="${_apps_dir}/${_repo}"
+
+    # skip non app directories
+    [ ! -d "${_path}/.git" ] && return
+    # skip current ci building repo
+    [ -n "${_src_appname}" ] && [ "${_repo}" = "${_src_appname}" ] && return
+
+    echo ":: processing ${_repo}"
+
+    checkout_repo "${_repo}" "${_path}" "${_semver_commitish}"
+}
+
+maybe_checkout_core() {
+    local _core_path=
+    local _core_pkg=
+    case "${_project_type}" in
+        kazoo-application)
+            _core_path="${ROOT}/core"
+            _core_pkg="kazoo-core"
+            ;;
+        monster-ui-application)
+            _core_path="${ROOT}"
+            _core_pkg="monster-ui-core"
+            ;;
+        commland-application)
+            _core_path="${ROOT}"
+            _core_pkg="commland-core"
+            ;;
+        *)
+            echo "The CI repo name is ${_repo_name}, CI scripts already taken care of core, skipping..."
+            return
+            ;;
+    esac
+
+    echo ":: This is an app repository, going to resolve core ${_core_pkg} package using build-manifest-overrides"
+    local _cmd="${_manifests_root_path}/build-manifest-overrides/scripts/resolve-override.sh"
+    # do not use -k or -keep-going maybe?
+    local _resolved=
+    _resolved="$("${_cmd}" -k -m "${_meta_pkg}" -s "${_pkg_name}" -v "${_repo_commitish}" "${_core_pkg}")"
+
+    echo ":: Resolved core ${_core_pkg} package to ${_resolved}, running git checkout"
+    checkout_repo "${_core_pkg}" "${_core_path}" "${_resolved}"
 }
 
 _setup_manifests_repos() {
@@ -271,17 +343,21 @@ _setup_manifests_repos() {
     # manifests/
     # ├── build-manifest-overrides
     # └── build-manifests
+    echo ":: Setting up build-manifests and override repos"
     if [ ! -d "${_manifests_root_path}/build-manifests" ]; then
-        echo "cloning required build-manifests repo to ${_manifests_root_path}/build-manifests"
+        echo "cloning build-manifests repo to ${_manifests_root_path}/build-manifests"
         mkdir -p "${_manifests_root_path}"
         git clone git@github.com:2600hz/build-manifests.git "${_manifests_root_path}/build-manifests"
     fi
     if [ ! -d "${_manifests_root_path}/build-manifest-overrides" ]; then
-        echo "cloning required build-manifests repo to ${_manifests_root_path}/build-manifest-overrides"
+        echo "cloning build-manifests repo to ${_manifests_root_path}/build-manifest-overrides"
         mkdir -p "${_manifests_root_path}"
         git clone git@github.com:2600hz/build-manifest-overrides.git "${_manifests_root_path}/build-manifest-overrides"
     fi
     _manifests_root_path="$(realpath "${_manifests_root_path}")"
+
+    echo "using main manifests from ${_manifests_root_path}/build-manifests"
+    echo "using override manifests from ${_manifests_root_path}/build-manifest-overrides"
 }
 
 appname_to_pkgname() {
@@ -341,56 +417,78 @@ pkgname_to_appname() {
     esac
 }
 
-maybe_checkout_core() {
-    local _core_path=
-    local _core_pkg=
-    case "${_project_type}" in
-        kazoo-application)
-            _core_path="${ROOT}/core"
-            _core_pkg="kazoo-core"
-            ;;
-        monster-ui-application)
-            _core_path="${ROOT}"
-            _core_pkg="monster-ui-core"
-            ;;
-        commland-application)
-            _core_path="${ROOT}"
-            _core_pkg="commland-core"
-            ;;
-        *)
-            # the repo is core, orb shouldve already checkout the tag
-            return
-            ;;
-    esac
-    _cmd="${_manifests_root_path}/build-manifest-overrides/scripts/resolve-override.sh"
-    # do not use -k or -keep-going
-    _resolved="$("${_cmd}" -m "${_meta_pkg}" -s "${_pkg_name}" -v "${_src_vsn}" "${_core_pkg}")"
-
-}
-
 # if this is a CI run on a fix release/branch then find the apps latest tag from manifests
-if [ -n "${_src_repo}" ] && [ -n "${_src_vsn}" ] && [ -n "$(is_fix_branch "${_src_vsn}")" ]; then
+if [ -n "${_repo_name}" ] && [ -n "${_repo_commitish}" ] && [ -n "$(is_fix_branch "${_repo_commitish}")" ]; then
+    echo ">> This is a fix branch going to use the build-manifests and build-manifest-overrides to find branches/versions"
+    echo "suitable for repository ${_repo_name} ref ${_repo_commitish}"
+
+    _setup_manifests_repos
     # ./scripts/resolve-overrides.sh -m meta-kazoo-applications -s kazoo-application-crossbar -v 5.1.27.1 \
     #     kazoo-core kazoo-application-ecallmgr kazoo-application-desktop [... other packages to list]
+    echo ":: Calling build-manifest-overrides to resolve refs for dependencies"
     _cmd="${_manifests_root_path}/build-manifest-overrides/scripts/resolve-override.sh"
+    _longest_pkg_name=
+    _pkg=
     declare -A _pkgs=()
+    # creating an asossicate array of all apps with key being pkg name and their value is
+    # version/branch which will be populate when we call resolve-override script.
+    # If no version is resolved then checkout function will get latest tag.
     for app in ${_apps}; do
-        _pkgs["$(appname_to_pkgname "${app}")"]=""
+        # skip non app-repo directories (like in mui-apploader, etc...)
+        [ ! -d "${_apps_dir}/${app}/.git" ] && continue
+        # skip current ci building repo
+        [ -n "${_src_appname}" ] && [ "${app}" = "${_src_appname}" ] && continue
+        _pkg="$(appname_to_pkgname "${app}")"
+        _pkgs["${_pkg}"]=""
+        if [ -n "${_longest_pkg_name}" ] && [ "${#_pkg}" -gt "${_longest_pkg_name}" ]; then
+            _longest_pkg_name="${#_pkg}"
+        elif [ -z "${_longest_pkg_name}" ]; then
+            _longest_pkg_name="${#_pkg}"
+        fi
     done
 
+    # can't use mapfile since centos bash version is old, it needs at least bash 4.4
+    # not save to use unquote too, so we run and store in a tmp var. do not redirect to
+    # while since we don't catch a pipe/redirect failure. Then we iterate over and
+    # set associated array.
+    # Other solution is use `sed 's/: /:SEMVER:/g'` and loop over. look at manifests
+    # 'scripts/resolved-version.sh':
+    # _name="${_pkg%:SEMVER:*}"
+    # _vsn="${_pkg#*:SEMVER:}"
+    #
+    # using -k or -keep-going so if no version found in manifest we fall back to find the
+    # latest tag
+    _resolved="$("${_cmd}" -k -m "${_meta_pkg}" -s "${_pkg_name}" -v "${_repo_commitish}" "${!_pkgs[@]}")"
     while IFS='' read -r line; do
         _pkgs["${line%%:*}"]="${line#*: }"
-    # do not use -k or -keep-going
-    done < <("${_cmd}" -k -m "${_meta_pkg}" -s "${_pkg_name}" -v "${_src_vsn}" "${!_pkgs[@]}")
+    done <<<"${_resolved}"
 
+    echo ":: Resolved refs for the following dependencies:"
+    # print resolved packages in a nice table
     for _pkg in "${!_pkgs[@]}"; do
-        checkout_repo "$(pkgname_to_appname "${_pkg}")" "${_pkgs[${_pkg}]}"
+        printf "  %-${_longest_pkg_name:-30}s | %-50s\n" "${_pkg}" "${_pkgs[${_pkg}]:-not found in manifests, going to use the latest tag}"
     done
+    unset _pkg
+
+    echo
+    echo ">> Git checking out apps"
+    for _pkg in "${!_pkgs[@]}"; do
+        checkout_app_repo "$(pkgname_to_appname "${_pkg}")" "${_pkgs[${_pkg}]}"
+    done
+
+    echo
+    echo ">> Check if we need to git checkout core app too"
+    maybe_checkout_core
 
     exit 0
 fi
 
-echo "no source repo and version were given, chechking out latest release tags"
+if [ -n "${_repo_name}" ] && [ -n "${_repo_commitish}" ]; then
+    echo ">> This is not a fix branch, going to checkout apps to their base branch tags"
+else
+    echo ">> No repository name was given, going to checkout apps to their base branch tags"
+fi
+
 for app in ${_apps} ; do
-    checkout_repo "${app}"
+    checkout_app_repo "${app}"
 done
