@@ -171,6 +171,14 @@ if [ -n "${CI}" ]; then
     _clean_after_checkout=true
 fi
 
+if [ -n "${_project_name}" ] && [ "${_project_name}" = "kazoo5" ]; then
+    echo "Not supported repo ${_project_name}"
+    if [ -n "${CI}" ]; then
+        exit 0
+    fi
+    exit 1
+fi
+
 # override vars if src options are used
 if [ -n "${_project_name}" ] && [ -n "${_project_ref}" ]; then
     echo "=== Setting up variables to checkout apps to version/branch suitable for repository ${_project_name} ref ${_project_ref}"
@@ -200,9 +208,8 @@ if [ -n "${_project_name}" ] && [ -n "${_project_ref}" ]; then
             exit 1
             ;;
         kazoo5)
-            _project_type=kazoo5
-            _apps_dir="${ROOT}/applications"
-            _meta_pkg=meta-kazoo-applications
+            echo "Not supported repo ${_project_name}"
+            exit 1
             ;;
         kazoo-core)
             _project_type=kazoo-core
@@ -403,6 +410,7 @@ checkout_app_repo() {
     [ -n "${_clean_after_checkout}" ] && git -C "${_path}" clean -x -d -f >/dev/null 2>&1
 }
 
+# always check with circleci orb, look in init-workspace and compile commands
 maybe_checkout_core() {
     local _core_path=
     local _core_pkg=
@@ -459,11 +467,10 @@ _setup_manifests_repos() {
     echo "using override manifests from ${_manifests_root_path}/build-manifest-overrides"
 }
 
-appname_to_pkgname() {
+app_appname_to_pkgname() {
     case "${_project_type}" in
         kazoo-core)
-            echo "kazoo-core"
-            ;;
+            ;&
         kazoo-application)
             case "${1}" in
                 call_inspector)
@@ -477,40 +484,25 @@ appname_to_pkgname() {
                     ;;
             esac
             ;;
-        monster-ui-core)
-            echo "monster-ui-core"
-            ;;
-        monster-ui-application)
+        monster-ui*)
             echo "monster-ui-application-${1}"
             ;;
-        commland-core)
-            echo "commland-core"
-            ;;
-        commland-application)
+        commland*)
             echo "commland-application-${1}"
             ;;
     esac
 }
 
-pkgname_to_appname() {
+app_pkgname_to_appname() {
     case "${_project_type}" in
-        kazoo-core)
-            echo "${1#kazoo-}"
-            ;;
-        kazoo-application)
+        kazoo*)
             local _tmp="${1#kazoo-application-}"
             echo "${_tmp//-/_}"
             ;;
-        monster-ui-core)
-            echo "${1#monster-ui-}"
-            ;;
-        monster-ui-application)
+        monster-ui*)
             echo "${1#monster-ui-application-}"
             ;;
-        commland-core)
-            echo "${1#commland-}"
-            ;;
-        commland-application)
+        commland*)
             echo "${1#commland-application-}"
             ;;
     esac
@@ -544,7 +536,7 @@ if [ -n "${_is_project_fix_branch}" ]; then
         [ ! -d "${_apps_dir}/${app}/.git" ] && continue
         # skip current ci building repo
         [ -n "${_src_appname}" ] && [ "${app}" = "${_src_appname}" ] && continue
-        _pkg="$(appname_to_pkgname "${app}")"
+        _pkg="$(app_appname_to_pkgname "${app}")"
         _pkgs["${_pkg}"]=""
         if [ -n "${_longest_pkg_name}" ] && [ "${#_pkg}" -gt "${_longest_pkg_name}" ]; then
             _longest_pkg_name="${#_pkg}"
@@ -579,7 +571,7 @@ if [ -n "${_is_project_fix_branch}" ]; then
     echo
     echo ">> Git checking out apps"
     for _pkg in "${!_pkgs[@]}"; do
-        checkout_app_repo "$(pkgname_to_appname "${_pkg}")" "${_pkgs[${_pkg}]}"
+        checkout_app_repo "$(app_pkgname_to_appname "${_pkg}")" "${_pkgs[${_pkg}]}"
     done
 
     echo
