@@ -455,7 +455,9 @@ checkout_app_repo() {
 
     checkout_repo "${_repo}" "${_path}" "${_semver_commitish}"
 
-    [ -n "${_clean_after_checkout}" ] && git -C "${_path}" clean -x -d -f >/dev/null 2>&1
+    if [ -n "${_clean_after_checkout}" ]; then
+        git -C "${_path}" clean -x -d -f >/dev/null 2>&1
+    fi
 }
 
 # always check with circleci orb, look in init-workspace and compile commands
