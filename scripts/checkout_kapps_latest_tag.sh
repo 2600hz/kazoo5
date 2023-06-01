@@ -1,20 +1,68 @@
 #!/bin/bash
 
+# A script to checkout apps (and core if required) to latest tag or a suitable git ref
+# according to manifests.
+#
+# The scripts only supports tags or fix branch/tags and everything must starts with a
+# valid semver for tag and fix semver for fix branch/tag.
+#
+# This simply just search for list of apps under the app directory (base on project type)
+# and then if this is a simple tag, runs git describe to find the latest tag in base branch
+# and then checks out.
+#
+# For fix, either fix tag, fix release branch, fix branch/pr, this clones and runs the
+# scripts from build-manifests and build-manifest-overrides to resolve the apps
+# version/refs an checks out anything that it can find, for those that does not exists in
+# manifests files, it uses latest tag from their base branch.
+#
+# This tries to preserve the old behavior of this script which was check out apps to their
+# latest base branch. The old script was being called by CircleCI Orb ONLY during
+# rag/release.
+#
+# But to support the fix branch the functionality is now extend to support resolving the
+# versions. As a workaround this script is being called during compile/compile-test ONLY
+# CI. For local testing and setup simply call this script directly with proper options.
+#
+# If you don't specify project name and version/ref, it uses latest tags of base branch.
+#
+# - `-r|-repo-name`: The name of project must be its GitHub repository name
+# - `-v|-repo-version`: The project version is either a tag/release that starts with semver or
+#   a fix branch name that starts with a valid semver
+#
+#   Valid options:
+#     5.1.1
+#     5.1.1.1
+#     5.1.1.1-lol
+#   Non valid options:
+#     master
+#     main
+#     KZOO-111
+#     lol-5.1.1.1
+#     5.1a.1
+#     really-anything-else-that-is-not-start-with-a_valid_semver_:)
+#
+# Examples:
+#
+# To resolve apps base on specific version of kazoo-crossbar:
+#   ./scripts/checkout_kapps_latest_tag.sh -v 5.1.27.1 -r kazoo-crossbar
+#
+# To resolve apps to their latest base branch:
+#   ./scripts/checkout_kapps_latest_tag.sh -b origin/5.1
+
 set -e -o pipefail
 
-# echo ' _____ _               _    _                           _'
-# echo '/  __ \ |             | |  (_)                         | |'
-# echo '| /  \/ |__   ___  ___| | ___ _ __   __ _    ___  _   _| |_'
-# echo '| |   | |_ \ / _ \/ __| |/ / | |_ \ / _` |  / _ \| | | | __|'
-# echo '| \__/\ | | |  __/ (__|   <| | | | | (_| | | (_) | |_| | |_'
-# echo ' \____/_| |_|\___|\___|_|\_\_|_| |_|\__, |  \___/ \__,_|\__|'
-# echo ' _       _            _     _   __   __/ |'
-# echo '| |     | |          | |   | | / /  |___/'
-# echo '| | __ _| |_ ___  ___| |_  | |/ /  __ _ _______   ___'
-# echo '| |/ _\ | __/ _ \/ __| __| |    \ / _` |_  / _ \ / _ \ '
-# echo '| | (_| | ||  __/\__ \ |_  | |\  \ (_| |/ / (_) | (_) |'
-# echo '|_|\__,_|\__\___||___/\__| \_| \_/\__,_/___\___/ \___/'
-# echo
+echo '██   ██  █████  ███████  ██████   ██████'
+echo '██  ██  ██   ██    ███  ██    ██ ██    ██'
+echo '█████   ███████   ███   ██    ██ ██    ██'
+echo '██  ██  ██   ██  ███    ██    ██ ██    ██'
+echo '██   ██ ██   ██ ███████  ██████   ██████'
+echo ''
+echo '███    ███  █████  ███    ██ ██ ███████ ███████ ███████ ████████  ██████'
+echo '████  ████ ██   ██ ████   ██ ██ ██      ██      ██         ██    ██    ██'
+echo '██ ████ ██ ███████ ██ ██  ██ ██ █████   █████   ███████    ██    ██    ██'
+echo '██  ██  ██ ██   ██ ██  ██ ██ ██ ██      ██           ██    ██    ██    ██'
+echo '██      ██ ██   ██ ██   ████ ██ ██      ███████ ███████    ██     ██████'
+echo
 
 pushd "$(dirname "$0")/.." > /dev/null || exit 1
 ROOT="$(pwd -P)"
@@ -339,7 +387,7 @@ checkout_repo() {
         fi
         if [ -n "$(is_fix_branch "${_semver_commitish}")" ] && [ -z "${_is_project_fix_branch}" ]; then
             echo "latest tag ${_semver_commitish} looks like a fix tag, but the build for project ${_project_name:-'unspecified'} is not."
-            echo "This is inavlid state and can cause problems, please ask lead developers and remove this tag ${_semver_commitish}"
+            echo "This is an invalid state and can cause problems, please ask lead developers and remove this tag ${_semver_commitish}"
             echo "Fix tags MUST NOT leak to normal release tags!"
             echo
             echo "Release/Tags built from a fix branch MUST be in their respective fix release branch:"
@@ -528,7 +576,7 @@ if [ -n "${_is_project_fix_branch}" ]; then
     _longest_pkg_name=
     _pkg=
     declare -A _pkgs=()
-    # creating an asossicate array of all apps with key being pkg name and their value is
+    # creating an assassinate array of all apps with key being pkg name and their value is
     # version/branch which will be populate when we call resolve-override script.
     # If no version is resolved then checkout function will get latest tag.
     for app in ${_apps}; do

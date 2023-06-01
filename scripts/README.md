@@ -346,47 +346,58 @@ Check for trailing whitespaces
 
 ## `checkout_kapps_latest_tag.sh`
 
-This is script is helper in CI to check all Kapps for their latest tag and checkout that tag when are building releases.
+A script to checkout apps (and core if required) to latest tag or a suitable git ref
+according to manifests.
 
-For this script to work you need have `BASE_BRANCH` variable exported (with value like `origin/5.0`) and all Kapps are checked out to a release branch.
-A Release branch is like `{MAJOR}.{MINOR}` for example: `5.0`.
+The scripts only supports tags or fix branch/tags and everything must starts with a
+valid semver for tag and fix semver for fix branch/tag.
 
-```shell
-$ # this variable is required
-$ export BASE_BRANCH=origin/5.0
-$ # next line is to simulate situation when the CI release build is running for `kazoo-call-inspector` repo.
-$ export CIRCLE_PROJECT_REPONAME=kazoo-call-inspector
-$ # if you need to checkout all repos to their release branch
-$ # ./kgit git checkout 5.0
-$ ./scripts/checkout_kapps_latest_tag.sh
-BASE_BRANCH: origin/5.0
-Base major version: 5
-Base minor version: 0
+This simply just search for list of apps under the app directory (base on project type)
+and then if this is a simple tag, runs git describe to find the latest tag in base branch
+and then checks out.
 
-:: Checking ast repo for its latest tag...
-found latest tag '5.0.7', checking out
-Note: switching to '5.0.7'.
+For fix, either fix tag, fix release branch, fix branch/pr, this clones and runs the
+scripts from build-manifests and build-manifest-overrides to resolve the apps
+version/refs an checks out anything that it can find, for those that does not exists in
+manifests files, it uses latest tag from their base branch.
 
-You are in 'detached HEAD' state. You can look around, make experimental
-changes and commit them, and you can discard any commits you make in this
-state without impacting any branches by switching back to a branch.
+This tries to preserve the old behavior of this script which was check out apps to their
+latest base branch. The old script was being called by CircleCI Orb ONLY during
+rag/release.
 
-If you want to create a new branch to retain commits you create, you may
-do so (now or later) by using -c with the switch command. Example:
+But to support the fix branch the functionality is now extend to support resolving the
+versions. As a workaround this script is being called during compile/compile-test ONLY
+CI. For local testing and setup simply call this script directly with proper options.
 
-  git switch -c <new-branch-name>
+If you don't specify project name and version/ref, it uses latest tags of base branch.
 
-Or undo this operation with:
+- `-r|-repo-name`: The name of project must be its GitHub repository name
+- `-v|-repo-version`: The project version is either a tag/release that starts with semver or
+  a fix branch name that starts with a valid semver
 
-  git switch -
+Valid version option examples:
+- `5.1.1`
+- `5.1.1.1`
+- `5.1.1.1-lol`
 
-Turn off this advice by setting config variable advice.detachedHead to false
+Non valid version option examples:
+- `master`
+- `main`
+- `KZOO-111`
+- `lol-5.1.1.1`
+- `5.1a.1`
+- `really-anything-else-that-is-not-start-with-a_valid_semver_:)`
 
-HEAD is now at bdd79a6 [5.0] PROD-199: handle generic IDs (#13)
-Removing ebin/
-.....
-.....
-.....
+### Examples:
+
+To resolve apps base on specific version of kazoo-crossbar:
+```bash
+./scripts/checkout_kapps_latest_tag.sh -v 5.1.27.1 -r kazoo-crossbar
+```
+
+To resolve apps to their latest base branch:
+```bash
+./scripts/checkout_kapps_latest_tag.sh -b origin/5.1
 ```
 
 ## `code_checks.bash`
