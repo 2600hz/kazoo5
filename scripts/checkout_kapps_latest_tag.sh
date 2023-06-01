@@ -123,7 +123,9 @@ _pkg_name=
 _meta_pkg=
 
 _is_project_fix_branch=
+_is_project_fix_tag=
 _is_project_tag=
+_is_core_project=
 
 _clean_after_checkout="${CLEAN_AFTER}"
 
@@ -133,6 +135,12 @@ _clean_after_checkout="${CLEAN_AFTER}"
 # 3) can we extend this to support master or non-release branches? Like dependent PRs?
 is_fix_branch() {
     if echo "${1}" | grep -Eo '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' >/dev/null; then
+        echo true
+    fi
+}
+
+is_fix_tag() {
+    if echo "${1}" | grep -Eo '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' >/dev/null; then
         echo true
     fi
 }
@@ -244,6 +252,7 @@ if [ -n "${_project_name}" ] && [ -n "${_project_ref}" ]; then
     _release_branch="${_release_major}.${_release_minor}"
 
     _is_project_fix_branch="$(is_fix_branch "${_project_ref}")"
+    _is_project_fix_tag="$(is_fix_tag "${_project_ref}")"
     _is_project_tag="$(is_tag "${_project_ref}")"
 
     case "${_project_name}" in
@@ -260,6 +269,7 @@ if [ -n "${_project_name}" ] && [ -n "${_project_ref}" ]; then
             exit 1
             ;;
         kazoo-core)
+            _is_core_project=true
             _project_type=kazoo-core
             _apps_dir="${ROOT}/applications"
             _pkg_name=kazoo-core
@@ -274,6 +284,7 @@ if [ -n "${_project_name}" ] && [ -n "${_project_ref}" ]; then
             _meta_pkg=meta-kazoo-applications
             ;;
         monster-ui)
+            _is_core_project=true
             _project_type=monster-ui-core
             _apps_dir="${ROOT}/src/apps"
             _pkg_name="monster-ui-core"
@@ -287,6 +298,7 @@ if [ -n "${_project_name}" ] && [ -n "${_project_ref}" ]; then
             _meta_pkg=meta-monster-ui
             ;;
         commland-core)
+            _is_core_project=true
             _project_type=commland-core
             _apps_dir="${ROOT}/applications"
             _pkg_name="commland-core"
@@ -304,6 +316,18 @@ if [ -n "${_project_name}" ] && [ -n "${_project_ref}" ]; then
             exit 1
             ;;
     esac
+
+    # since this script will be called on compile, specifically check that we aare not
+    # doing anything on app checkout when the repo is core
+    # Core is special and MUST always be tagged BEFORE any other repo
+    if [ -n "${_is_core_project}" ] && [ -n "${_is_project_tag}" ] && [ -n "${CI}" ]; then
+        echo "============================================================================================="
+        echo " Checkout apps to latest base branch tag for regular tag in core repository is not possible."
+        echo " Make sure you tag the core repository BEFORE any app repos"
+        echo "============================================================================================="
+        echo "skipping checkouts...."
+        exit 0
+    fi
 else
     echo "=== Setting up the variables to checkout apps to their latest tag in base branch since no repository name was given"
 
