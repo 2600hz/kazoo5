@@ -371,8 +371,9 @@ echo "Base branch: ${_base_branch}"
 echo "Release branch: ${_release_branch}"
 echo "Project repository name: ${_project_name:-N/A}"
 echo "Project repository git ref: ${_project_ref:-N/A}"
-echo "Is Fix Branch: ${_is_project_fix_branch:-false}"
-echo "Is Release/Tag: ${_is_project_tag:-false}"
+echo "Is fix branch: ${_is_project_fix_branch:-false}"
+echo "Is fix release/tag: ${_is_project_fix_tag:-false}"
+echo "Is release/tag: ${_is_project_tag:-false}"
 echo
 
 echo ":: Searching for apps in directory ${_apps_dir}/"
