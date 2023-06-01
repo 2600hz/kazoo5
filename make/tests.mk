@@ -15,7 +15,15 @@ compile-proper: compile-test
 
 .PHONY: compile-test
 compile-test: ERLC_OPTS += +nowarn_missing_spec
+ifneq ($(CI),)
+# currentlly CI orb is only running this script only on release/tag
+# to support fix branches and tags we use this as a workaround to checkout apps from manifests
+# the script will check if this is tag or fix and skip of not
+# If you want to run this locally, just call the script directly with proper options
+compile-test: to-fix-branch compile-test-core compile-test-apps
+else
 compile-test: compile-test-core compile-test-apps
+endif
 
 .PHONY: compile-test-core
 compile-test-core: deps fetch-core

@@ -119,7 +119,12 @@ make-dependency-check:
 
 .PHONY: compile-lean compile-lean-core compile-lean-apps
 compile-lean: ACTION = compile-lean
+ifneq ($(CI),)
+compile-lean: to-fix-branch deps compile-lean-core compile-lean-apps
+else
 compile-lean: deps compile-lean-core compile-lean-apps
+endif
+
 compile-lean-core:
 	@ROOT=$(ROOT) $(MAKE) -j$(JOBS) -C core/ compile-lean
 compile-lean-apps:
@@ -127,7 +132,19 @@ compile-lean-apps:
 
 .PHONY: compile
 compile: ACTION = all
+ifneq ($(CI),)
+# currentlly CI orb is only running this script only on release/tag
+# to support fix branches and tags we use this as a workaround to checkout apps from manifests
+# the script will check if this is tag or fix and skip of not
+# If you want to run this locally, just call the script directly with proper options
+compile: to-fix-branch deps kazoo
+else
 compile: deps kazoo
+endif
+
+.PHONY: to-fix-branch
+to-fix-branch:
+	@./scripts/checkout_kapps_latest_tag.sh
 
 .PHONY: sparkly-clean
 sparkly-clean: stop-if-changed clean-kazoo clean-release clean-deps clean-tags
