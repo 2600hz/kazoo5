@@ -2,9 +2,7 @@
 
 set -e
 
-pushd "$(dirname "$0")" >/dev/null
-
-ROOT=$(readlink -f "$(pwd -P)"/..)
+pushd "$(dirname "$0")/.." >/dev/null
 
 errors=0
 erls=""
@@ -14,20 +12,20 @@ erls=""
 if [ -z "$1" ]; then
     echo "no files to check for logging"
     exit 0
-else
-    lager_files="$1"
 fi
 
-#for ERL in $(egrep -rl "lager:\w+\(\"[A-Z]{1}[a-z]" $lager_files); do
-for ERL in $(egrep -rl "lager:\w+\(\"[A-Z]{1}[a-z]" $lager_files); do
+# reading lines and redirect to while to avoid word splitting in file paths
+MACTHES="$(grep -Erl "lager:\w+\(\"[a-z]{1}[a-z]" "${@}")"
+while IFS='' read -r ERL; do
+    # lager:critical_unsafe has _ in it
     # sed captures lager:[word](" as \1
     # captures A-Z as \2
     # captures the rest of the line as \3
     # changes \2 to the lowercase version using \l
-    sed -E -i 's/(lager:[[:alpha:]]+\(")([A-Z]{1})([a-z].+)/\1\l\2\3/g' $ERL
+    sed -r -i 's/(lager:[a-z_]+\(")([A-Z]{1})([a-z].+)/\1\l\2\3/g' "${ERL}"
     errors=1
     erls="$erls$ERL:1: log lines starting with capital letters"$'\n'
-done
+done <<< "${MACTHES}"
 
 if [ $errors = 1 ]; then
     echo "$erls"
