@@ -23,6 +23,7 @@ DEPS ?= blackhole \
 	stepswitch \
 	sysconf \
 	tasks \
+	teammate \
 	teletype \
 	trunkstore \
 	webhooks
