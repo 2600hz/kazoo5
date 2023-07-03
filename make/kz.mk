@@ -374,10 +374,10 @@ $(DOCS_INDEX): pr_template
 
 PR_TEMPLATE = .github/pull_request_template.md
 
-.PHONY: pr-template clean-pr-template
-pr-template: clean-pr-template $(PR_TEMPLATE)
+.PHONY: pr_template clean_pr_template
+pr_template: clean_pr_template $(PR_TEMPLATE)
 
-clean-pr-template:
+clean_pr_template:
 	@rm -f $(PR_TEMPLATE)
 
 $(PR_TEMPLATE):

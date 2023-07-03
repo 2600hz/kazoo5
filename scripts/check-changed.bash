@@ -27,7 +27,7 @@ function get_changed {
     _ci_debug "- checking $1 (base_branch=${base_branch})"
     diff=""
     for file in $(git -C $1 --no-pager diff --name-only HEAD $base_branch); do
-        diff+=" $1$file"
+        diff+=" $1/$file"
     done
     echo "$diff"
 }
