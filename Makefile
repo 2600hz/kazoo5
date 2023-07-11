@@ -11,6 +11,7 @@ KZ_VSCODE_DEBUGGER = $(ROOT)/.vscode/launch.json
 
 ERLANG_MK = $(ROOT)/erlang.mk
 DOT_ERLANG_MK = $(ROOT)/.erlang.mk
+MORE_APPS_MK = $(ROOT)/make/more_apps.mk
 
 ## If you use SSH keys instead
 ## FETCH_AS = git@github.com:
@@ -225,21 +226,22 @@ $(CORE_DIR)/Makefile: $(DOT_ERLANG_MK)
 apps: core fetch-apps
 	@ROOT=$(ROOT) $(MAKE) -j$(JOBS) -C $(APPS_DIR) all
 
+.PHONY: fetch-apps
 fetch-apps: $(APPS_HASH_FILE) $(APP_URLS_HASH_FILE) $(APPS_DIR)/Makefile
 	@NO_AUTOPATCH_ERLANG_MK=1 ROOT=$(ROOT) $(MAKE) -f $(ROOT)/make/Makefile.apps -C $(APPS_DIR) fetch-deps
 
 # Target: apps hash file
 # 1. Make sure elrang.mk is setup
 # Once satisfied, create the applications directory and the apps hash file
-$(APPS_HASH_FILE): $(DOT_ERLANG_MK) make/more_apps.mk
+$(APPS_HASH_FILE): $(DOT_ERLANG_MK) $(MORE_APPS_MK)
 	@touch $(APPS_HASH_FILE)
 
 $(APP_URLS_HASH_FILE):
 	@touch $(APP_URLS_HASH_FILE)
 
 # Bootstrap more_apps.mk with kazoo_properly and kazoo_ast
-make/more_apps.mk:
-	@cp make/more_apps.mk.default make/more_apps.mk
+$(MORE_APPS_MK):
+	@cp $(MORE_APPS_MK).default $(MORE_APPS_MK)
 
 .PHONY: apps-makefile
 apps-makefile: $(APPS_DIR)/Makefile
