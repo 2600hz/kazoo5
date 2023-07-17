@@ -132,15 +132,13 @@ sparkly-clean: stop-if-changed clean-kazoo clean-release clean-deps clean-tags
 
 .PHONY: stop-if-changed
 stop-if-changed:
-	@[ -z "$(CHANGED)" ] && exit 0 || `echo Unstaged changes make this unsage && exit 1`
+	@[ -z "$(CHANGED)" ] || (echo "Unstaged changes make this unsafe" && exit 1)
 
 .PHONY: clean-kazoo
 clean-kazoo: stop-if-changed
-	@$(ls -d $(APPS_DIR)/* | xargs rm -rf)
-	@$(rm -rf $(CORE_DIR))
-	@$(if $(wildcard $(CORE_HASH_FILE)), rm -rf $(CORE_HASH_FILE))
-	@$(if $(wildcard $(APPS_HASH_FILE)), rm -rf $(APPS_HASH_FILE))
-	@$(if $(wildcard $(APP_URLS_HASH_FILE)), rm -rf $(APP_URLS_HASH_FILE))
+	@rm -rf $(APPS_DIR)/*
+	@rm -rf $(CORE_DIR)
+	@rm -f $(ROOT)/make/.{app_urls,apps,core}.mk.*
 
 .PHONY: clean
 clean: clean-core clean-apps
@@ -165,9 +163,9 @@ clean-deps: clean-deps-hash
 
 .PHONY: clean-deps-hash
 clean-deps-hash:
-	$(if $(wildcard $(ROOT)/make/.deps.mk.*), rm $(ROOT)/make/.deps.mk.*)
+	@rm -f $(ROOT)/make/.deps.mk.*
 
-.PHONY=dot_erlang_mk
+.PHONY: dot_erlang_mk
 dot_erlang_mk: $(DOT_ERLANG_MK)
 
 $(DOT_ERLANG_MK): $(ERLANG_MK)
@@ -202,6 +200,7 @@ core: deps fetch-core
 
 # Target: fetch-core
 # Alias for $(CORE_DIR)Makefile to fetch the core apps
+.PHONY: fetch-core
 fetch-core: $(CORE_HASH_FILE) $(CORE_DIR)/Makefile
 
 # Target: core hash file
