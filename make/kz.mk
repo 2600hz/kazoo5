@@ -81,7 +81,9 @@ APPS_MK = $(CURDIR)/apps.mk
 DEPS_DIR = $(ROOT)/deps
 CORE_DIR = $(ROOT)/core
 APPS_DIR = $(ROOT)/applications
+SCRIPTS_DIR = $(ROOT)/scripts
 DOT_ERLANG_MK = $(ROOT)/.erlang.mk
+INTEGRATIONS = $(CWD)/priv/integrations.config
 
 APPS_LIST = $(file < $(APPS_MK))
 APP_DIRS = $(foreach APP,$(APPS_LIST),$(wildcard $(ROOT)/applications/$(APP)))
@@ -347,7 +349,7 @@ fixture_shell:
 		erl -setcookie change_me -name '$(NODE_NAME)' -s reloader "$$@"
 
 .PHONY: code_checks apps_of_app
-code_checks: edoc
+code_checks: edoc $(INTEGRATIONS)
 	@printf ":: Check for copyright year\n\n"
 	@$(ROOT)/scripts/bump-copyright-year.py $(SOURCES)
 	@printf "\n:: Check code\n\n"
@@ -394,6 +396,13 @@ elvis: $(CORE_DIR)/kazoo_stdlib/ebin/kz_style.beam
 	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(ROOT)/elvis --config $(ROOT)/make/elvis.config -k --parallel auto rock $(subst $(ROOT)/,,$(filter %.erl,$(wildcard $(TEST_SOURCES))))
 
 splchk-all: $(addsuffix .common,$(basename $(SOURCES)) $(basename $(JSON)) $(basename $(DOCS_INDEX)) $(basename $(DOCS)) )
+
+.PHONY: integrations
+integrations:
+	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(SCRIPTS_DIR)/check-integrations.escript $(INTEGRATIONS) $(BEAMS)
+
+$(INTEGRATIONS):
+	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(SCRIPTS_DIR)/check-integrations.escript $(INTEGRATIONS) $(BEAMS)
 
 include $(ROOT)/make/splchk.mk
 include $(ROOT)/make/fmt.mk
