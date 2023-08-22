@@ -94,6 +94,13 @@ changed:
 unstaged:
 	$(ROOT)/scripts/check-unstaged.bash
 
+.PHONY: untracked untracked-list
+untracked:
+	$(ROOT)/scripts/check-git-diff-untracked.bash "$(ROOT)" "$(ROOT)/core" "$(ROOT)/applications/*"
+
+untracked-list:
+	$(ROOT)/scripts/check-git-diff-untracked.bash -l "$(ROOT)" "$(ROOT)/core" "$(ROOT)/applications/*"
+
 .PHONY: changed_swagger
 changed_swagger:
 	@echo "$(CHANGED_SWAGGER)"
