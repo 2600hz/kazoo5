@@ -82,7 +82,6 @@ all: prerequisites compile
 
 .PHONY: changed
 changed:
-	@echo "chapps: $(CHANGED_APPS)"
 	@$(ROOT)/scripts/pretty-print-files.bash "changed:" $(PRINTABLE_CHANGED)
 	@$(ROOT)/scripts/pretty-print-files.bash "changed ERL:" $(PRINTABLE_ERL)
 	@$(ROOT)/scripts/pretty-print-files.bash "changed APPS:" $(PRINTABLE_APPS)
@@ -364,6 +363,11 @@ apis: schemas api_endpoints kzd_builder
 	@$(ROOT)/scripts/format-json.py $(shell find $(APPS_DIR) $(CORE_DIR) -wholename '*/api/*.json')
 	@$(ROOT)/scripts/format-couchdb-views.py $(shell find $(CORE_DIR)/kazoo_apps/priv/couchdb/account -name '*.json')
 	@$(ROOT)/scripts/format-couchdb-views.py $(shell find $(APPS_DIR) $(CORE_DIR) -wholename '*/couchdb/views/*.json')
+
+.PHONY: json
+json:
+	@$(ROOT)/scripts/format-json.py $(APPS_DIR)/crossbar/priv/api/swagger.json
+	@$(ROOT)/scripts/format-json.py $(shell find $(APPS_DIR) $(CORE_DIR) -wholename '*/api/*.json')
 
 .PHONY: kzd_builder
 kzd_builder:
