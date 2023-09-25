@@ -258,11 +258,6 @@ Removes trailing whitespaces from files
 
 When building applications that don't live in the kazoo src tree, this script will configure CircleCI to run the necessary tests against Kazoo with the application added in.
 
-## circleci-build-erlang.sh
-
-Fetches kerl and installs configured Erlang version (used in CircleCI)
-
-
 ## code\_checks.bash
 
 Checks source code files for various formatting expectations and exits if any are found.
