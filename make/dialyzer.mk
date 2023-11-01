@@ -16,6 +16,8 @@ ifneq ($(CIRCLECI),)
 endif
 endif
 
+TO_DIALYZE ?= $(shell find $(APPS_DIR) -name ebin)
+
 EXCLUDE_DEPS = $(DEPS_DIR)/erlang_localtime/ebin
 $(PLT): DEPS_EBIN ?= $(filter-out $(EXCLUDE_DEPS),$(wildcard $(DEPS_DIR)/*/ebin))
 # $(PLT): CORE_EBINS ?= $(shell find $(CORE_DIR) -name ebin)
@@ -43,11 +45,10 @@ dialyze-apps:  TO_DIALYZE  = $(shell find $(APPS_DIR) -name ebin)
 dialyze-apps: dialyze
 
 .PHONY: dialyze-core
-dialyze-core:  TO_DIALYZE  = $(shell find $(CORE_DIR)         -name ebin)
-dialyze-core: dialyze-it
+dialyze-core:  TO_DIALYZE  = $(shell find $(CORE_DIR) -name ebin)
+dialyze-core: dialyze
 
 .PHONY: dialyze
-dialyze:       TO_DIALYZE ?= $(shell find $(APPS_DIR) -name ebin)
 dialyze: dialyze-it
 
 .PHONY: dialyze-changed
@@ -64,16 +65,17 @@ dialyze-types-kazoo: dialyze-types-it
 
 .PHONY: dialyze-types
 dialyze-types: TO_DIALYZE = $(CHANGED)
-dialyze-types: $(PLT) dialyze-types-it
+dialyze-types: dialyze-types-it
 
-dialyze-types-it:
+.PHONY: dialyze-types-it
+dialyze-types-it: $(PLT)
 	@echo ":: dialyzing types"
-	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(if $(DEBUG),time -v) $(ROOT)/scripts/check-dialyzer-types.escript $(ROOT)/.kazoo.plt $(CHECK_DIALYZER_OPTS) $(strip $(filter %.beam %.erl %/ebin,$(TO_DIALYZE))) && echo "dialyzer is happy!"
+	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(if $(DEBUG),time -v) $(ROOT)/scripts/check-dialyzer-types.escript $(PLT) $(CHECK_DIALYZER_OPTS) $(strip $(filter %.beam %.erl %/ebin,$(TO_DIALYZE))) && echo "dialyzer is happy!"
 
 .PHONY: dialyze-it
 dialyze-it: $(PLT)
 	@echo ":: dialyzing"
-	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(if $(DEBUG),time -v) $(ROOT)/scripts/check-dialyzer.escript $(ROOT)/.kazoo.plt $(CHECK_DIALYZER_OPTS) $(strip $(filter %.beam %.erl %/ebin,$(TO_DIALYZE))) && echo "dialyzer is happy!"
+	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(if $(DEBUG),time -v) $(ROOT)/scripts/check-dialyzer.escript $(PLT) $(CHECK_DIALYZER_OPTS) $(strip $(filter %.beam %.erl %/ebin,$(TO_DIALYZE))) && echo "dialyzer is happy!"
 
 .PHONY: dialyze-it-changed
 dialyze-it-changed: export TO_DIALYZE = $(CHANGED)
