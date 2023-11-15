@@ -159,22 +159,6 @@ Now you have a listing of registered processes to put in your .app.src
 
 Find git repos and accumulate changed files
 
-## check-git-status.bash
-
-```shell
-./check-git-status.bash [directories]
-```
-
-Check porcelain status of each repo and accumulate the results
-
-## `check-git-diff-untracked.bash`
-
-Show git diff for untracked file in directories.
-
-```shell
-./check-git-diff-untracked.bash <directories>+
-```
-
 ## check-dialyzer.escript
 
 An Erlang escript that dialyzes changed files. Run it using the Makefile target 'dialyze' with the files to dialyze:
@@ -201,6 +185,26 @@ dialyze paths: ["path/to/ebin/module.beam"]
 Failed to find type kz_term:objects/0
 ```
 
+## check-git-status.bash
+
+```shell
+./check-git-status.bash [directories]
+```
+
+Check porcelain status of each repo and accumulate the results
+
+## `check-git-diff-untracked.bash`
+
+Show git diff for untracked file in directories.
+
+```shell
+./check-git-diff-untracked.bash <directories>+
+```
+
+## check-integrations.escript
+
+Erlang script using xref to calculate remote M:F/A each module uses in an app, and write to priv/integrations.config. Run with the Erlang/KAZOO app's Makefile
+
 ## check-loglines.bash
 
 Checks code for log lines that start with a capital letter.
@@ -218,7 +222,7 @@ A quick script to check that all scripts in `$(ROOT)/scripts` are documented in 
 
 Takes the misspellings.txt and checks for common mistakes.
 
-Each line on the text file has the format `{correct}|{mispelt} [{misspelt} ...]`
+Each line on the text file has the format `{correct}|{misspelt} [{misspelt} ...]`
 
 ## check-stacktrace.py
 
@@ -253,11 +257,6 @@ Removes trailing whitespaces from files
 ## circleci.bash
 
 When building applications that don't live in the kazoo src tree, this script will configure CircleCI to run the necessary tests against Kazoo with the application added in.
-
-## circleci-build-erlang.sh
-
-Fetches kerl and installs configured Erlang version (used in CircleCI)
-
 
 ## code\_checks.bash
 

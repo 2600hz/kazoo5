@@ -41,8 +41,6 @@ DEPS ?= amqp_client \
 	fcm \
 	hep
 
-IGNORE_DEPS = hamcrest
-
 ifeq ($(CIRCLECI),true)
     DEPS += coveralls
     dep_coveralls = git https://github.com/markusn/coveralls-erl 1.4.0
@@ -66,7 +64,7 @@ dep_esaml = git https://github.com/2600hz/erlang-esaml.git master
 # Karl updated the 'show' branch to add X-Kazoo-Applications on commit a3d6f12ac186e4ef67731ed4b78d1a879c2b9701
 dep_couchbeam = git https://github.com/2600hz/erlang-couchbeam a3d6f12ac186e4ef67731ed4b78d1a879c2b9701
 
-dep_cowboy = git https://github.com/2600hz/erlang-cowboy 2.8.0
+dep_cowboy = git https://github.com/2600hz/erlang-cowboy 2600hz
 
 dep_eflame = git https://github.com/slfritchie/eflame 7b0bb1a7e8c8482a59421a3a50ae69d49af59d52
 # used by kz_tracers

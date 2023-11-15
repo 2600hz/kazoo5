@@ -2,7 +2,7 @@
 version: 2.1
 
 orbs:
-  kazoo: official-2600hz/kazoo@0.2.10
+  kazoo: official-2600hz/kazoo@0.3.0
 
 workflows:
   version: 2
@@ -10,42 +10,63 @@ workflows:
     jobs:
       - kazoo/build-preparation:
           context: Private-Builds
+          name: preparation-<< matrix.platform >>
           target-type: kazoo
+          platform: << matrix.platform >>
+          matrix:
+            parameters:
+              platform: [centos-7, rockylinux-8, rockylinux-9]
       - kazoo/build:
           context: Private-Builds
+          name: beams-<< matrix.platform >>
+          platform: << matrix.platform >>
+          matrix:
+            parameters:
+              platform: [centos-7, rockylinux-8, rockylinux-9]
           requires:
-            - kazoo/build-preparation
+            - preparation-<< matrix.platform >>
       - kazoo/eunit-tests:
           context: Private-Builds
           requires:
-            - kazoo/build-preparation
+            - preparation-centos-7
       - kazoo/code-checks:
           requires:
-            - kazoo/build
+            - beams-centos-7
       - kazoo/docs:
           requires:
-            - kazoo/build
+            - beams-centos-7
       - kazoo/analyze:
           requires:
-            - kazoo/build
+            - beams-centos-7
       - kazoo/integration-test:
           requires:
-            - kazoo/build
+            - beams-centos-7
       - kazoo/build-centos7:
           context: Private-Builds
           target-type: kazoo
           requires:
-            - kazoo/eunit-tests
-            - kazoo/code-checks
-            - kazoo/docs
-            - kazoo/analyze
-            - kazoo/integration-test
+            - beams-centos-7
+      - kazoo/build-rockylinux8:
+          context: Private-Builds
+          target-type: kazoo
+          requires:
+            - beams-rockylinux-8
+      - kazoo/build-rockylinux9:
+          context: Private-Builds
+          target-type: kazoo
+          requires:
+            - beams-rockylinux-9
 
   build_release:
     jobs:
       - kazoo/build-preparation:
           context: Private-Builds
+          name: preparation-<< matrix.platform >>
           target-type: kazoo
+          platform: << matrix.platform >>
+          matrix:
+            parameters:
+              platform: [centos-7, rockylinux-8, rockylinux-9]
           for-packager: "true"
           filters:
             tags:
@@ -54,65 +75,86 @@ workflows:
               ignore: /.*/
       - kazoo/build:
           context: Private-Builds
+          name: beams-<< matrix.platform >>
+          platform: << matrix.platform >>
+          matrix:
+            parameters:
+              platform: [centos-7, rockylinux-8, rockylinux-9]
+          requires:
+            - preparation-<< matrix.platform >>
           filters:
             tags:
               only: /^\d+\.\d+\.\d+$/
             branches:
               ignore: /.*/
-          requires:
-            - kazoo/build-preparation
       - kazoo/eunit-tests:
           context: Private-Builds
+          requires:
+            - preparation-centos-7
           filters:
             tags:
               only: /^\d+\.\d+\.\d+$/
             branches:
               ignore: /.*/
-          requires:
-            - kazoo/build-preparation
       - kazoo/code-checks:
+          requires:
+            - beams-centos-7
           filters:
             tags:
               only: /^\d+\.\d+\.\d+$/
             branches:
               ignore: /.*/
-          requires:
-            - kazoo/build
       - kazoo/docs:
+          requires:
+            - beams-centos-7
           filters:
             tags:
               only: /^\d+\.\d+\.\d+$/
             branches:
               ignore: /.*/
-          requires:
-            - kazoo/build
       - kazoo/analyze:
+          requires:
+            - beams-centos-7
           filters:
             tags:
               only: /^\d+\.\d+\.\d+$/
             branches:
               ignore: /.*/
-          requires:
-            - kazoo/build
       - kazoo/integration-test:
+          requires:
+            - beams-centos-7
           filters:
             tags:
               only: /^\d+\.\d+\.\d+$/
             branches:
               ignore: /.*/
-          requires:
-            - kazoo/build
       - kazoo/build-centos7:
           context: Private-Builds
           target-type: kazoo
+          requires:
+            - beams-centos-7
           filters:
             tags:
               only: /^\d+\.\d+\.\d+$/
             branches:
               ignore: /.*/
+      - kazoo/build-rockylinux8:
+          context: Private-Builds
+          target-type: kazoo
           requires:
-            - kazoo/eunit-tests
-            - kazoo/code-checks
-            - kazoo/docs
-            - kazoo/analyze
-            - kazoo/integration-test
+            - beams-rockylinux-8
+          filters:
+            tags:
+              only: /^\d+\.\d+\.\d+$/
+            branches:
+              ignore: /.*/
+      - kazoo/build-rockylinux9:
+          context: Private-Builds
+          target-type: kazoo
+          requires:
+            - beams-rockylinux-9
+          filters:
+            tags:
+              only: /^\d+\.\d+\.\d+$/
+            branches:
+              ignore: /.*/

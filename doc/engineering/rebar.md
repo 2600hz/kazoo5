@@ -1,0 +1,190 @@
+# Kazoo Rebar3 built tool support (Experimental)
+
+[Rebar3](https://rebar3.org) official build tool for Erlang/OTP. When development of Kazoo was started there was no Rebar3 so that is why [GNU `make`](https://www.gnu.org/software/make/) was chosen for its build system.
+
+Since Rebar3 is now mature enough and adopted by almost all Erlang projects, by supporting in Kazoo can now benefit of supporting Rebar3 and have better integration and interoperability with other tools such as code editors, other Erlang libraries and Erlang tools (such as [ErlangLS](https://github.com/erlang-ls/erlang_ls)) and way much faster build time.
+
+Rebar3 in Kazoo still and experimental and won't replace the existing make build system.
+Make is still the official build system supported by Kazoo.
+
+This an umbrella app Rebar configuration and each application (in `core/` and `applications/`) can have their own `rebar.config` with any customizations needed by that particular application.
+
+> **NOTE** All Rebar commands must be run from root of Kazoo source code.
+
+This document present the current workflow of using Rebar3 and track what is working and
+what is not.
+
+Users of macOS and Windows can benefit of this since building and running a dev Kazoo
+release is now depends less on Makefiles.
+
+
+
+## Prerequisites
+
+You must have the usual Kazoo dev environment installed, mainly:
+
+1. A Kazoo supported Erlang/OTP version
+2. [Rebar3](https://rebar3.org)
+3. Git (at least Git v2)
+4. Essential build tools (`build-essential` in Debian) which may include GCC/G++, make,
+   automake, autoconf, zip/unzip and etc...
+5. Other Kazoo required stack if you want to a dev release (CouchDB, RabbitMQ at least).
+
+Consult [Installation](../installation.md) and [Installing on macOS](./installing-on-mac.md) for more info.
+
+## Fetch Core and Kazoo Apps
+
+You still need to manually fetch Kazoo Core and Kazoo Applications. Go ahead and copy
+`make/more_apps.mk.default` to `make/mores_apps.mk` if you have't already. Add any other
+Kazoo applications extra repository you want to fetch and run the command in the root of
+Kazoo source code directory:
+
+```shell
+# edit (or copy make/more_apps.mk.default to make/mores_apps.mk) and extra kazoo apps repos
+# if needed
+
+# and now fetch repos by:
+make fetch-core fetch-apps
+```
+
+## Get yourself familiar with `rebar3`
+
+> **NOTE** All Rebar commands must be run from root of Kazoo source code.
+
+Running `rebar3` without any argument will print its help. If you need to need more about some
+specific Rebar sub-command or it options, you can use:
+
+```
+rebar3 help {sub_commnad}
+```
+
+See Rebar3 [documentation](https://rebar3.org/docs/commands/) for more info.
+
+## Compile (whole project, including fetch and compile deps)
+
+> **NOTE** Please keep `make/deps.mk` and `rebar.config` deps in sync
+
+Almost all sub-commands of `rebar3` are depend on `compile` and they will trigger it. But
+if you want explicitly run it, simply type and run:
+
+```
+rebar3 compile
+```
+
+This will always fetch and compiles any missing dependency.
+
+By default rebar is using `_build` directory. You will find all Beam files in `default`
+target at `_build/default/lib` path.
+
+Recent version Rebar3 compile everything in parallel, which makes compile deps + core +
+kapps to something under ~3mins from cold start!
+
+### Side note
+
+If you already compile the project using `make`, I recommend to `make clean clean-deps`
+before compiling.
+
+Rebar3 usually copies any beam files from ebin directory to its build directory.
+
+In some rare cases (removing old source file, apps and etc) it is better to start fresh,
+remove `_build` and compile. It is fast enough.
+
+### Clean
+
+This is not so much needed but if you need:
+
+```
+rebar3 clean
+```
+
+See documents for more info.
+
+In rare case it is better to remove `_build` directory and start over.
+
+## Erlang Releases
+
+### Building Dev Release
+
+This is the only configured release provided by `rebar.config`. If you need more you can
+create a new config file for and/or use rebar3 release option to use it.
+
+For building dev release:
+
+```
+rebar3 release
+```
+
+Please be advise that we use special `vm.args` and `sys.config` for rebar releases. Newer
+`relx` support `.src` for those file so we can dynamically configure them for runtime.
+
+### Running Dev release
+
+Simply use this to run a kazoo dev release with `reloader` attached:
+
+```
+_build/default/rel/kazoo_dev/bin/kazoo_dev console
+```
+
+You will get an Erlang shell. Consult that `kazoo_dev` script for more sub-commands.
+
+#### Controlling NODE_NAME and COOKIE
+
+As you see from `rel/rebar.dev.vm.args.src`, you can set shell enviroment variable to
+customize the node name and cookie:
+
+```
+KAZOO_NODE=ecallmgr KAZOO_COOKIE=mycookie _build/default/rel/kazoo_dev/bin/kazoo_dev console
+```
+
+Default values are:
+
+- `KAZOO_NODE`: `kazoo_apps`
+- `KAZOO_COOKIE`: `change_me`
+
+
+Also note that `rel/rebar.dev.sys.config.src` will put `ra` data_dir in `_build`.
+
+No not forget that you need at least `KAZOO_CONFIG` variable too, unless the default Kazoo
+config is enough for you.
+
+## Dialyzer
+
+As easy as:
+
+```
+rebar3 dialyze
+```
+
+### Caveat
+
+- There is no way to ignore false-positive warnings as we already do in `scripts/chech-dialyzer.escript`
+- There is no way to run dialyzer for only changed files, by at least it is not too slow!
+- Currently we complete ignore `lager` module mostly to silent warnings regarding return
+  type not matched.
+
+## Xref
+
+```
+rebar3 xref
+```
+
+There is some ignore configurations in `rebar.config` to silent deps.
+
+### Caveat
+
+- There is no way to run this for only changed files, by at least it is not too slow!
+
+## Run Tests (Eunit and PropEr)
+
+I suggest to add `--cover` option to you generate test coverage report. This will run both
+EUnit and PropEr tests:
+
+```
+rebar3 eunit --cover
+```
+
+then to create and print coverage:
+
+```
+rebar3 cover -v
+```

@@ -1,5 +1,5 @@
 .PHONY: erlang-ls
-erlang-ls: $(ERLANG_LS)
+erlang-ls: $(ERLANG_LS) copy-erlang-ls
 
 $(ERLANG_LS):
 	@touch $(ERLANG_LS)
@@ -22,6 +22,13 @@ $(ERLANG_LS):
 	@echo "runtime: " >> $(ERLANG_LS)
 	@echo "    use_long_names: true" >> $(ERLANG_LS)
 	@echo "generated $(ERLANG_LS)"
+
+.PHONY: copy-erlang-ls
+copy-erlang-ls:
+	@for app in $(APPS); do cp $(ERLANG_LS) "applications/$$(basename $${app})/"; done
+	@cp $(ERLANG_LS) "core/"
+	@echo "copied $(ERLANG_LS) to core and all apps"
+	@echo
 	@echo "It is highly recommended to copy $(ERLANG_LS) file to your global Erlang-LS configuration place"
 	@echo "This could be your home directory or ~/.config/erlang_ls directory"
 
@@ -32,7 +39,7 @@ clean-erlang-ls:
 .PHONY: kazoo-code-workspace
 kazoo-code-workspace: $(KZ_VSCODE) $(KZ_VSCODE_DEBUGGER)
 
-$(KZ_VSCODE):
+$(KZ_VSCODE): $(APPS_HASH_FILE)
 	@touch $(KZ_VSCODE)
 	@echo '{"folders": [' > $(KZ_VSCODE)
 	@for app in $(APPS) ; do echo "{ \"name\": \"kapp/$$(basename $${app})\", \"path\": \"applications/$$(basename $${app})\" }," >> $(KZ_VSCODE); done
