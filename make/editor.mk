@@ -37,20 +37,25 @@ clean-erlang-ls:
 	@rm $(ERLANG_LS)
 
 .PHONY: kazoo-code-workspace
-kazoo-code-workspace: $(KZ_VSCODE) $(KZ_VSCODE_DEBUGGER)
+kazoo-code-workspace: $(KZ_VSCODE) $(KZ_VSCODE_DEBUGGER) $(KZ_VSCODE_SETTINGS)
 
 $(KZ_VSCODE): $(APPS_HASH_FILE)
 	@touch $(KZ_VSCODE)
 	@echo '{"folders": [' > $(KZ_VSCODE)
 	@for app in $(APPS) ; do echo "{ \"name\": \"kapp/$$(basename $${app})\", \"path\": \"applications/$$(basename $${app})\" }," >> $(KZ_VSCODE); done
 	@echo '{"name": "core", "path": "core" },' >> $(KZ_VSCODE)
-	@echo '{"name": "kazoo (root)", "path": "." }],' >> $(KZ_VSCODE)
-	@echo '"settings": {"files.exclude": {"/applications/": true,"/core/": true}' >> $(KZ_VSCODE)
-	@echo '}}' >> $(KZ_VSCODE)
+	@echo '{"name": "kazoo (root)", "path": "." }]' >> $(KZ_VSCODE)
+	@echo '}' >> ${KZ_VSCODE}
 	@$(ROOT)/scripts/format-json.py $(KZ_VSCODE)
 	@echo "generated $(KZ_VSCODE)"
 
-$(KZ_VSCODE_DEBUGGER):
-	@mkdir $(ROOT)/.vscode
-	@cp $(ROOT)/.vscode_launch.json $(ROOT)/.vscode/launch.json
+$(KZ_VSCODE_DEBUGGER): $(KZ_VSCODE_DIR)
+	@cp $(ROOT)/.vscode_launch.json $(KZ_VSCODE_DEBUGGER)
 	@echo "generated $(KZ_VSCODE_DEBUGGER)"
+
+$(KZ_VSCODE_SETTINGS): $(KZ_VSCODE_DIR)
+	@cp $(ROOT)/.vscode_settings.json $(KZ_VSCODE_SETTINGS)
+	@echo "generated $(KZ_VSCODE_SETTINGS)"
+
+$(KZ_VSCODE_DIR):
+	@mkdir $(KZ_VSCODE_DIR)

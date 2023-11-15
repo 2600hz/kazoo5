@@ -7,7 +7,9 @@ APPS_DIR = $(ROOT)/applications
 TAGS = $(ROOT)/TAGS
 ERLANG_LS = $(ROOT)/erlang_ls.config
 KZ_VSCODE = $(ROOT)/kazoo.code-workspace
-KZ_VSCODE_DEBUGGER = $(ROOT)/.vscode/launch.json
+KZ_VSCODE_DIR = $(ROOT)/.vscode
+KZ_VSCODE_DEBUGGER = $(KZ_VSCODE_DIR)/launch.json
+KZ_VSCODE_SETTINGS = $(KZ_VSCODE_DIR)/settings.json
 
 ERLANG_MK = $(ROOT)/erlang.mk
 DOT_ERLANG_MK = $(ROOT)/.erlang.mk
