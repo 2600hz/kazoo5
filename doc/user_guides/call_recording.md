@@ -13,7 +13,10 @@ Call recording can be enabled in a number of ways:
 * At the device level
 * Explicitly as a callflow action
 
-Call recording also requires you to have a web server capable of receiving an HTTP PUT request with the contents of the recording. You are then free to save the recording in a way that meets your needs.
+Call recording requires you to either:
+
+* have a web server capable of receiving an HTTP `PUT` request with the contents of the recording, which you are then free to save in a way that meets your needs
+* configure a [storage plan](../../applications/crossbar/doc/storage.md) for call recordings
 
 ### Account, User, or Device
 
@@ -73,6 +76,8 @@ When an onnet device makes an internal call:
 | Endpoint -> Outbound -> Onnet  | onnet  | onnet       | yes               |
 | Endpoint -> Outbound -> Offnet | onnet  | onnet       | no                |
 
+¹ When the setting is enabled on the *destination* endpoint
+
 When an onnet device makes an external call:
 
 | Setting                        | Source | Destination | Recording Started |
@@ -110,19 +115,19 @@ curl -v -X PATCH \
 Sales wants calls to and from customers to be recorded but not calls within the account. The sales users would have their `call_recording` settings set as:
 
 ```json
-{"id":"{USER_ID}"
- ,"call_recording":{
-   "inbound":{
-     "offnet":{
-       ...recording settings...
-     }
-   }
-   ,"outbound":{
-     "offnet":{
-       ...recording settings...
-     }
-   }
- }
+{
+  "call_recording": {
+    "inbound": {
+      "offnet": {
+        "enabled": true
+      }
+    },
+    "outbound": {
+      "offnet": {
+        "enabled": true
+      }
+    }
+  }
 }
 ```
 

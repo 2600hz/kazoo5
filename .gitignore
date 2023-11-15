@@ -19,6 +19,7 @@
 *.pid
 *.dump
 *.swp
+rebar3.crashdump
 
 *.coverdata
 
@@ -29,6 +30,8 @@
 **/.vscode/
 **/*.code-workspace
 **/.vimspector.json
+
+erlang_ls.config
 
 sup.bash
 
@@ -54,6 +57,7 @@ erlang.mk
 /deps/
 /core/
 /applications/*/
+/_build/
 
 /TAGS
 
@@ -76,6 +80,7 @@ compile_commands.json
 /make/.core.mk.*
 /make/.apps.mk.*
 /make/.app_urls.mk.*
+/make/.rebar.config.script.*
 /make/circleci
 
 /out/
@@ -88,6 +93,5 @@ compile_commands.json
 /todo.org
 /make/pest-*
 # asdf-vm "local" versions handler
-/erlang_ls.config
 /make/more_apps.mk
 /applications/Makefile

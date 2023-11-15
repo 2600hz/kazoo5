@@ -1,4 +1,4 @@
-ROOT ?= $(shell cd "$(dirname '.')" && pwd -P)
+ROOT := $(shell cd "$(dirname '.')" && pwd -P)
 
 DEPS_DIR = $(ROOT)/deps
 CORE_DIR = $(ROOT)/core
@@ -10,8 +10,8 @@ KZ_VSCODE = $(ROOT)/kazoo.code-workspace
 KZ_VSCODE_DEBUGGER = $(ROOT)/.vscode/launch.json
 
 ERLANG_MK = $(ROOT)/erlang.mk
-ERLANG_MK_COMMIT = 89f2eca925b3f19b2409f9d0e71cf8108e5bd5eb
 DOT_ERLANG_MK = $(ROOT)/.erlang.mk
+MORE_APPS_MK = $(ROOT)/make/more_apps.mk
 
 ## If you use SSH keys instead
 ## FETCH_AS = git@github.com:
@@ -51,12 +51,14 @@ STATUS = $($(ROOT)/scripts/check-git-status.bash $(ROOT) $(CORE_DIR) $(APPS))
 
 CHANGED_SWAGGER ?= $(shell $(ROOT)/kgit -kapps crossbar git --no-pager diff --name-only HEAD $(BASE_BRANCH) -- priv/api/swagger.json)
 CHANGED_ERL=$(filter %.hrl %.erl %.escript,$(CHANGED))
+CHANGED_APPS=$(filter $(APPS_DIR)%,$(CHANGED_ERL))
 CHANGED_JSON=$(filter %.json,$(CHANGED))
 CHANGED_YML=$(filter %.yml,$(CHANGED))
 CHANGED_DOCS=$(filter %.md,$(CHANGED))
 
 PRINTABLE_CHANGED=$(subst $(ROOT),,$(CHANGED))
 PRINTABLE_ERL=$(subst $(ROOT),,$(CHANGED_ERL))
+PRINTABLE_APPS=$(sort $(foreach app,$(CHANGED_APPS),$(firstword $(subst /, ,$(subst $(APPS_DIR)/,,$(app))))))
 PRINTABLE_JSON=$(subst $(ROOT),,$(CHANGED_JSON))
 PRINTABLE_YML=$(subst $(ROOT),,$(CHANGED_YML))
 PRINTABLE_DOCS=$(subst $(ROOT),,$(CHANGED_DOCS))
@@ -65,6 +67,7 @@ PRINTABLE_DOCS=$(subst $(ROOT),,$(CHANGED_DOCS))
 export CHANGED
 export CHANGED_SWAGGER
 export CHANGED_ERL
+export CHANGED_APPS
 export CHANGED_JSON
 export CHANGED_YML
 export CHANGED_DOCS
@@ -81,19 +84,37 @@ all: prerequisites compile
 changed:
 	@$(ROOT)/scripts/pretty-print-files.bash "changed:" $(PRINTABLE_CHANGED)
 	@$(ROOT)/scripts/pretty-print-files.bash "changed ERL:" $(PRINTABLE_ERL)
+	@$(ROOT)/scripts/pretty-print-files.bash "changed APPS:" $(PRINTABLE_APPS)
 	@$(ROOT)/scripts/pretty-print-files.bash "changed JSON:" $(PRINTABLE_JSON)
 	@$(ROOT)/scripts/pretty-print-files.bash "changed YML:" $(PRINTABLE_YML)
 	@$(ROOT)/scripts/pretty-print-files.bash "changed docs:" $(PRINTABLE_DOCS)
 
+.PHONY: unstaged
 unstaged:
 	$(ROOT)/scripts/check-unstaged.bash
+
+.PHONY: untracked untracked-list
+untracked:
+	$(ROOT)/scripts/check-git-diff-untracked.bash "$(ROOT)" "$(ROOT)/core" "$(ROOT)/applications/*"
+
+untracked-list:
+	$(ROOT)/scripts/check-git-diff-untracked.bash -l "$(ROOT)" "$(ROOT)/core" "$(ROOT)/applications/*"
 
 .PHONY: changed_swagger
 changed_swagger:
 	@echo "$(CHANGED_SWAGGER)"
 
 .PHONY: prerequisites
-prerequisites: make-dependency-check
+prerequisites: make-dependency-check rebar
+
+REBAR=$(ROOT)/.rebar/rebar
+
+.PHONY: rebar
+rebar: $(REBAR)
+
+$(REBAR):
+	curl https://github.com/2600hz/erlang-rebar/wiki/rebar --create-dirs --location -o $(REBAR)
+	chmod +x $(REBAR)
 
 .PHONY: make-dependency-check
 make-dependency-check:
@@ -117,15 +138,13 @@ sparkly-clean: stop-if-changed clean-kazoo clean-release clean-deps clean-tags
 
 .PHONY: stop-if-changed
 stop-if-changed:
-	@[ -z "$(CHANGED)" ] && exit 0 || `echo Unstaged changes make this unsage && exit 1`
+	@[ -z "$(CHANGED)" ] || (echo "Unstaged changes make this unsafe" && exit 1)
 
 .PHONY: clean-kazoo
 clean-kazoo: stop-if-changed
-	@$(ls -d $(APPS_DIR)/* | xargs rm -rf)
-	@$(rm -rf $(CORE_DIR))
-	@$(if $(wildcard $(CORE_HASH_FILE)), rm -rf $(CORE_HASH_FILE))
-	@$(if $(wildcard $(APPS_HASH_FILE)), rm -rf $(APPS_HASH_FILE))
-	@$(if $(wildcard $(APP_URLS_HASH_FILE)), rm -rf $(APP_URLS_HASH_FILE))
+	@rm -rf $(APPS_DIR)/*
+	@rm -rf $(CORE_DIR)
+	@rm -f $(ROOT)/make/.{app_urls,apps,core}.mk.*
 
 .PHONY: clean
 clean: clean-core clean-apps
@@ -137,9 +156,18 @@ clean: clean-core clean-apps
 clean-core:
 	@$(if $(wildcard $(CORE_DIR)),ROOT=$(ROOT) $(MAKE) -j$(CLEAN_JOBS) -C $(CORE_DIR) clean)
 
+.PHONY: clean-core-hash
+clean-core-hash:
+	$(if $(wildcard $(ROOT)/make/.core.mk.*), rm $(ROOT)/make/.core.mk.*)
+
 .PHONY: clean-apps
 clean-apps:
 	@$(if $(wildcard $(APPS_DIR)/Makefile),ROOT=$(ROOT) $(MAKE) -j$(CLEAN_JOBS) -C $(APPS_DIR) clean)
+
+.PHONY: clean-apps-hash
+clean-apps-hash:
+	$(if $(wildcard $(ROOT)/make/.apps.mk.*), rm $(ROOT)/make/.apps.mk.*)
+	rm -f $(ROOT)/make/.rebar.config.script.*
 
 .PHONY: clean-deps
 clean-deps: clean-deps-hash
@@ -150,16 +178,16 @@ clean-deps: clean-deps-hash
 
 .PHONY: clean-deps-hash
 clean-deps-hash:
-	$(if $(wildcard $(ROOT)/make/.deps.mk.*), rm $(ROOT)/make/.deps.mk.*)
+	@rm -f $(ROOT)/make/.deps.mk.*
 
-.PHONY=dot_erlang_mk
+.PHONY: dot_erlang_mk
 dot_erlang_mk: $(DOT_ERLANG_MK)
 
 $(DOT_ERLANG_MK): $(ERLANG_MK)
-	@ERLANG_MK_COMMIT=$(ERLANG_MK_COMMIT) $(MAKE) -f $(ERLANG_MK) erlang.mk
+	@$(MAKE) -f $(ERLANG_MK) erlang.mk
 
 $(ERLANG_MK):
-	@wget 'https://raw.githubusercontent.com/ninenines/erlang.mk/2018.03.01/erlang.mk' -O $(ERLANG_MK)
+	@wget 'https://raw.githubusercontent.com/2600hz/erlang.mk/master/erlang.mk' -O $(ERLANG_MK)
 
 .PHONY: deps
 deps: $(DEPS_HASH_FILE)
@@ -168,11 +196,11 @@ $(DEPS_HASH_FILE):
 	@$(MAKE) clean-deps
 	@$(MAKE) $(DEPS_DIR)/Makefile
 	@ROOT=$(ROOT) $(MAKE) -C $(DEPS_DIR)/ all
-	touch $(DEPS_HASH_FILE)
+	@touch $(DEPS_HASH_FILE)
 
 $(DEPS_DIR)/Makefile: $(DOT_ERLANG_MK) $(DEPS_DIR) clean-plt
+	@cp $(ROOT)/make/Makefile.deps $(DEPS_DIR)/Makefile
 	@$(MAKE) -f $(ERLANG_MK) deps
-	cp $(ROOT)/make/Makefile.deps $(DEPS_DIR)/Makefile
 
 $(DEPS_DIR):
 	@mkdir -p $(DEPS_DIR)
@@ -187,13 +215,14 @@ core: deps fetch-core
 
 # Target: fetch-core
 # Alias for $(CORE_DIR)Makefile to fetch the core apps
+.PHONY: fetch-core
 fetch-core: $(CORE_HASH_FILE) $(CORE_DIR)/Makefile
 
 # Target: core hash file
 # 1. Make sure erlang.mk is setup
 # 2. Make sure core/Makefile exists
 # Once satisfied, create the core hash file
-$(CORE_HASH_FILE): $(CORE_DIR)/Makefile
+$(CORE_HASH_FILE): clean-core-hash $(CORE_DIR)/Makefile
 	@touch $(CORE_HASH_FILE)
 
 # Target: core/Makefile
@@ -211,21 +240,22 @@ $(CORE_DIR)/Makefile: $(DOT_ERLANG_MK)
 apps: core fetch-apps
 	@ROOT=$(ROOT) $(MAKE) -j$(JOBS) -C $(APPS_DIR) all
 
+.PHONY: fetch-apps
 fetch-apps: $(APPS_HASH_FILE) $(APP_URLS_HASH_FILE) $(APPS_DIR)/Makefile
 	@NO_AUTOPATCH_ERLANG_MK=1 ROOT=$(ROOT) $(MAKE) -f $(ROOT)/make/Makefile.apps -C $(APPS_DIR) fetch-deps
 
 # Target: apps hash file
 # 1. Make sure elrang.mk is setup
 # Once satisfied, create the applications directory and the apps hash file
-$(APPS_HASH_FILE): $(DOT_ERLANG_MK) make/more_apps.mk
+$(APPS_HASH_FILE): clean-apps-hash $(DOT_ERLANG_MK) $(MORE_APPS_MK)
 	@touch $(APPS_HASH_FILE)
 
 $(APP_URLS_HASH_FILE):
 	@touch $(APP_URLS_HASH_FILE)
 
 # Bootstrap more_apps.mk with kazoo_properly and kazoo_ast
-make/more_apps.mk:
-	@cp make/more_apps.mk.default make/more_apps.mk
+$(MORE_APPS_MK):
+	@cp $(MORE_APPS_MK).default $(MORE_APPS_MK)
 
 .PHONY: apps-makefile
 apps-makefile: $(APPS_DIR)/Makefile
@@ -282,7 +312,8 @@ bump-license:
 
 .PHONY: app_applications
 app_applications:
-	ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(ROOT)/scripts/apps_of_app.escript -a $(shell find $(APPS_DIR) -name *.app.src)
+app_applications:
+	ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(ROOT)/scripts/apps_of_app.escript -a $(PRINTABLE_APPS)
 
 .PHONY: code_checks
 code_checks: bump-changed-copyright bump-changed-license edoc splchk-common
@@ -295,7 +326,7 @@ code_checks: bump-changed-copyright bump-changed-license edoc splchk-common
 	@printf "\n:: Check for Kazoo document accessors\n\n"
 	@$(ROOT)/scripts/kzd_module_check.bash
 	@printf "\n:: Check for proper log message usage\n\n"
-	@$(ROOT)/scripts/check-loglines.bash
+	@$(ROOT)/scripts/check-loglines.bash $(CHANGED_ERL)
 	@printf "\n:: Check for Erlang 21 new stacktrace syntax\n\n"
 	@$(ROOT)/scripts/check-stacktrace.py $(CHANGED_ERL)
 
@@ -326,19 +357,30 @@ check_stacktrace:
 ## Adding this format couchdb view target to circleci steps for every app is painful
 ## also this formatting is better to be done before validate-js ci step to make sure
 ## the view is still in correct shape
-apis: schemas
-	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(ROOT)/scripts/generate-api-endpoints.escript
+apis: schemas api_endpoints kzd_builder
 	@$(ROOT)/scripts/generate-doc-schemas.py `egrep -rl '(#+) Schema' core/ applications/ | grep -v '.[h|e]rl'`
 	@$(ROOT)/scripts/format-json.py $(APPS_DIR)/crossbar/priv/api/swagger.json
 	@$(ROOT)/scripts/format-json.py $(shell find $(APPS_DIR) $(CORE_DIR) -wholename '*/api/*.json')
-	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(ROOT)/scripts/generate-kzd-builders.escript
 	@$(ROOT)/scripts/format-couchdb-views.py $(shell find $(CORE_DIR)/kazoo_apps/priv/couchdb/account -name '*.json')
 	@$(ROOT)/scripts/format-couchdb-views.py $(shell find $(APPS_DIR) $(CORE_DIR) -wholename '*/couchdb/views/*.json')
+
+.PHONY: json
+json:
+	@$(ROOT)/scripts/format-json.py $(APPS_DIR)/crossbar/priv/api/swagger.json
+	@$(ROOT)/scripts/format-json.py $(shell find $(APPS_DIR) $(CORE_DIR) -wholename '*/api/*.json')
+
+.PHONY: kzd_builder
+kzd_builder:
+	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(ROOT)/scripts/generate-kzd-builders.escript
 
 .PHONY: schemas
 schemas: $(KAST)
 	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(ROOT)/scripts/generate-schemas.escript $(CHANGED_ERL)
 	@$(ROOT)/scripts/format-json.py $(shell find $(APPS_DIR) $(CORE_DIR) -wholename '*/schemas/*.json')
+
+.PHONY: api_endpoints
+api_endpoints:
+	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(ROOT)/scripts/generate-api-endpoints.escript
 
 $(KAST):
 	@DEPS=ast ROOT=$(ROOT) $(MAKE) -f $(ROOT)/make/Makefile.apps -C $(APPS_DIR)

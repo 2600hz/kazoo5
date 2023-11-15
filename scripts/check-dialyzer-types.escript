@@ -128,10 +128,15 @@ filter_non_erlang(File, Paths, 'true', 'false', 'false') ->
     [File | Paths];
 filter_non_erlang(File, Paths, 'false', 'true', 'false') ->
     %% add beam
-    [File | Paths];
+    case filelib:is_regular(File) of
+        'true' -> [File | Paths];
+        'false' ->
+            io:format("failed to find ~s~n", [File]),
+            Paths
+    end;
 filter_non_erlang(File, Paths, 'false', 'false', 'true') ->
     %% add .erl
-    [to_beam(File) | Paths];
+    filter_non_erlang(to_beam(File), Paths, 'false', 'true', 'false');
 filter_non_erlang(_File, Paths, _, _, _) -> Paths.
 
 to_beam(Erl) ->

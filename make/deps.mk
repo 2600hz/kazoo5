@@ -41,8 +41,6 @@ DEPS ?= amqp_client \
 	fcm \
 	hep
 
-IGNORE_DEPS = hamcrest
-
 ifeq ($(CIRCLECI),true)
     DEPS += coveralls
     dep_coveralls = git https://github.com/markusn/coveralls-erl 1.4.0
@@ -65,7 +63,7 @@ dep_esaml = git https://github.com/2600hz/erlang-esaml.git master
 #Based off latest commit on 'show' branch: "fix fetch, all, stream, show and view ddoc types"
 dep_couchbeam = git https://github.com/2600hz/erlang-couchbeam 2d29971cbb4da822da9bc14113e3045bc1e08c6e
 
-dep_cowboy = git https://github.com/2600hz/erlang-cowboy 2.8.0
+dep_cowboy = git https://github.com/2600hz/erlang-cowboy 2600hz
 
 dep_eflame = git https://github.com/slfritchie/eflame 7b0bb1a7e8c8482a59421a3a50ae69d49af59d52
 # used by kz_tracers
@@ -82,7 +80,7 @@ dep_erlang_localtime = git https://github.com/2600hz/erlang-localtime 2600hz
 dep_erlazure = git https://github.com/2600hz/erlang-erlazure.git 88e0417251983ab4d8a2a2606c732906eecd5007
 # used by kazoo_attachments, merged in lazedo/erlazure add-start-link changes
 
-dep_erlcloud = git https://github.com/2600hz/erlang-erlcloud 3.2.7
+dep_erlcloud = git https://github.com/2600hz/erlang-erlcloud 3.5.16
 # used by kazoo_attachments and a crossbar test (cb_storage_tests)
 
 dep_ersip = git https://github.com/2600hz/erlang-ersip master

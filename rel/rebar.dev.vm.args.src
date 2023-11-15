@@ -4,14 +4,15 @@
 -boot start_sasl
 
 -kernel inet_dist_listen_min 11500 inet_dist_listen_max 11999
--kernel inet_dist_use_interface {127,0,0,1}
+# sorry Luis I need my inet_dist interface accessible over remote host :)
+# -kernel inet_dist_use_interface {127,0,0,1}
 -kernel start_pg true
 
 # Use kernel poll functionality if supported by emulator
 +K true
 
 # Start a pool of asynchronous IO threads
-+A 100
++A 10
 
 # Treat error_logger:warning_msg/2 as warnings instead of errors (default)
 +W w
@@ -29,3 +30,7 @@
 -env ERL_CRASH_DUMP_NICE 1
 
 -s kazoo_apps_app
+-s reloader
+
+-name ${KAZOO_NODE:-kazoo_apps}
+-setcookie ${KAZOO_COOKIE:-change_me}

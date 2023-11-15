@@ -81,7 +81,9 @@ APPS_MK = $(CURDIR)/apps.mk
 DEPS_DIR = $(ROOT)/deps
 CORE_DIR = $(ROOT)/core
 APPS_DIR = $(ROOT)/applications
+SCRIPTS_DIR = $(ROOT)/scripts
 DOT_ERLANG_MK = $(ROOT)/.erlang.mk
+INTEGRATIONS = $(CWD)/priv/integrations.config
 
 APPS_LIST = $(file < $(APPS_MK))
 APP_DIRS = $(foreach APP,$(APPS_LIST),$(wildcard $(ROOT)/applications/$(APP)))
@@ -193,7 +195,7 @@ ebin/%.beam: src/*/%.erl
 	ERL_LIBS=$(ELIBS) erlc -v $(ERLC_OPTS) $(PA) $(APPS_PA) -o ebin/ $<
 
 ebin/%.beam: test/%.erl
-	ERL_LIBS=$(ELIBS) erlc -v $(filter-out +warn_missing_spec,$(ERLC_OPTS)) $(PA) $(APPS_PA) -o ebin/ $<
+	ERL_LIBS=$(ELIBS) erlc -v $(ERLC_OPTS) $(PA) $(APPS_PA) -o ebin/ $<
 
 .PHONY: depend
 depend: $(DEPS_RULES) $(TEST_DEPS)
@@ -204,7 +206,7 @@ $(DEPS_RULES):
 
 .PHONY: app_src
 app_src:
-	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(ROOT)/scripts/apps_of_app.escript -a $(APPS_DIR)/$(PROJECT)/src/$(PROJECT).app.src
+	@ERL_LIBS=$(ELIBS) $(ROOT)/scripts/apps_of_app.escript -a $(APPS_DIR)/$(PROJECT)/src/$(PROJECT).app.src
 
 .PHONY: json
 json: JSON = $(shell find $(CWD) -name '*.json')
@@ -212,13 +214,13 @@ json:
 	@$(ROOT)/scripts/format-json.py $(JSON)
 
 .PHONY: compile-test compile-test-direct
-compile-test: deps $(TEST_DEPS) compile-test-kz-deps compile-test-direct json $(TEST_BEAMS)
+compile-test: deps $(TEST_DEPS) compile-test-kz-deps compile-test-direct json
 
-compile-test-direct: ERLC_OPTS += -DTEST
+compile-test-direct: ERLC_OPTS := -DTEST $(filter-out +warn_missing_spec,$(ERLC_OPTS))
 compile-test-direct: deps apps-test $(COMPILE_MOAR) test/$(PROJECT).app $(TEST_BEAMS)
 
 $(TEST_DEPS):
-	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(ROOT)/scripts/calculate-dep-targets.escript $(ROOT) $(PROJECT) > $(TEST_DEPS)
+	@ERL_LIBS=$(ELIBS) $(ROOT)/scripts/calculate-dep-targets.escript $(ROOT) $(PROJECT) > $(TEST_DEPS)
 
 ifeq ($(wildcard $(TEST_DEPS)),)
 KZ_DEPS_TARGETS =
@@ -240,7 +242,7 @@ endif
 test/$(PROJECT).app:
 	@mkdir -p test/
 	@mkdir -p ebin/
-	ERL_LIBS=$(ELIBS) erlc -v +nowarn_missing_spec  $(filter-out +warn_missing_specs,$(ERLC_OPTS)) $(TEST_PA) $(APPS_PA) -o ebin/ $(TEST_SOURCES)
+	ERL_LIBS=$(ELIBS) erlc -v +nowarn_missing_spec $(filter-out +warn_missing_specs,$(ERLC_OPTS)) $(TEST_PA) $(APPS_PA) -o ebin/ $(TEST_SOURCES)
 
 	@sed "s/{modules,[[:space:]]*\[\]}/{modules,\[$(TEST_MODULES)\]}/" src/$(PROJECT).app.src > $@
 	@sed "s/{modules,[[:space:]]*\[\]}/{modules,\[$(TEST_MODULES)\]}/" src/$(PROJECT).app.src > ebin/$(PROJECT).app
@@ -296,7 +298,10 @@ $(ROOT)/make/core.mk:
 proper: compile-proper eunit-run
 
 compile-proper: ERLC_OPTS += -DPROPER
-compile-proper: clean-test compile-test
+compile-proper: clean-test compile-test-direct
+
+compile-perf: ERLC_OPTS += -pa $(DEPS_DIR)/horse/ebin -DPERF +'{parse_transform, horse_autoexport}'
+compile-perf: clean-test compile-test-direct
 
 PLT ?= $(ROOT)/.kazoo.plt
 $(PLT):
@@ -306,19 +311,19 @@ $(PLT):
 dialyze: TO_DIALYZE ?= $(abspath ebin)
 dialyze: $(PLT)
 	@echo ":: dialyzing"
-	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(ROOT)/scripts/check-dialyzer.escript $(PLT) $(TO_DIALYZE)
+	@ERL_LIBS=$(ELIBS) $(ROOT)/scripts/check-dialyzer.escript $(PLT) $(TO_DIALYZE)
 
 dialyze-hard: TO_DIALYZE ?= $(abspath ebin)
 dialyze-hard: $(PLT)
 	@echo ":: dialyzing"
-	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(ROOT)/scripts/check-dialyzer.escript $(PLT) --hard $(TO_DIALYZE)
+	@ERL_LIBS=$(ELIBS) $(ROOT)/scripts/check-dialyzer.escript $(PLT) --hard $(TO_DIALYZE)
 
 dialyze-types: TO_DIALYZE ?= $(abspath ebin)
 dialyze-types: $(PLT)
 	@echo ":: dialyzing types"
-	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(ROOT)/scripts/check-dialyzer-types.escript $(PLT) $(TO_DIALYZE)
+	@ERL_LIBS=$(ELIBS) $(ROOT)/scripts/check-dialyzer-types.escript $(PLT) $(TO_DIALYZE)
 
-REBAR=$(DEPS_DIR)/.erlang.mk/rebar/rebar
+REBAR=$(ROOT)/.rebar/rebar
 
 .PHONY: xref fmt perf fixture_shell
 xref: compile
@@ -328,30 +333,33 @@ xref:
 
 fmt: TO_FMT ?= $(shell find src include test -iname '*.erl' -or -iname '*.hrl' -or -iname '*.escript')
 
-perf: ERLC_OPTS += -pa $(DEPS_DIR)/horse/ebin -DPERF +'{parse_transform, horse_autoexport}'
-perf: compile-test
+perf: compile-perf
 	$(gen_verbose) @ERL_LIBS=$(ELIBS) erl -noshell  -pa $(DEPS_DIR)/horse/ebin -pa $(TEST_PA) \
 		-eval 'horse:app_perf($(PROJECT)), init:stop().'
 
+perf.%: compile-perf
+	$(gen_verbose) @ERL_LIBS=$(ELIBS) erl -noshell  -pa $(DEPS_DIR)/horse/ebin -pa $(TEST_PA) \
+		-eval "horse:mod_perf($*), init:stop()."
+
 fixture_shell: ERL_CRASH_DUMP = "$(ROOT)/$(shell date +%s)_ecallmgr_erl_crash.dump"
-fixture_shell: ERL_LIBS = "$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR):$(shell echo $(DEPS_DIR)/rabbitmq_erlang_client-*/deps)"
+fixture_shell: ERL_LIBS = "$(ELIBS):$(shell echo $(DEPS_DIR)/rabbitmq_erlang_client-*/deps)"
 fixture_shell: NODE_NAME ?= fixturedb
 fixture_shell:
 	@ERL_CRASH_DUMP="$(ERL_CRASH_DUMP)" ERL_LIBS="$(ERL_LIBS)" KAZOO_CONFIG=$(ROOT)/rel/config-test.ini \
 		erl -setcookie change_me -name '$(NODE_NAME)' -s reloader "$$@"
 
 .PHONY: code_checks apps_of_app
-code_checks: edoc
+code_checks: edoc $(INTEGRATIONS)
 	@printf ":: Check for copyright year\n\n"
 	@$(ROOT)/scripts/bump-copyright-year.py $(SOURCES)
 	@printf "\n:: Check code\n\n"
 	@$(ROOT)/scripts/code_checks.bash $(SOURCES)
 	@printf "\n:: Check for raw JSON usage\n\n"
-	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(ROOT)/scripts/no_raw_json.escript $(SOURCES)
+	@ERL_LIBS=$(ELIBS) $(ROOT)/scripts/no_raw_json.escript $(SOURCES)
 	@printf "\n:: Check for Erlang 21 new stacktrace syntax\n\n"
 	@$(ROOT)/scripts/check-stacktrace.py $(SOURCES)
 	@printf "\n:: Generating schemas\n\n"
-	ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(ROOT)/scripts/generate-schemas.escript $(SOURCES)
+	ERL_LIBS=$(ELIBS) $(ROOT)/scripts/generate-schemas.escript $(SOURCES)
 
 .PHONY: edoc
 edoc:
@@ -360,11 +368,23 @@ edoc:
 	@CHANGED="$(SOURCES_FULL_PATH)" $(ROOT)/scripts/state-of-edoc.escript
 
 DOCS_INDEX ?= doc/dev.yml
-docs_index:
+docs_index: pr_template
 	@ERL_LIBS="$(DEPS_DIR):$(CORE_DIR)" $(ROOT)/scripts/build-application-doc-index.escript $(ROOT) $(CURDIR)
 
-$(DOCS_INDEX):
+$(DOCS_INDEX): pr_template
 	@ERL_LIBS="$(DEPS_DIR):$(CORE_DIR)" $(ROOT)/scripts/build-application-doc-index.escript $(ROOT) $(CURDIR)
+
+PR_TEMPLATE = .github/pull_request_template.md
+
+.PHONY: pr_template clean_pr_template
+pr_template: clean_pr_template $(PR_TEMPLATE)
+
+clean_pr_template:
+	@rm -f $(PR_TEMPLATE)
+
+$(PR_TEMPLATE):
+	@mkdir -p $(dir $(PR_TEMPLATE))
+	@cp -a $(ROOT)/make/pull_request_template.md $(PR_TEMPLATE)
 
 hank:
 	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(ROOT)/scripts/hank.escript $(wildcard src/*.[h|e]rl) $(wildcard src/*/*.[h|e]rl) $(wildcard include/*.hrl)
@@ -376,6 +396,13 @@ elvis: $(CORE_DIR)/kazoo_stdlib/ebin/kz_style.beam
 	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(ROOT)/elvis --config $(ROOT)/make/elvis.config -k --parallel auto rock $(subst $(ROOT)/,,$(filter %.erl,$(wildcard $(TEST_SOURCES))))
 
 splchk-all: $(addsuffix .common,$(basename $(SOURCES)) $(basename $(JSON)) $(basename $(DOCS_INDEX)) $(basename $(DOCS)) )
+
+.PHONY: integrations
+integrations:
+	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(SCRIPTS_DIR)/check-integrations.escript $(INTEGRATIONS) $(BEAMS)
+
+$(INTEGRATIONS):
+	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(SCRIPTS_DIR)/check-integrations.escript $(INTEGRATIONS) $(BEAMS)
 
 include $(ROOT)/make/splchk.mk
 include $(ROOT)/make/fmt.mk

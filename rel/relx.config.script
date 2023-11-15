@@ -6,7 +6,7 @@ VSN = case os:getenv("KZ_VERSION") of
 
 ToName = fun (App) -> list_to_atom(hd(string:tokens(App,"-"))) end,
 
-Apps = [list_to_atom(App)  || "applications/"++App = Dir <- filelib:wildcard("applications/*"), filelib:is_dir(Dir)],
+Apps = [list_to_atom(App)  || "applications/"++App = Dir <- filelib:wildcard("applications/*"), filelib:is_dir(Dir), filelib:is_dir(filename:join([Dir, "ebin"]))],
 Core = [list_to_atom(App)  ||         "core/"++App = Dir <- filelib:wildcard(        "core/*"), filelib:is_dir(Dir)],
 Deps = [list_to_atom(App)  ||         "deps/"++App = Dir <- filelib:wildcard(        "deps/*"), filelib:is_dir(Dir)],
 
