@@ -22,7 +22,7 @@ main(Args) ->
                   ,fun kp_data_usage:to_schema_docs/0
                   ,{fun kapps_config_usage:to_schema_docs/1, Modules}
                   ,fun conference_schema_builder:to_schema/0
-                  ,fun kapi_schemas:to_schemas/0
+                  ,{fun kapi_schemas:to_schemas/1, Modules}
                   ,fun maintenance_docs:to_docs/0
                   ]
                  ).

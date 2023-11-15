@@ -39,7 +39,7 @@ clean-erlang-ls:
 .PHONY: kazoo-code-workspace
 kazoo-code-workspace: $(KZ_VSCODE) $(KZ_VSCODE_DEBUGGER)
 
-$(KZ_VSCODE):
+$(KZ_VSCODE): $(APPS_HASH_FILE)
 	@touch $(KZ_VSCODE)
 	@echo '{"folders": [' > $(KZ_VSCODE)
 	@for app in $(APPS) ; do echo "{ \"name\": \"kapp/$$(basename $${app})\", \"path\": \"applications/$$(basename $${app})\" }," >> $(KZ_VSCODE); done

@@ -182,6 +182,7 @@ skillful|skilfull
 speech|speach speeche
 spelled|spelt
 successful|succesful successfull sucessful
+successfully|sucessfully
 supersede|supercede
 sure|shure
 surprise|suprise surprize

@@ -3,6 +3,8 @@
 KAZOO_DICT = .aspell.en.pws
 KAZOO_REPL = .aspell.en.prepl
 
+ASPELL = aspell $(ASPELL_ARGS) --home-dir=$(ROOT) --personal=$(KAZOO_DICT) --repl=$(KAZOO_REPL) --lang=en -x check
+
 $(ROOT)/$(KAZOO_DICT):
 	@$(file >$(ROOT)/$(KAZOO_DICT),personal_ws-1.1 en 0 utf-8)
 
@@ -17,29 +19,29 @@ ifeq ($(wildcard $(CURDIR)/doc/*.md),)
 splchk-docs:: splchk-init
 else
 DOCS := $(shell find doc -type f -name "*.md" -o -regex "doc/mkdocs/.+" -prune)
-splchk-docs:: splchk-init $(addsuffix .chk,$(basename $(DOCS)))
+splchk-docs:: splchk-init $(addsuffix .chk,$(DOCS))
 endif
 
 ifneq ($(wildcard $(CURDIR)/priv/templates/*),)
 TEMPLATES := $(shell find $(CURDIR)/priv/templates -type f)
-splchk-docs:: splchk-init $(addsuffix .chk,$(basename $(TEMPLATES)))
+splchk-docs:: splchk-init $(addsuffix .chk,$(TEMPLATES))
 endif
 
 ifneq ($(wildcard $(CURDIR)/test/rendered-templates/*),)
 RENDERED_TEMPLATES := $(shell find $(CURDIR)/test/rendered-templates -type f)
-splchk-docs:: splchk-init $(addsuffix .chk,$(basename $(RENDERED_TEMPLATES)))
+splchk-docs:: splchk-init $(addsuffix .chk,$(RENDERED_TEMPLATES))
 endif
 
 ifneq ($(wildcard $(CURDIR)/priv/*/templates/*),)
 TEMPLATES := $(shell find $(CURDIR)/priv/*/templates/ -type f)
-splchk-docs:: splchk-init $(addsuffix .chk,$(basename $(TEMPLATES)))
+splchk-docs:: splchk-init $(addsuffix .chk,$(TEMPLATES))
 endif
 
 JSON := $(wildcard $(CURDIR)/priv/couchdb/schemas/*.json)
 ifeq ($(JSON),)
 splchk-json: splchk-init
 else
-splchk-json: splchk-init $(addsuffix .chk,$(basename $(JSON)))
+splchk-json: splchk-init $(addsuffix .chk,$(JSON))
 endif
 
 ESCRIPTS := $(wildcard $(CURDIR)/scripts/*.escript)
@@ -48,71 +50,33 @@ CODE := $(SRC) $(ESCRIPTS)
 ifeq ($(CODE),)
 splchk-code: splchk-init
 else
-splchk-code: splchk-init $(addsuffix .chk,$(basename $(CODE)))
+splchk-code: splchk-init $(addsuffix .chk,$(CODE))
 endif
 
 .PHONY: splchk-changed
-splchk-changed: splchk-init $(addsuffix .chk,$(basename $(CHANGED)))
+splchk-changed: splchk-init $(addsuffix .chk,$(wildcard $(CHANGED)))
 
 .PHONY: splchk-common
-splchk-common: $(addsuffix .common,$(basename $(CHANGED_ERL)) $(basename $(CHANGED_JSON)) $(basename $(CHANGED_YML)) $(basename $(CHANGED_DOCS)))
+splchk-common: $(addsuffix .common,$(wildcard $(CHANGED_ERL) $(CHANGED_JSON) $(CHANGED_YML) $(CHANGED_DOCS)))
 
-%.common: %.mk
-	@$(ROOT)/scripts/check-spelling.bash $<
-%.common: %.md
-	@$(ROOT)/scripts/check-spelling.bash $<
-%.common: %.json
-	@$(ROOT)/scripts/check-spelling.bash $<
-%.common: %.text
-	@$(ROOT)/scripts/check-spelling.bash $<
-%.common: %.txt
-	@$(ROOT)/scripts/check-spelling.bash $<
-%.common: %.org
-	@$(ROOT)/scripts/check-spelling.bash $<
-%.common: %.tmpl
-	@$(ROOT)/scripts/check-spelling.bash $<
-%.common: %.erl
-	@$(ROOT)/scripts/check-spelling.bash $<
-%.common: %.escript
-	@$(ROOT)/scripts/check-spelling.bash $<
-%.common: %.hrl
-	@$(ROOT)/scripts/check-spelling.bash $<
-%.common: %.html
-	@$(ROOT)/scripts/check-spelling.bash $<
-%.common: %.py
-	@$(ROOT)/scripts/check-spelling.bash $<
-%.common: %.yml
+%.common: %
 	@$(ROOT)/scripts/check-spelling.bash $<
 
-%.chk: %.md
-	@aspell --home-dir=$(ROOT) --personal=$(KAZOO_DICT) --repl=$(KAZOO_REPL) --lang=en -x check $<
+%.chk: TO_CHK = $(basename $@)
 
-%.chk: %.json
-	@aspell --home-dir=$(ROOT) --personal=$(KAZOO_DICT) --repl=$(KAZOO_REPL) --lang=en -x check $<
+# Basic checks for these file types
+CHK_PATTERNS = $(foreach p,md json text txt org tmpl,%.$(p).chk)
+# Checks for Erlang types
+ERL_CHK_PATTERNS = $(foreach p,erl escript hrl,%.$(p).chk)
+# Checks for HTML
+HTML_CHK_PATTERNS = %.html.chk
 
-%.chk: %.text
-	@aspell --home-dir=$(ROOT) --personal=$(KAZOO_DICT) --repl=$(KAZOO_REPL) --lang=en -x check $<
+$(CHK_PATTERNS) $(ERL_CHK_PATTERNS) $(HTML_CHK_PATTERNS):
+	@$(ASPELL) $(TO_CHK)
 
-%.chk: %.txt
-	@aspell --home-dir=$(ROOT) --personal=$(KAZOO_DICT) --repl=$(KAZOO_REPL) --lang=en -x check $<
+$(ERL_CHK_PATTERNS): ASPELL_ARGS += --add-filter-path=$(ROOT) --mode=erlang
+$(HTML_CHK_PATTERNS): ASPELL_ARGS += --add-filter-path=$(ROOT) --mode=html
 
-%.chk: %.org
-	@aspell --home-dir=$(ROOT) --personal=$(KAZOO_DICT) --repl=$(KAZOO_REPL) --lang=en -x check $<
-
-%.chk: %.tmpl
-	@aspell --home-dir=$(ROOT) --personal=$(KAZOO_DICT) --repl=$(KAZOO_REPL) --lang=en -x check $<
-
-%.chk: %.erl
-	@aspell --add-filter-path=$(ROOT) --mode=erlang --home-dir=$(ROOT) --personal=$(KAZOO_DICT) --repl=$(KAZOO_REPL) --lang=en -x check $<
-
-%.chk: %.escript
-	@aspell --add-filter-path=$(ROOT) --mode=erlang --home-dir=$(ROOT) --personal=$(KAZOO_DICT) --repl=$(KAZOO_REPL) --lang=en -x check $<
-
-%.chk: %.hrl
-	@aspell --add-filter-path=$(ROOT) --mode=erlang --home-dir=$(ROOT) --personal=$(KAZOO_DICT) --repl=$(KAZOO_REPL) --lang=en -x check $<
-
-%.chk: %.html
-	@aspell --add-filter-path=$(ROOT) --mode=html --home-dir=$(ROOT) --personal=$(KAZOO_DICT) --repl=$(KAZOO_REPL) --lang=en -x check $<
-
-%.chk: Makefile
-	@aspell --add-filter-path=$(ROOT) --mode=erlang --home-dir=$(ROOT) --personal=$(KAZOO_DICT) --repl=$(KAZOO_REPL) --lang=en -x check $<
+Makefile.chk: ASPELL_ARGS += --add-filter-path=$(ROOT)
+Makefile.chk:
+	@$(ASPELL) $(TO_CHK)
