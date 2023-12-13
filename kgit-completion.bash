@@ -8,8 +8,11 @@ _kgit()
         # check if we're still completing our options
         case ${COMP_WORDS[$i]} in
             gh|git|hub)
-                offset=$((i+1))
                 offset=$i
+                break
+                ;;
+            cmd)
+                offset=$((i + 1))
                 break
                 ;;
         esac
@@ -35,17 +38,29 @@ _kgit()
         -A -all
         -kcore
         -kroot
-        -kchanged
-        -help
-        -q -qq
+        -origin
+        -not-changed-uncommitted
+        -not-changed-unpushed
+        -not-changed-base
+        -not-changed-latest
+        -not-changed
+        -only-changed-uncommitted
+        -only-changed-unpushed
+        -only-changed-base
+        -only-changed-latest
+        -only-changed
+        -show-changed
         -get-root
+        -h -help
+        -q -qq
         -exit-on-error
         gh
         git
-        hub"
+        hub
+        cmd"
 
         case "${prev}" in
-            -kapps)
+            -kapps|-exclude-apps)
                 if [ -d "applications" ]; then
                     COMPREPLY=( $(compgen -W "$(echo applications/*/ | sed -e 's/applications//g' -e 's|/||g')" -- "$cur") )
                 else
@@ -55,7 +70,7 @@ _kgit()
                 fi
                 return
                 ;;
-            -kzchanged)
+            -show-changed)
                 return
                 ;;
         esac

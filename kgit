@@ -3,23 +3,28 @@
 set -e
 
 _info() {
-    ( [ -n "$_silence" ] || [ -n "$_quiet" ] ) && return
-    printf "\e[1;36m${0##*/}:\e[1;37m $@ \e[00m\n"
+    { [ -n "$_silence" ] || [ -n "$_quiet" ]; } && return
+    printf "\e[1;36m%s:\e[1;37m %s \e[00m\n" "${0##*/}" "$@" >&2
 }
 
-_say() {
-    ( [ -n "$_silence" ] || [ -n "$_quiet" ] ) && return
-    printf "\e[1;36m${0##*/}:\e[1;37m $@ \e[00m\n"
+_silent_say() {
+    { [ -n "$_silence" ] || [ -n "$_quiet" ]; } && return
+    printf "\e[1;36m%s:\e[1;37m %s \e[00m\n" "${0##*/}" "$@" >&2
 }
 
 _error() {
     [ -n "$_silence" ] && return
-    printf "\e[1;36m${0##*/}:\e[1;31m error:\e[1;37m $@ \e[00m\n"
+    printf "\e[1;36m%s:\e[1;31m error:\e[1;37m %s \e[00m\n" "${0##*/}" "$@" >&2
 }
 
 _die () {
     _error "$@"
     exit 1
+}
+
+_say() {
+    { [ -n "$_silence" ] || [ -n "$_quiet" ]; } && return
+    printf "\e[1;36m%s:\e[1;37m %s \e[00m\n" "${0##*/}" "$@"
 }
 
 # macOS/BSD does not support readlink '-f' flag
@@ -51,7 +56,7 @@ is_kazoo_src() {
     fi
 }
 
-_script_dir="$(dirname $(another_readlink "$0"))"
+_script_dir="$(dirname "$(another_readlink "$0")")"
 if is_kazoo_src "$_script_dir/.."; then
     ROOT="$_script_dir/.."
 elif is_kazoo_src "$_script_dir"; then
@@ -95,6 +100,7 @@ Usage:
         git        Runs git command
         gh         Runs gh command (https://cli.github.com)
         hub        Runs hub command (https://github.com/github/hub)
+        cmd        Run arbitrary command
 
 Example:
 
@@ -102,6 +108,7 @@ Example:
 
 Options:
 
+# Filter directories by their type
     -kapps app_name[,app_name...]        add a comma separated list of Kazoo apps to working directories list
     -exclude-apps app_name[,app_name...] exclude a comma separated list of Kazoo apps from working directories list
                                              This takes precedence over -kapps, -a and -A.
@@ -110,14 +117,39 @@ Options:
     -a, --all-apps                       add all Kazoo apps to working directories list
     -A, -All                             add "core", all kazoo apps and kazoo source root directory to
                                              list of working directories. This option is default
-    -exit-on-error                       exit if command returns exit other than 0
-    -kchanged                            loop over working directories and prints the name of files which are
+
+# Skip directories that have changes
+
+ Skip option will override their "only run on directory" option below if both are specified
+
+    -not-changed-uncommitted             skip directories that have not committed changes (any staged or unstaged changes)
+    -not-changed-unpushed                skip directories that have not any diff between its branch HEAD and its origin (unpushed commits)
+    -not-changed-base                    skip directories that have not any diff with their base branch
+    -not-changed-latest                  skip directories that have not any diff with their branch latest tag
+                                             (if no tag, uses base branch)
+    -not-changed                         this skips any directories that have any changes or diff
+                                             either committed or unpushed commits or diff with base branch
+
+# Only run on directories that have changes
+    -only-changed-uncommitted            only run on directories that uncommitted changes (staged or unstaged)
+    -only-changed-unpushed               only run on directories that have diff between its branch HEAD and its origin (unpushed commits)
+    -only-changed-base                   only run on directories that have diff with their base branch
+    -only-changed-latest                 only run on directories that have diff with their latest tag
+                                             (if no tag, uses base branch)
+    -only-changed                        only run on directories that have any changes or diff
+                                             either committed or unpushed commits and/or diff with base branch
+
+# Useful utility commands
+    -get-root                            print path to Kazoo source directory and exit
+    -show-changed                        loop over working directories and prints the name of files which are
                                              different than "$BASE_BRANCH". "master" is the default BASE_BRANCH
                                          this does not run git/hub/gh commands
-    -get-root                            print path to Kazoo source directory and exit
+
+# Other Options
+    -exit-on-error                       exit if command returns exit other than 0 in a directory
     -q                                   be quiet, but still print error messages
     -qq                                  be more quiet, also do not print errors
-    -help                                shows help
+    -h, -help                                shows help
 END
 }
 
@@ -170,23 +202,51 @@ while [ $# -gt 0 ]; do
                 shift
             fi
             ;;
-        -m|-edit-message)
-            if [ -n "$2" ]; then
-                _message="$2"
-                shift
-            fi
+        # -m|-edit-message)
+        #     if [ -n "$2" ]; then
+        #         _message="$2"
+        #         shift
+        #     fi
+        #     ;;
+        -not-changed-uncommitted)
+            no_uncommitted_changes=true
             ;;
-        -on-changed)
-            on_changed=1
+        -not-changed-unpushed)
+            no_unpushed_changes=true
             ;;
-        -on-changed-header)
-            on_changed_head=1
+        -not-changed-base)
+            no_base_changes=true
             ;;
-        -kchanged)
+        -not-changed-latest)
+            no_latest_changes=true
+            ;;
+        -not-changed)
+            no_uncommitted_changes=true
+            no_unpushed_changes=true
+            no_base_changes=true
+            ;;
+        -only-changed-uncommitted)
+            only_uncommitted_changes=true
+            ;;
+        -only-changed-unpushed)
+            only_unpushed_changes=true
+            ;;
+        -only-changed-base)
+            only_base_changes=true
+            ;;
+        -only-changed-latest)
+            only_latest_changes=true
+            ;;
+        -only-changed)
+            only_uncommitted_changes=true
+            only_unpushed_changes=true
+            only_base_changes=true
+            ;;
+        -show-changed)
             _action="changed"
             # TODO: maybe read next args for diff-ing git branch A B
             # explicit end of options
-            explicit_opts_end=1
+            # explicit_opts_end=1
             shift
             break
             ;;
@@ -194,7 +254,7 @@ while [ $# -gt 0 ]; do
             echo -n "$ROOT"
             exit 0
             ;;
-        -help)
+        -h|-help)
             usage
             exit 0
             ;;
@@ -210,21 +270,33 @@ while [ $# -gt 0 ]; do
         gh)
             _action="gh"
             # explicit end of options
-            explicit_opts_end=1
+            # explicit_opts_end=1
             shift
             break
             ;;
         git)
             _action="git"
             # explicit end of options
-            explicit_opts_end=1
+            # explicit_opts_end=1
             shift
             break
             ;;
         hub)
             _action="hub"
             # explicit end of options
-            explicit_opts_end=1
+            # explicit_opts_end=1
+            shift
+            break
+            ;;
+        cmd)
+            if [ -n "$2" ]; then
+                _action="${2}"
+                shift
+            else
+                _die "No command was given"
+            fi
+            # explicit end of options
+            # explicit_opts_end=1
             shift
             break
             ;;
@@ -265,7 +337,7 @@ add_app_to_work_dir() {
     local path
     while [ $# -gt 0 ]; do
         path="$1"
-        if [[ ! " $_exclude_apps " =~  " ${path#applications/} " ]]; then
+        if [[ ! " $_exclude_apps " =~  ${path#applications/} ]]; then
             add_work_dir "$path"
         fi
         shift
@@ -295,7 +367,7 @@ parse_paths() {
         add_work_dir "."
     fi
 
-    _work_dirs="$(echo $_work_dirs | tr ' ' '\n' | sort -u | tr '\n' ' ')"
+    _work_dirs="$(echo "${_work_dirs}" | tr ' ' '\n' | sort -u | tr '\n' ' ')"
 }
 
 parse_paths
@@ -305,11 +377,11 @@ if [ -z "$_work_dirs" ]; then
 fi
 
 get_changed() {
-    local base_branch="${BASE_BRANCH:-$(<$ROOT/.base_branch)}"
-    [ -f $1/.base_branch ] && base_branch="${BASE_BRANCH:-$(<$1/.base_branch)}"
+    local base_branch="${BASE_BRANCH:-$(<"${ROOT}"/.base_branch)}"
+    [ -f "${1}"/.base_branch ] && base_branch="${BASE_BRANCH:-$(<"${1}"/.base_branch)}"
 
-    local diff=""
-    for file in $(git -C $1 --no-pager diff --name-only HEAD $base_branch); do
+    local diff
+    for file in $(git -C "${1}" --no-pager diff --name-only HEAD "${base_branch}"); do
         diff+=" $1/$file"
     done
     echo "$diff"
@@ -319,18 +391,33 @@ action_changed() {
     local changed=""
     local directory
     for directory in $_work_dirs; do
-        if [ -d $directory ]; then
-            changed+=" $(get_changed "$directory")"
+        if [ -d "${directory}" ]; then
+            changed+=" $(get_changed "${directory}")"
         fi
     done
 
     for FF in $changed; do
-        echo $FF
+        echo "${FF}"
     done
 }
 
 check_action() {
-    if [ -n "$_action" ] && [ -z "$(type "$_action" 2>/dev/null)" ]; then
+    case "${_action}" in
+        git)
+            ;;
+        gh)
+            ;;
+        hub)
+            ;;
+        *)
+            if [ -z "$_action" ]; then
+                _error "$_action command not found"
+                [ -n "$_silence" ] && exit 1
+            fi
+            return
+            ;;
+    esac
+    if [ -z "$(type "$_action" 2>/dev/null)" ]; then
         _error "$_action command not found"
         [ -n "$_silence" ] && exit 1
         echo >&2
@@ -347,50 +434,27 @@ check_action() {
         esac
         exit 1
     fi
-
-    if [ -z "$*" ]; then
-        $_action
-        exit 0
-    fi
 }
 
 run_git() {
     local ret=0
-    local base_branch="${BASE_BRANCH:-$(<$ROOT/.base_branch)}"
-    [ -f $1/.base_branch ] && base_branch="${BASE_BRANCH:-$(<$1/.base_branch)}"
-
-    local dir="$1"
+    local dir="${1}"
     shift
 
-    local command="$1"
+    local command="${1}"
     declare -A netops
     netops["fetch"]=1
     netops["push"]=1
     netops["pull"]=1
 
-    if [ -n "$on_changed" ]; then
-        if [ -n "$(git -C "$dir" status --short --untracked-files=no 2>&1)" ]; then
-            _error "Not running git, there are some changes: " >&2
-            git -C "$dir" status
-            return 1
-        fi
-    fi
-    if [ -n "$on_changed_head" ]; then
-        if [ -n "$(git -C "$dir" --no-pager diff --name-only HEAD $base_branch 2>&1)" ]; then
-            _error "Not running git, there are some changes: " >&2
-            git -C $1 --no-pager diff --name-only HEAD $base_branch
-            return 1
-        fi
-    fi
-
     git -C "$dir" "$@"
     ret=$?
 
     if [ $ret -ne 0 ]; then
-        if [[ 1 = ${netops[$command]} ]]; then
+        if [[ 1 = "${netops[$command]}" ]]; then
             if [ $_git_retries -lt $MAX_GIT_RETRIES ]; then
-                _say "Failed, retrying... ${_git_retries}/${MAX_GIT_RETRIES}"
-                let "_git_retries++"
+                _silent_say "Failed, retrying... ${_git_retries}/${MAX_GIT_RETRIES}"
+                ((_git_retries++))
                 run_git "$dir" "$@"
             else
                 echo "${MAX_GIT_RETRIES} retries performed and still failing, giving up on this one"
@@ -404,7 +468,7 @@ run_git() {
 
 loop_wait_gh() {
     local counter=1
-    if [[ "$@" =~ "pr create" ]] || [[ "$@" =~ "issue create" ]]; then
+    if [[ "${*}" =~ "pr create" ]] || [[ "${*}" =~ "issue create" ]]; then
         echo -n "Waiting 60s on stupid GitHub to avoid GraphQL limit on creation"
         while [ $counter -le 60 ]; do
             if [ $((counter % 5)) -eq 0 ]; then
@@ -419,11 +483,149 @@ loop_wait_gh() {
     fi
 }
 
+has_uncommitted_changes() {
+    local _git_status
+    _git_status="$(git -C "${1}" status --porcelain --short -uno)"
+    if [ -n "${_git_status}" ]; then
+        echo "has_changes"
+    fi
+}
+
+has_git_diff_changes() {
+    local _dir="${1}"
+    local _base="${2}"
+    local _changes
+    _changes="$(git -C "${_dir}" --no-pager diff --name-only "${_base}" HEAD 2>/dev/null)"
+    if [ -n "${_changes}" ]; then
+        echo "has_changes"
+    fi
+}
+
+has_git_diff_unpushed() {
+    local _branch
+    _branch="$(git -C "${1}" rev-parse --abbrev-ref HEAD 2>/dev/null)"
+    [ -z "${_branch}" ] && return
+
+    has_git_diff_changes "${1}" "origin/${_branch}"
+}
+
+has_git_diff_base() {
+    local base_branch="${BASE_BRANCH:-$(<"${ROOT}"/.base_branch)}"
+    [ -f "${1}"/.base_branch ] && base_branch="${BASE_BRANCH:-$(<"${1}"/.base_branch)}"
+    has_git_diff_changes "${1}" "${base_branch}"
+}
+
+has_git_diff_latest() {
+    local base_branch="${BASE_BRANCH:-$(<"${ROOT}"/.base_branch)}"
+    [ -f "${1}"/.base_branch ] && base_branch="${BASE_BRANCH:-$(<"${1}"/.base_branch)}"
+
+    local _latest_tag
+    _latest_tag="$(git -C "${1}" describe --tags 2>/dev/null | cut -d- -f 1)"
+    if [ -n "${_latest_tag}" ]; then
+        has_git_diff_changes "${1}" "${_latest_tag}"
+    else
+        has_git_diff_changes "${1}" "${base_branch}"
+    fi
+}
+
+# controls should we skip dir, true means true, non empty will indicate
+# maybe_should_skip condition is satisified and it can skip running next git command
+_should_skip=
+
+# will be used to check for only on options: uncommitted, unpushed, base
+_has_changes=
+set_should_skip() {
+    local _has_no="${1}"
+    local _has_only_on="${2}"
+    local _changes="${3}"
+
+    _has_changes="${_has_changes:-${_changes}}"
+
+    if [ -n "${_changes}" ]; then
+        if [ "${_has_no}" = "true" ]; then
+            _should_skip=true
+        elif [ "${_has_only_on}" = "true" ]; then
+            _should_skip=false
+        fi
+    else
+        if [ "${_has_no}" = "true" ]; then
+            _should_skip=
+        fi
+    fi
+}
+
+maybe_should_skip() {
+    local _dir="${1}"
+
+    # silly and dirty conditions to check whether we should skip the dir
+    #
+    # this tries to run git as minmimum as possible, worst case scenario is only_*
+    # options. for example if is uncommitted detects no change we need to run next git
+    # commands for unpushed, then base and latest. this runs git four times for each dir
+    # to check whether we should run the _action command or not which slow things a bit.
+    #
+    # no_* options are easy, if we find the first git command has change we can return
+    #
+    # _should_skip is check for no_* options
+    #
+    # set_should_skip will aggeragiates all changes from all git commands so
+    # we can check for only_* options here
+    #
+    # obviously I'm talking about when user is using -only-changed or -not-changed
+    # otherwise -only-changed-base or -not-changed-base are faster than those
+    # (we are talking about a few milliseconds (top 1second) here but if you notice the lag, you notice)
+    #
+    # please note that no_* options have priority over only_*, by it is not guaranties.
+    # if you want it then write a better code here /shrug
+    # otherwise don't mix no_* and only_* and expect magic
+
+    if [ -n "${no_uncommitted_changes}" ] || [ -n "${only_uncommitted_changes}" ]; then
+        set_should_skip "${no_uncommitted_changes}" "${only_uncommitted_changes}" "$(has_uncommitted_changes "${_dir}")"
+        [ -n "${_should_skip}" ] && return
+    fi
+    if [ -n "${no_unpushed_changes}" ] || [ -n "${only_unpushed_changes}" ]; then
+        set_should_skip "${no_unpushed_changes}" "${only_unpushed_changes}" "$(has_git_diff_unpushed "${_dir}")"
+        [ -n "${_should_skip}" ] && return
+    fi
+    if [ -n "${no_base_changes}" ] || [ -n "${only_base_changes}" ]; then
+        set_should_skip "${no_base_changes}" "${only_base_changes}" "$(has_git_diff_base "${_dir}")"
+        [ -n "${_should_skip}" ] && return
+    fi
+
+    # -only-changed only cares about the first three only_ options
+    if [ -z "${_has_changes}" ]; then
+        if [ -n "${only_uncommitted_changes}" ] || [ -n "${only_unpushed_changes}" ] || [ -n "${only_base_changes}" ]; then
+            _should_skip=true
+            return
+        fi
+    fi
+
+    if [ -n "${no_latest_changes}" ] || [ -n "${only_latest_changes}" ]; then
+        set_should_skip "${no_latest_changes}" "${only_latest_changes}" "$(has_git_diff_latest "${_dir}")"
+    fi
+
+    if [ -z "${_has_changes}" ]; then
+        if [ -n "${only_latest_changes}" ]; then
+            _should_skip=true
+        fi
+    fi
+}
+
 run_action() {
     local ret
     local loop_count=1
+
     check_action "$@"
+
     for dir in $_work_dirs; do
+        _should_skip=
+        _has_changes=
+
+        maybe_should_skip "${dir}"
+        if [ "${_should_skip}" = "true" ]; then
+            continue
+        fi
+
         _info "$dir"
 
         case "$_action" in
@@ -454,13 +656,7 @@ case "$_action" in
     changed)
         action_changed
         ;;
-    gh)
-        run_action "$@"
-        ;;
-    hub)
-        run_action "$@"
-        ;;
-    git)
+    *)
         run_action "$@"
         ;;
 esac
