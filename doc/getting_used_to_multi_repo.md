@@ -39,6 +39,7 @@ Usage:
         git        Runs git command
         gh         Runs gh command (https://cli.github.com)
         hub        Runs hub command (https://github.com/github/hub)
+        cmd        Run arbitrary command
 
 Example:
 
@@ -46,20 +47,48 @@ Example:
 
 Options:
 
-    -kapps app_name[,app_name...]    add a comma separated list of Kazoo apps to working directories list
-    -kcore                           add "core" directory to working directories list
-    -kroot                           add kazoo source root directory to working directories list
-    -a, --all-apps                   add all Kazoo apps to working directories list
-    -A, -All                         add "core", all kazoo apps and kazoo source root directory to
-                                         list of working directories. This option is default
-    -exit-on-error                   exit if command returns exit other than 0
-    -kchanged                        loop over working directories and prints the name of files which are
-                                         different than "$BASE_BRANCH". "master" is the default BASE_BRANCH
-                                     this does not run git/hub/gh commands
-    -get-root                        print path to Kazoo source directory and exit
-    -q                               be quiet, but still print error messages
-    -qq                              be more quiet, also do not print errors
-    -help                            shows help
+# Filter directories by their type
+    -kapps app_name[,app_name...]        add a comma separated list of Kazoo apps to working directories list
+    -exclude-apps app_name[,app_name...] exclude a comma separated list of Kazoo apps from working directories list
+                                             This takes precedence over -kapps, -a and -A.
+    -kcore                               add "core" directory to working directories list
+    -kroot                               add kazoo source root directory to working directories list
+    -a, --all-apps                       add all Kazoo apps to working directories list
+    -A, -All                             add "core", all kazoo apps and kazoo source root directory to
+                                             list of working directories. This option is default
+
+# Skip directories that have changes
+
+ Skip option will override their "only run on directory" option below if both are specified
+
+    -not-changed-uncommitted             skip directories that have not committed changes (any staged or unstaged changes)
+    -not-changed-unpushed                skip directories that have not any diff between its branch HEAD and its origin (unpushed commits)
+    -not-changed-base                    skip directories that have not any diff with their base branch
+    -not-changed-latest                  skip directories that have not any diff with their branch latest tag
+                                             (if no tag, uses base branch)
+    -not-changed                         this skips any directories that have any changes or diff
+                                             either committed or unpushed commits or diff with base branch
+
+# Only run on directories that have changes
+    -only-changed-uncommitted            only run on directories that uncommitted changes (staged or unstaged)
+    -only-changed-unpushed               only run on directories that have diff between its branch HEAD and its origin (unpushed commits)
+    -only-changed-base                   only run on directories that have diff with their base branch
+    -only-changed-latest                 only run on directories that have diff with their latest tag
+                                             (if no tag, uses base branch)
+    -only-changed                        only run on directories that have any changes or diff
+                                             either committed or unpushed commits and/or diff with base branch
+
+# Useful utility commands
+    -get-root                            print path to Kazoo source directory and exit
+    -show-changed                        loop over working directories and prints the name of files which are
+                                             different than "$BASE_BRANCH". "master" is the default BASE_BRANCH
+                                         this does not run git/hub/gh commands
+
+# Other Options
+    -exit-on-error                       exit if command returns exit other than 0 in a directory
+    -q                                   be quiet, but still print error messages
+    -qq                                  be more quiet, also do not print errors
+    -h, -help                                shows help
 ```
 
 
@@ -98,6 +127,12 @@ $ kgit -kcore -kroot git commit -a
 # please refer to git manual for format of the file
 $ vim /tmp/commit-message.txt
 $ kgit git commit -a -F /tmp/commit-message.txt
+
+
+# Run arbitary commands
+$ kgit cmd ls
+$ kgit cmd bash -c 'basename $(pwd)'
+$ kgit cmd cp ~/lol.json priv/
 ```
 
 ### Examples for working with pull-requests
@@ -139,3 +174,69 @@ Please find out usage examples for `gh` and `hub` here:
 
 * [`gh` Examples in use](https://cli.github.com/manual/examples)
 * [`hub` Usage examples](https://hub.github.com)
+
+### Filter the directories that kgit would run by its type
+
+If you need to run the command only for kazoo-applications, core or root:
+
+```
+# to run only on all applications/*
+kgit -a git status --branch -s
+
+# to run only on core
+kgit -kcore git status --branch -s
+
+# to run only on kazoo root
+kgit -kroot git status --branch -s
+
+# to only run in specific applications
+kgit -kapps crossbar,ast -kapps properly git status --branch -s
+
+# to exclude (not run) on specific applications
+kgit -exclude-apps crossbar,ast git status --branch -s
+```
+
+### Filter the directories that kgit would run based on its git status
+
+Do not mix `only-changed*` and `not-changed*` options!
+
+#### If you need to run the commands on certain git status conditions of the directory
+
+```
+# run the command only if current branch has uncommitted changes
+kgit -only-changed-uncommitted git commit -a -m 'awesome work'
+
+# run the command only if HEAD of current branch has differences with its `origin` base branch (you may want to
+pull down to update your local origin)
+kgit -only-changed-base git commit -a -m 'awesome work'
+
+# run the command only if HEAD of current branch has differences with its `origin` (you may want to
+pull down to update your local origin)
+# this is different from origin base branch as it only compares with the current branch
+# like if you on PR-BRANCH-1 and want to run command only if your local HEAD is different
+# from `origin/PR-BRANCH-1.
+# This is useful for situation you did not yet pushed your commit to Github yet.
+kgit -only-changed-unpushed git commit -a -m 'awesome work'
+
+# run the command only if HEAD of current branch has differences with the latest tag of the branch (you may want to
+pull down to update your local origin)
+#
+# CAUTION: this may be result incorrect behaviour, especially when the `master` branch has
+# tag in it. User discretion is applied!
+kgit -only-changed-latest git commit -a -m 'awesome work'
+```
+
+#### If you DO NOT want to run the commands on certain git status conditions of the directory
+
+Same as above, but negates the logic to skip the directory if the directory status is not
+clean.
+
+```
+-not-changed-uncommitted             skip directories that have not committed changes (any staged or unstaged changes)
+-not-changed-unpushed                skip directories that have not any diff between its branch HEAD and its origin (unpushed commits)
+-not-changed-base                    skip directories that have not any diff with their base branch
+-not-changed-latest                  skip directories that have not any diff with their branch latest tag
+                                         (if no tag, uses base branch)
+-not-changed                         this skips any directories that have any changes or diff
+                                         either committed or unpushed commits or diff with base branch
+```
