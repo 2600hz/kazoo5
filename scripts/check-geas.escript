@@ -21,7 +21,8 @@ main(Paths, PrintGlobal) ->
                                 ,{[], "0.0.0", "99.9.9"}
                                 ,expand_paths(Paths)
                                 ),
-    PrintGlobal andalso io:format("OTP versions: ~s < KAZOO < ~s~n", [Min, Max]),
+    PrintGlobal
+        andalso io:format("OTP versions: ~s < KAZOO < ~s~n", [Min, Max]),
 
     print_app_vsns(lists:keysort(2, Is)).
 
