@@ -318,7 +318,7 @@ app_applications:
 	ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(ROOT)/scripts/apps_of_app.escript -a $(PRINTABLE_APPS)
 
 .PHONY: code_checks
-code_checks: bump-changed-copyright bump-changed-license edoc splchk-common
+code_checks: bump-changed-copyright bump-changed-license edoc splchk-common geas
 	@printf "\n:: Check code\n\n"
 	@$(ROOT)/scripts/code_checks.bash $(CHANGED_ERL)
 	@printf "\n:: Check for raw JSON usage\n\n"
