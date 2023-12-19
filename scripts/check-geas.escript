@@ -8,7 +8,7 @@
 -export([main/1]).
 
 %% API
-maih([]) ->
+main([]) ->
     io:format("Please include paths to Erlang app directories~n"),
     halt(0);
 main(["-a" | Paths]) ->
