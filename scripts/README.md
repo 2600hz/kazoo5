@@ -185,6 +185,76 @@ dialyze paths: ["path/to/ebin/module.beam"]
 Failed to find type kz_term:objects/0
 ```
 
+## check-geas.escript
+
+Escript to check OTP compatibilty ranges of changed files or the project as a whole.
+
+Invoke as CI check on changed files:
+
+```shell
+make geas-changed
+OTP versions: 21.3 < 26.1
+   ast
+```
+
+In this case, the AST kazoo application had a change and was analyzed.
+
+Full project analysis can be run:
+
+```shell
+make geas
+OTP versions: R16B < KAZOO < 26.1
+OTP versions: 15 < 26.1
+   trunkstore      sysconf         stats           skel            reorder
+   omnipresence    milliwatt       jonny5          hotornot        hangups
+   conference      call_inspector  braintree       webseq          sup
+   kazoo_yodb      kazoo_xml       kazoo_translato kazoo_transacti kazoo_token_buc
+   kazoo_temporal_ kazoo_templates kazoo_stats     kazoo_speech    kazoo_sip
+   kazoo_provision kazoo_oauth     kazoo_modb      kazoo_ledgers   kazoo_ips
+   kazoo_hooks     kazoo_globals   kazoo_fax       kazoo_etsmgr    kazoo_edr
+   kazoo_databases kazoo_cnam      kazoo_bindings  amqp_leader
+
+OTP versions: 16.2 < 26.1
+  pivot
+
+OTP versions: 17.0 < 26.1
+  media_mgr       cdr             kazoo_media     kazoo_directory kazoo_convert
+
+OTP versions: 17.1 < 26.1
+  stepswitch      kazoo_tasks     kazoo_services  kazoo_nodes     kazoo_fixturedb
+   kazoo_endpoint
+
+OTP versions: 17.3 < 26.1
+  kazoo_couch
+
+OTP versions: 18.0 < 26.1
+  registrar       pusher          doodle          callflow        kazoo_perf
+   kazoo_im        kazoo_documents kazoo_amqp
+
+OTP versions: 19.0 < 26.1
+  teletype        kazoo_voicemail kazoo_telemetry kazoo_numbers   kazoo_csv
+
+OTP versions: 21.0 < 26.1
+  blackhole       kazoo_web       kazoo_schemas
+
+OTP versions: 21.2 < 26.1
+  crossbar
+
+OTP versions: 21.3 < 26.1
+  ecallmgr        ast             kazoo_stdlib    kazoo_data      kazoo_config
+   kazoo_caches
+
+OTP versions: 22.2 < 26.1
+  webhooks        properly        kazoo_auth      kazoo_attachmen
+
+OTP versions: 23.0 < 26.1
+  tasks           fax             kazoo_call      kazoo_apps      kazoo_appex
+```
+
+A global project range of OTP versions supported, followed by OTP ranges and the apps included in the range is printed.
+
+At this time, no action is taken.
+
 ## check-git-status.bash
 
 ```shell

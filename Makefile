@@ -417,5 +417,6 @@ include $(ROOT)/make/pest.mk
 include $(ROOT)/make/releases.mk
 include $(ROOT)/make/splchk.mk
 include $(ROOT)/make/tests.mk
+include $(ROOT)/make/geas.mk
 
 circle: ci

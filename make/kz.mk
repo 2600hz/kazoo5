@@ -404,5 +404,8 @@ integrations:
 $(INTEGRATIONS):
 	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(SCRIPTS_DIR)/check-integrations.escript $(INTEGRATIONS) $(BEAMS)
 
+geas:
+	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(ROOT)/scripts/check-geas.escript $(CURDIR)
+
 include $(ROOT)/make/splchk.mk
 include $(ROOT)/make/fmt.mk
