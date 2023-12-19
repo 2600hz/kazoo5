@@ -70,7 +70,8 @@ expand_path(Path) ->
     case filename:extension(Path) of
         <<>> -> maybe_expand_dir(Path);
         <<".erl">> -> maybe_expand_erl(Path);
-        <<".beam">> -> [filename:dirname(filename:dirname(Path))]
+        <<".beam">> -> [filename:dirname(filename:dirname(Path))];
+        _ -> []
     end.
 
 maybe_expand_erl(Path) ->
