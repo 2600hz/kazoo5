@@ -13,6 +13,7 @@ DEPS ?= amqp_client \
 	erlydtl \
 	ersip \
 	esaml \
+	geas \
 	gen_smtp \
 	getopt \
 	gproc \
@@ -183,3 +184,6 @@ dep_hep = git https://github.com/2600hz/hep-erlang 5f18e91e45d49d3d7013fc93897d5
 
 # runtime code generation
 dep_meta = git https://github.com/2600hz/erlang-meta 0.1.3
+
+# Detect OTP versions available given the codebase
+dep_geas = git https://github.com/crownedgrouse/geas 2.7.14
