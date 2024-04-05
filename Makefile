@@ -1,3 +1,7 @@
+ifndef VERBOSE
+MAKEFLAGS += --no-print-directory
+endif
+
 ROOT := $(shell cd "$(dirname '.')" && pwd -P)
 
 DEPS_DIR = $(ROOT)/deps
@@ -108,15 +112,6 @@ changed_swagger:
 
 .PHONY: prerequisites
 prerequisites: make-dependency-check rebar
-
-REBAR=$(ROOT)/.rebar/rebar
-
-.PHONY: rebar
-rebar: $(REBAR)
-
-$(REBAR):
-	curl https://github.com/2600hz/erlang-rebar/wiki/rebar --create-dirs --location -o $(REBAR)
-	chmod +x $(REBAR)
 
 .PHONY: make-dependency-check
 make-dependency-check:
@@ -318,11 +313,9 @@ app_applications:
 	ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(ROOT)/scripts/apps_of_app.escript -a $(PRINTABLE_APPS)
 
 .PHONY: code_checks
-code_checks: bump-changed-copyright bump-changed-license edoc splchk-common geas
+code_checks: bump-changed-copyright bump-changed-license edoc splchk-common geas raw-json
 	@printf "\n:: Check code\n\n"
 	@$(ROOT)/scripts/code_checks.bash $(CHANGED_ERL)
-	@printf "\n:: Check for raw JSON usage\n\n"
-	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(ROOT)/scripts/no_raw_json.escript $(CHANGED_ERL)
 	@printf "\n:: Check for Kazoo diaspora\n\n"
 	@$(ROOT)/scripts/kz_diaspora.bash
 	@printf "\n:: Check for Kazoo document accessors\n\n"
@@ -331,6 +324,11 @@ code_checks: bump-changed-copyright bump-changed-license edoc splchk-common geas
 	@$(ROOT)/scripts/check-loglines.bash $(CHANGED_ERL)
 	@printf "\n:: Check for Erlang 21 new stacktrace syntax\n\n"
 	@$(ROOT)/scripts/check-stacktrace.py $(CHANGED_ERL)
+
+.PHONY: raw-json
+raw-json:
+	@printf "\n:: Check for raw JSON usage\n\n"
+	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(ROOT)/scripts/no_raw_json.escript $(CHANGED_ERL)
 
 .PHONY: edoc
 edoc:
@@ -406,6 +404,7 @@ validate-schemas:
 whitespace:
 	@$(ROOT)/scripts/check-whitespace.sh $(CHANGED)
 
+include $(ROOT)/make/rebar.mk
 include $(ROOT)/make/ci.mk
 include $(ROOT)/make/dialyzer.mk
 include $(ROOT)/make/docs.mk

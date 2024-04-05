@@ -21,7 +21,10 @@ process_file(File, Acc) ->
 process_file(File, Acc, <<".erl">>) ->
     Basename = filename:basename(File, ".erl"),
     Module = kz_term:to_atom(Basename, 'true'),
-    raw_json_usage:process_module(Module) ++ Acc;
+    case raw_json_usage:process_module(Module) of
+        [] -> Acc;
+        RawJSON -> RawJSON ++ Acc
+    end;
 process_file(_File, Acc, _Ext) -> Acc.
 
 handle_potential_usage(ModulesWithRawJSON) ->
@@ -43,6 +46,8 @@ handle_potential_usage({Module, Lines}, ExitCode) ->
     file:close(IODevice),
     ExitWith.
 
+using_json_macro({Line, _Col}, {Module, IODevice, CurrentLine, RawLines}) ->
+    using_json_macro(Line, {Module, IODevice, CurrentLine, RawLines});
 using_json_macro(Line, {Module, IODevice, CurrentLine, RawLines}) when CurrentLine < Line ->
     {'ok', _Data} = file:read_line(IODevice),
     using_json_macro(Line, {Module, IODevice, CurrentLine+1, RawLines});

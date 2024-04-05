@@ -76,13 +76,13 @@ init_output(Options) ->
         'undefined' ->
             {'standard_io', 'standard_io'};
         OutFile ->
-            case file:open(OutFile, [write]) of
-                {ok, IoFile} ->
+            case file:open(OutFile, ['write']) of
+                {'ok', IoFile} ->
                     %% Warnings and errors can include Unicode characters.
-                    ok = io:setopts(IoFile, [{encoding, unicode}]),
+                    'ok' = io:setopts(IoFile, [{'encoding', 'unicode'}]),
                     io:format("saving dialyzer output to ~ts~n", [OutFile]),
                     {OutFile, IoFile};
-                {error, Reason} ->
+                {'error', Reason} ->
                     io:format("could not open output file ~tp, Reason: ~p\n", [OutFile, Reason]),
                     halt(1)
             end
@@ -264,9 +264,12 @@ maybe_separate_step({'beam', Bs}, {Apps, Beams}, _InBulk) ->
 maybe_separate_step(Beam, {Apps, Beams}, _InBulk) ->
     {Apps, [Beam | Beams]}.
 
-%% explicitly adding `kz_types' so dialyzer knows about `sup_init_ret', `handle_call_ret_state' and other supervisor,
-%% gen_server, ... critical types defined in `kz_types'. Dialyzer is strict about types for these `init', `handle_*'
-%% functions and if we don't add `kz_types' here, Dialyzer thinks their types are `any()' and will warn about it.
+%% explicitly adding `kz_types' so dialyzer knows about
+%% `sup_init_ret', `handle_call_ret_state' and other supervisor,
+%% gen_server, ... critical types defined in `kz_types'. Dialyzer is
+%% strict about types for these `init', `handle_*' functions and if we
+%% don't add `kz_types' here, Dialyzer thinks their types are `any()'
+%% and will warn about it.
 ensure_kz_types(Beams) ->
     case lists:any(fun(F) -> filename:basename(F, ".beam") =:= "kz_types" end, Beams) of
         'true' -> lists:usort(Beams);
@@ -304,7 +307,7 @@ filter({'warn_return_no_exit',      _, {'no_return',['only_normal','kz_log_md_cl
 filter({'warn_failing_call',        _, {'call',['lager','md',"([])" | _]}}) -> 'false';
 filter(_W) -> 'true'.
 
-print(Beams, {Tag, {"src/" ++ _=File, Line}, _W}=Warning, OutFile) ->
+print(Beams, {Tag, {"src/" ++ _=File, {Line, _Col}}, _W}=Warning, OutFile) ->
     Filename = filename:basename(File, ".erl"),
     case [Beam || Beam <- Beams, Filename =:= filename:basename(Beam, ".beam")] of
         [] ->
@@ -312,10 +315,21 @@ print(Beams, {Tag, {"src/" ++ _=File, Line}, _W}=Warning, OutFile) ->
         [Beam] ->
             AppDir = filename:dirname(filename:dirname(Beam)),
             SrcFile = filename:join([AppDir, File]),
-            output_write(OutFile, io_lib:format("~ts:~tp: ~ts~n  ~ts~n", [SrcFile, Line, Tag, dialyzer:format_warning(Warning)]))
+            output_write(OutFile
+                        ,io_lib:format("~ts:~tp: ~ts~n  ~ts~n"
+                                      ,[SrcFile, Line, Tag
+                                       ,dialyzer:format_warning(Warning, [{'error_location', 'line'}])]
+                                      )
+                        )
     end;
 print(_Beams, {Tag, {File, Line}, _W}=Warning, OutFile) ->
-    output_write(OutFile, io_lib:format("~ts:~tp: ~ts~n  ~ts~n", [File, Line, Tag, dialyzer:format_warning(Warning)]));
+    output_write(OutFile
+                ,io_lib:format("uk: ~ts:~tp: ~ts~n  ~ts~n"
+                              ,[File, Line, Tag
+                               ,dialyzer:format_warning(Warning, [{'error_location', 'line'}])
+                               ]
+                              )
+                );
 print(_Beams, _Err, OutFile) ->
     output_write(OutFile, io_lib:format("error: ~tp~n", [_Err])).
 
@@ -361,13 +375,14 @@ do_scan(PLT, Paths) ->
                                 %% ,no_match          %% suppress warnings for patterns that are unused
                                 %% ,'no_missing_calls'  %% suppress warnings about calls to missing functions
                                 %% ,no_opaque         %% suppress warnings for violating opaque data structures
-                                %% ,no_return         %% suppress warnings for functions that never return a value
+                               ,'no_return'         %% suppress warnings for functions that never return a value
                                 %% ,no_undefined_callbacks %% suppress warnings about behaviours with no -callback
                                 %% ,no_unused         %% suppress warnings for unused functions
                                 %% ,'race_conditions'   %% include warnings for possible race conditions
                                ,'underspecs'        %% warn when the spec is too loose
-                                %% ,'unknown'           %% let warnings about unknown functions/types change exit status
+                               ,'no_unknown'           %% let warnings about unknown functions/types change exit status
                                ,'unmatched_returns' %% warn when function calls ignore structure return values
+                               ,'no_extra_return' %% ignore functions that have too-permissive specs
                                 %% ,overspecs %% ignorable, mostly for Dialyzer devs
                                 %% ,specdiffs
                                ]}

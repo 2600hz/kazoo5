@@ -119,6 +119,10 @@ Python script to walk the supplied files and bumps the copyright year if appropr
 ./scripts/bump-copyright-year.py [FILE]
 ```
 
+## build-release.escript
+
+Builds Erlang releases. Based on erlang.mk's usage of relx
+
 ## calculate-dep-targets.escript
 
 Given the KAZOO root directory and an app (in core or applications), calculate the core applications it relies on (and transitive dependencies). This listing is then stored to `{APP}/.test.deps` for use in compilation of dependant apps when running tests on an app (vs compiling the whole project for testing).

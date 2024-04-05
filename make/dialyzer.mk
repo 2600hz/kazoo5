@@ -1,7 +1,7 @@
 PLT = $(ROOT)/.kazoo.plt
 
 DIALYZER ?= dialyzer
-DIALYZER += --statistics --no_native
+DIALYZER += --statistics
 
 OTP_APPS ?= erts kernel stdlib crypto public_key ssl asn1 inets xmerl
 

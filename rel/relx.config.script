@@ -31,8 +31,7 @@ Base = [runtime_tools
        ,sasl
        ],
 
-BASE = [{default_release, {kazoo, VSN}}
-       ,{release, {kazoo, VSN}
+BASE = [{release, {kazoo, VSN}
        ,Base ++ Preparer(Apps ++ Core ++ Deps)
        }],
 

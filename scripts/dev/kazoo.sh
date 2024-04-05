@@ -2,7 +2,7 @@
 
 pushd "$(dirname "$0")" >/dev/null
 
-ROOT="$(pwd -P)"/../..
+ROOT=$(realpath "$(pwd -P)"/../..)
 
 # look for kazoo release root directory
 DEFAULT_ROOT=${KAZOO_ROOT:-${ROOT}/_rel/kazoo}

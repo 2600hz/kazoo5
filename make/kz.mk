@@ -1,5 +1,10 @@
 ## Kazoo Makefile targets
 ## Targets are run from the application's root directory (not KAZOO root).
+ifndef VERBOSE
+MAKEFLAGS += --no-print-directory
+endif
+
+include $(ROOT)/make/rebar.mk
 
 ## Platform detection.
 ifeq ($(PLATFORM),)
@@ -34,7 +39,6 @@ SHELL := /bin/bash -o pipefail
 FETCH_AS ?= https://github.com/
 
 BASE_BRANCH := $(shell cat $(ROOT)/.base_branch)
-
 
 comma := ,
 empty :=
@@ -126,6 +130,8 @@ DEPS_HASH_FILE := .deps.mk.$(DEPS_HASH)
 APPS_HASH := $(shell md5sum $(APPS_MK) | cut -d' ' -f1)
 APPS_HASH_FILE := .apps.mk.$(APPS_HASH)
 
+APPS_MAKEFILE := $(APPS_DIR)/Makefile
+
 .PHONY: deps
 deps: $(DOT_ERLANG_MK) $(DEPS_HASH_FILE)
 
@@ -135,16 +141,18 @@ $(DEPS_HASH_FILE):
 	 fi
 	@touch .deps.mk.$(shell md5sum $(DEPS_MK) | cut -d' ' -f1)
 
+$(APPS_MAKEFILE):
+	@$(shell mkdir -p $(APPS_DIR))
+	@cp $(ROOT)/make/Makefile.applications $(APPS_MAKEFILE)
+
 .PHONY: apps
-apps: $(DOT_ERLANG_MK) $(APPS_HASH_FILE)
-	@$(MAKE) -C $(ROOT) apps-makefile
+apps: $(DOT_ERLANG_MK) $(APPS_HASH_FILE) $(APPS_MAKEFILE)
 	@if [ -s $(APPS_MK) ]; then \
 		ROOT=$(ROOT) APPS_MK="$(APPS_MK)" $(MAKE) -C $(APPS_DIR) all ;\
 	fi
 
 .PHONY:
-apps-test: $(DOT_ERLANG_MK) $(APPS_HASH_FILE)
-	@$(MAKE) -C $(ROOT) apps-makefile
+apps-test: $(DOT_ERLANG_MK) $(APPS_MAKEFILE) $(APPS_HASH_FILE)
 	@if [ -s $(APPS_MK) ]; then \
 		ROOT=$(ROOT) APPS_MK="$(APPS_MK)" $(MAKE) -C $(APPS_DIR) compile-test-direct ;\
 	fi
@@ -323,13 +331,10 @@ dialyze-types: $(PLT)
 	@echo ":: dialyzing types"
 	@ERL_LIBS=$(ELIBS) $(ROOT)/scripts/check-dialyzer-types.escript $(PLT) $(TO_DIALYZE)
 
-REBAR=$(ROOT)/.rebar/rebar
-
 .PHONY: xref fmt perf fixture_shell
 xref: compile
-xref: TO_XREF = ebin/  #FIXME: set TO_XREF to an app's dependencies' ebin/ directories
 xref:
-	@ERL_LIBS=$(ELIBS) $(REBAR) xref skip_deps=true -C $(ROOT)/make/xref.local.config
+	@@ERL_LIBS=$(ELIBS) $(ROOT)/scripts/check-xref.escript $(BEAMS)
 
 fmt: TO_FMT ?= $(shell find src include test -iname '*.erl' -or -iname '*.hrl' -or -iname '*.escript')
 
@@ -342,10 +347,11 @@ perf.%: compile-perf
 		-eval "horse:mod_perf($*), init:stop()."
 
 fixture_shell: ERL_CRASH_DUMP = "$(ROOT)/$(shell date +%s)_ecallmgr_erl_crash.dump"
-fixture_shell: ERL_LIBS = "$(ELIBS):$(shell echo $(DEPS_DIR)/rabbitmq_erlang_client-*/deps)"
 fixture_shell: NODE_NAME ?= fixturedb
 fixture_shell:
-	@ERL_CRASH_DUMP="$(ERL_CRASH_DUMP)" ERL_LIBS="$(ERL_LIBS)" KAZOO_CONFIG=$(ROOT)/rel/config-test.ini \
+	@# not re-defining ERL_LIBS in prerequisites to avoid below error:
+	@# *** Recursive variable 'ERL_LIBS' references itself (eventually).  Stop.
+	@ERL_CRASH_DUMP="$(ERL_CRASH_DUMP)" ERL_LIBS="$(ELIBS):$(shell echo $(DEPS_DIR)/rabbitmq_erlang_client-*/deps)" KAZOO_CONFIG=$(ROOT)/rel/config-test.ini \
 		erl -setcookie change_me -name '$(NODE_NAME)' -s reloader "$$@"
 
 .PHONY: code_checks apps_of_app

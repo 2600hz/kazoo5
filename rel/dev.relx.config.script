@@ -47,8 +47,7 @@ Base = [runtime_tools
        ,common_test
        ],
 
-BASE = [{default_release, {kazoo, VSN}}
-       ,{release
+BASE = [{release
         ,{kazoo, VSN}
         ,Base ++ Preparer(Apps ++ Core ++ Deps)
         }

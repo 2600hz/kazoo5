@@ -34,6 +34,7 @@ DEPS ?= amqp_client \
 	recon \
 	reloader \
 	soap \
+	relx \
 	syslog \
 	yamerl \
 	zucchini \
@@ -50,7 +51,7 @@ ifeq ($(CIRCLECI),true)
     DEPS += proper
 endif
 
-dep_amqp_client = hex 3.8.14
+dep_amqp_client = hex 3.12.13
 
 dep_amqp_dist = git https://github.com/2600hz/erlang-amqp_dist.git 581d4b53e1fb3e8247ad856bef106015304d1906
 
@@ -110,10 +111,10 @@ dep_gproc = git https://github.com/2600hz/erlang-gproc 0.8.0
 dep_inet_cidr = git https://github.com/2600hz/erlang-inet_cidr.git 1.0.2
 # used by kz_network_utils
 
-dep_jesse = git https://github.com/2600hz/jesse 1.5-rc13
+dep_jesse = git https://github.com/2600hz/erlang-jesse 86174cc16f18002ad640e62b2b3a8d9bcb33b05d
 # used by kazoo_schemas primarily
 
-dep_jiffy = git https://github.com/2600hz/erlang-jiffy 313d591cbda0fad5109fa8c049093984e54893a1
+dep_jiffy = git https://github.com/2600hz/erlang-jiffy c3b68f0dba2851bc7b2c79abe802ed9bab57c887
 # add an option to return error on duplicate key when decoding
 # includes changes from lazedo/utf8
 # used by kz_json, nklib, jesse, lager, maybe couchbeam if compiled
@@ -195,3 +196,6 @@ dep_soap = git https://github.com/2600hz/erlang-soap 2600Hz
 
 # XML lib
 dep_erlsom = git https://github.com/2600hz/erlang-erlsom 2600Hz
+
+# OTP release builder
+dep_relx = git https://github.com/erlware/relx v4.9.0
