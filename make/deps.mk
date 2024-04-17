@@ -173,7 +173,7 @@ dep_folsom = git https://github.com/2600hz/erlang-folsom 0.8.2
 # used by hangups
 
 
-dep_fcm = git https://github.com/2600hz/erlang-fcm.git b2f68a4c6f0f59475597a35e2dc9be13d9ba2910
+dep_fcm = git https://github.com/2600hz/erlang-fcm.git 42287cc390f46068525bbb310ea2516c9771ae97
 # Firebase cloud messaging
 # used by pusher
 
