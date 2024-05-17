@@ -10,6 +10,7 @@ DEPS ?= amqp_client \
 	erlang_localtime \
 	erlazure \
 	erlcloud \
+	erlsom \
 	erlydtl \
 	ersip \
 	esaml \
@@ -32,6 +33,7 @@ DEPS ?= amqp_client \
 	ranch \
 	recon \
 	reloader \
+	soap \
 	syslog \
 	yamerl \
 	zucchini \
@@ -187,3 +189,9 @@ dep_meta = git https://github.com/2600hz/erlang-meta 0.1.3
 
 # Detect OTP versions available given the codebase
 dep_geas = git https://github.com/crownedgrouse/geas 2.7.14
+
+# used for WSDL->record and WSDL RPC calls
+dep_soap = git https://github.com/2600hz/erlang-soap 2600Hz
+
+# XML lib
+dep_erlsom = git https://github.com/2600hz/erlang-erlsom 2600Hz
