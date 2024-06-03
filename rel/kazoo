@@ -144,7 +144,7 @@ relx_get_pid() {
 
 relx_get_nodename() {
     id="longname$(relx_gen_id)-${NAME}"
-    "$BINDIR/erl" -boot start_clean \
+    "$BINDIR/erl" -boot "$REL_DIR/start_clean" \
         -boot_var ERTS_LIB_DIR "$ERTS_LIB_DIR" \
         -eval '[_,H]=re:split(atom_to_list(node()),"@",[unicode,{return,list}]), io:format("~s~n",[H]), halt()' \
         -noshell ${NAME_TYPE} $id
@@ -160,7 +160,7 @@ relx_rem_sh() {
     TICKTIME="$(relx_nodetool rpcterms net_kernel get_net_ticktime)"
 
     # Setup remote shell command to control node
-    exec "$BINDIR/erl" "$NAME_TYPE" "$id" -remsh "$NAME" -boot start_clean \
+    exec "$BINDIR/erl" "$NAME_TYPE" "$id" -remsh "$NAME" -boot "$REL_DIR/start_clean" \
          -boot_var ERTS_LIB_DIR "$ERTS_LIB_DIR" \
          -setcookie "$COOKIE" -hidden -kernel net_ticktime $TICKTIME
 }
@@ -196,7 +196,7 @@ relx_get_code_paths() {
 "end, Apps),"\
 "halt()."
 
-    "$BINDIR/erl" -noshell -boot start_clean -eval "$code"
+    "$BINDIR/erl" -noshell -boot "$REL_DIR/start_clean" -eval "$code"
 }
 
 make_out_file_path() {
