@@ -1,7 +1,8 @@
-ROOT ?= ..
-ERLANG_MK_FILENAME = $(ROOT)/erlang.mk
+CWD = $(shell pwd -P)
+ROOT ?= $(realpath $(CWD)/..)
 
-DEPS_DIR = $(CURDIR)
+DEPS_DIR ?= $(CURDIR)
+
 ERLC_OPTS += +debug_info -DWITH_JIFFY=1
 
 .DEFAULT_GOAL := all
@@ -15,4 +16,4 @@ include $(DEPS_MK)
 endif
 
 include $(ROOT)/make/deps.mk
-include $(ERLANG_MK_FILENAME)
+include $(ROOT)/erlang.mk

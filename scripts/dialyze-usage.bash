@@ -8,7 +8,7 @@ cd $(pwd -P)/..
 
 if [ -z ${ERL_FILES+x} ]; then
     MODULE=$1
-    ERL_FILES=$(grep -rl "$1:" {core,applications} --include "*.erl" --exclude="\*pqc.erl" | grep -v "test/")
+    ERL_FILES=$(grep -rl "$1:" {core,applications} --include "*.erl" --exclude="properly*.erl" --exclude="\*pqc.erl" | grep -v "test/")
     MOD_BEAM=$(find {core,applications} -name "$MODULE.beam")
     echo "dialyzing usages of $MODULE"
     shift

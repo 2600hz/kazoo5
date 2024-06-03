@@ -184,7 +184,8 @@ $(DOT_ERLANG_MK): $(ERLANG_MK)
 	@$(MAKE) -f $(ERLANG_MK) erlang.mk
 
 $(ERLANG_MK):
-	@wget 'https://raw.githubusercontent.com/2600hz/erlang.mk/master/erlang.mk' -O $(ERLANG_MK)
+	curl -O https://erlang.mk/erlang.mk
+	#@wget 'https://raw.githubusercontent.com/2600hz/erlang.mk/master/erlang.mk' -O $(ERLANG_MK)
 
 .PHONY: deps
 deps: $(DEPS_HASH_FILE)
@@ -192,7 +193,7 @@ deps: $(DEPS_HASH_FILE)
 $(DEPS_HASH_FILE):
 	@$(MAKE) clean-deps
 	@$(MAKE) $(DEPS_DIR)/Makefile
-	@ROOT=$(ROOT) $(MAKE) -C $(DEPS_DIR)/ all
+	ROOT=$(ROOT) $(MAKE) -C $(DEPS_DIR)/ deps
 	@touch $(DEPS_HASH_FILE)
 
 $(DEPS_DIR)/Makefile: $(DOT_ERLANG_MK) $(DEPS_DIR) clean-plt

@@ -1,23 +1,29 @@
 ## 3rd party dependencies
-DEPS ?= amqp_client \
+DEPS ?=  amqp_client \
 	amqp_dist \
+	apns \
 	couchbeam \
-	cowlib \
 	cowboy \
+	cowlib \
 	eflame \
 	eiconv \
+	elvis \
 	epgsql \
-	erlang_localtime \
 	erlazure \
 	erlcloud \
 	erlsom \
 	erlydtl \
 	ersip \
 	esaml \
+	fcm \
+	folsom \
 	geas \
 	gen_smtp \
 	getopt \
 	gproc \
+	gun \
+	hackney \
+	hep \
 	inet_cidr \
 	jesse \
 	jiffy \
@@ -29,21 +35,19 @@ DEPS ?= amqp_client \
 	plists \
 	poolboy \
 	proper \
+	qdate \
+	qdate_localtime \
+	qrcode \
 	ra \
 	ranch \
 	recon \
 	reloader \
-	soap \
 	relx \
+	soap \
 	syslog \
-	yamerl \
-	zucchini \
 	trie \
-	gun \
-	folsom \
-	apns \
-	fcm \
-	hep
+	yamerl \
+	zucchini
 
 ifeq ($(CIRCLECI),true)
     DEPS += coveralls
@@ -55,7 +59,8 @@ dep_amqp_client = hex 3.12.13
 
 dep_amqp_dist = git https://github.com/2600hz/erlang-amqp_dist.git 581d4b53e1fb3e8247ad856bef106015304d1906
 
-dep_esaml = git https://github.com/2600hz/erlang-esaml.git master
+dep_esaml = git https://github.com/2600hz/erlang-esaml.git 9fe06697234113eb1a64a009a6a1167ba72c9c04
+# priv app usage, branch 2600Hz-otp-26
 
 # dep_certifi = hex 0.3.0
 # Used by hackney, let it pull in certifi
@@ -64,45 +69,54 @@ dep_esaml = git https://github.com/2600hz/erlang-esaml.git master
 # used by apns4erl
 
 # PRs merged!
-#Based off latest commit on 'show' branch: "fix fetch, all, stream, show and view ddoc types"
-dep_couchbeam = git https://github.com/2600hz/erlang-couchbeam 2d29971cbb4da822da9bc14113e3045bc1e08c6e
+# Based off latest commit on '2600hz-otp26' branch
+dep_couchbeam = git https://github.com/2600hz/erlang-couchbeam 2687ae6969390c4f733196552716db41f4d9ac93
 
-dep_cowboy = git https://github.com/2600hz/erlang-cowboy 2600hz
+# 2600Hz branch
+dep_hackney = git https://github.com/2600hz/erlang-hackney 7ae3831c1a56896d05d862de2c44cc751ae7790f
 
-dep_eflame = git https://github.com/slfritchie/eflame 7b0bb1a7e8c8482a59421a3a50ae69d49af59d52
+# Based off 2600Hz-2.12.0 branch
+dep_cowboy = git https://github.com/2600hz/erlang-cowboy 50c21ad
+
+dep_eflame = git https://github.com/2600hz/erlang-eflame 4faa5a7064b31903f71a90d6ad79c66fa63d591d
 # used by kz_tracers
 
 dep_eiconv = git https://github.com/zotonic/eiconv 1.0.0
 # used by gen_smtp
 
-dep_epgsql = git https://github.com/epgsql/epgsql 4.5.0
-# used to store tabulator events
+dep_epgsql = git https://github.com/epgsql/epgsql 7ba52768cf0ea7d084df24d4275a88eef4db13c2
+# used to store tabulator events, branch 2600Hz-otp-26
 
-dep_erlang_localtime = git https://github.com/2600hz/erlang-localtime 2600hz
+dep_erlang_localtime = git https://github.com/2600hz/erlang-localtime a0e19d15cd9c89c502a85b189eb8a7611bfb7548
 # used by kazoo_documents, teletype, notify, crossbar, callflow
+# branch 2600hz
 
-dep_erlazure = git https://github.com/2600hz/erlang-erlazure.git 88e0417251983ab4d8a2a2606c732906eecd5007
+dep_erlazure = git https://github.com/2600hz/erlang-erlazure.git 42cfbef9e0b30704123c0aee7144db1bb538a9d7
 # used by kazoo_attachments, merged in lazedo/erlazure add-start-link changes
+# added on top of latest master commit aee99060e1d420640b320bddc1ca8a5e92a46ce6
 
-dep_erlcloud = git https://github.com/2600hz/erlang-erlcloud 3.5.16
+dep_erlcloud = git https://github.com/2600hz/erlang-erlcloud 9fd232d08063a691ed4294ce3b8e4b99bf84fdda
+# 2600Hz-otp-26 branch
 # used by kazoo_attachments and a crossbar test (cb_storage_tests)
 
-dep_ersip = git https://github.com/2600hz/erlang-ersip master
+dep_ersip = git https://github.com/2600hz/erlang-ersip 5125e187807eff8dd507baa7fa6113e374d08ccb
 # used by properly, webhooks
+# branch 2600Hz-otp-26
 
 ## Code reloaders for dev VMs, uncomment if desired
 # dep_fs_event = git https://github.com/jamhed/fs_event 783400da08c2b55c295dbec81df0d926960c0346
 # dep_fs_sync = git https://github.com/jamhed/fs_sync 2cf85cf5861221128f020c453604d509fd37cd53
 
-dep_gen_smtp = git https://github.com/2600hz/erlang-gen_smtp 3f80bfcd4fd8704739d264eb4d5005d4392f2a35
+dep_gen_smtp = git https://github.com/2600hz/erlang-gen_smtp 7e57b573fe55b69aaff8126c7a662b1a6c00bf9f
 # used by teletype, notify, and fax
-# latest commit to origin/2600Hz: Fixes for encoding email address in a single comma separated header line
+# branch 2600Hz-otp-26-fixed
 
 dep_getopt = git https://github.com/2600hz/erlang-getopt v1.0.1
 # used in some scripts/ and sup
 
-dep_gproc = git https://github.com/2600hz/erlang-gproc 0.8.0
+dep_gproc = git https://github.com/2600hz/erlang-gproc 9f71a37fce4d58480a742b44458e4937c77f55c5
 # used by kazoo_events, webseq, konami, acdc, ecallmgr, callflow
+# based off master branch atm (no 2600Hz commits)
 
 # dep_horse = git https://github.com/ninenines/horse 4dc81d47c3116b38af673481402f34ce03f8936b
 # used by kazoo_stdlib in some test modules
@@ -127,24 +141,27 @@ dep_lager_syslog = git https://github.com/2600hz/erlang-lager_syslog 3.0.3
 dep_meck = git https://github.com/2600hz/erlang-meck 0.8.13
 # used in tests for kazoo_voicemail, crossbar, teletype, and other deps
 
-dep_nklib = git https://github.com/2600hz/erlang-nklib v0.4.1
+dep_nklib = git https://github.com/2600hz/erlang-nklib ed8097b4e3bac43864cfe5d522c7907b150b7037
 # used by kzsip_uri and cb_registrations
+# branch 2600Hz-otp-26
 
 # dep_parse_trans = git https://github.com/lazedo/parse_trans
 # appears unused
 
-dep_plists = git https://github.com/2600hz/erlang-plists 1.0.0
+dep_plists = git https://github.com/2600hz/erlang-plists 909aec1ffc2dfd651b880af8138346daff1cc407
 # used by a handful of core apps
+# 2600Hz-otp-26 branch
 
-dep_proper = git https://github.com/2600hz/erlang-proper v1.3
+dep_proper = git https://github.com/2600hz/erlang-proper a5ae5669f01143b0828fc21667d4f5e344aa760b
 # used by kazoo_proper, knm, kazoo_caches, kazoo_bindings, kz_util_tests, kazoo_token_buckets, kazoo_stdlib
 # used by apps hotornot and callflow
+# otp 26 fixes from upstream in after this hash
 
-dep_recon = git https://github.com/2600hz/erlang-recon 2.4.0
+dep_recon = git https://github.com/2600hz/erlang-recon 2.5.5
 
 dep_ra = git https://github.com/2600hz/erlang-ra.git v1.1.2
 
-dep_ranch = git https://github.com/2600hz/erlang-ranch 1.7.1
+dep_ranch = git https://github.com/2600hz/erlang-ranch 1.8.0
 
 dep_reloader = git https://github.com/2600hz/erlang-reloader de1e6c74204b61ccf3b3652f05c6a7dec9e8257d
 # Development-related for reloading beam files
@@ -166,13 +183,14 @@ dep_zucchini = git https://github.com/2600hz/erlang-zucchini 0.1.0
 dep_trie = git https://github.com/2600hz/erlang-trie v1.7.5
 # used by hotornot
 
-dep_cowlib = git https://github.com/2600hz/erlang-cowlib 2600hz-2.9.1
+dep_cowlib = git https://github.com/2600hz/erlang-cowlib 2.13.0
 
 dep_gun = git https://github.com/2600hz/erlang-gun 2600hz-2.0.0-pre.3
 
 dep_apns = git https://github.com/2600hz/erlang-apns4erl.git 2600hz-2.4.1
 
-dep_folsom = git https://github.com/2600hz/erlang-folsom 0.8.2
+dep_folsom = git https://github.com/2600hz/erlang-folsom 1f3f610d1498d4ae2625178daaac5fc4f5306969
+# 2600Hz-otp-26 branch
 # used by hangups
 
 
@@ -199,3 +217,12 @@ dep_erlsom = git https://github.com/2600hz/erlang-erlsom 2600Hz
 
 # OTP release builder
 dep_relx = git https://github.com/erlware/relx v4.9.0
+
+# Used by kazoo_auth
+# 2600Hz-otp-2 6branch
+dep_qrcode = git https://github.com/2600hz/erlang-qrcode 7faa72913a4f8267c10d8f4a82685f73122f00d6
+
+dep_qdate = git https://github.com/2600hz/erlang-qdate 2072b49220dc0cfad59f1163119e1e76e55240a1
+dep_qdate_localtime = git https://github.com/2600hz/erlang-qdate_localtime cee705be45df8bcdcc7f77d371d4b34ef52d369b
+
+dep_elvis = git https://github.com/2600hz/erlang-elvis 2600Hz
