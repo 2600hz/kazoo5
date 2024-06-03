@@ -114,9 +114,15 @@ def validate(json_file):
 for arg in sys.argv[1:]:
     if os.path.isdir(arg):
         for filename in os.listdir(arg):
+            print('Validating {}'.format(os.path.join(arg, filename)))
+            _, ext = os.path.splitext(filename)
+            if ext == '.src':
+                print('Skipping .src file')
+                continue
             json_file = os.path.join(arg, filename)
             validate(json_file)
     elif os.path.exists(arg):
+        print('Validating {}'.format(filename))
         validate(arg)
     else:
         print('Skipping', arg)

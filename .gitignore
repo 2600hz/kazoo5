@@ -46,7 +46,6 @@ _rel/
 make/erlang-formatter/
 .kerl
 *.tar
-.tool-versions
 
 erlang.mk
 .erlang.mk

@@ -24,6 +24,8 @@ ToFilterOut = [rabbitmq_codegen
               ,'ananke'
               ,'amqp_cron'
               ,'amqp_leader'
+              ,wx
+              ,observer
               ,elvis_mk
               ],
 
@@ -39,8 +41,6 @@ Preparer = fun(List) ->
            end,
 Base = [runtime_tools
        ,tools
-       ,wx
-       ,observer
        ,debugger
        ,sasl
        ,eunit

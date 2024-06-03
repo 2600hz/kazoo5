@@ -1,14 +1,21 @@
 #!/bin/bash
 
-. $(dirname $0)/increment_version.bash  --source-only
+. "$(dirname "${0}")"/increment_version.bash  --source-only
 
-branch=$(git rev-parse --abbrev-ref HEAD)
-parent=$(git show-branch 2>/dev/null | grep '\*' | grep -v "$branch" | head -n1 | sed 's/.*\[\(.*\)\].*/\1/' | sed 's/[\^~].*//')
-if [[ $parent == "master" ]]
-then   
-   version=$(cat $(dirname $0)/../VERSION)
+branch="$(git rev-parse --abbrev-ref HEAD)"
+parent="$(git show-branch 2>/dev/null | grep '\*' | grep -v "$branch" | head -n1 | sed 's/.*\[\(.*\)\].*/\1/' | sed 's/[\^~].*//')"
+if [ -z "${parent}" ] || [ "${parent}" == "master" ]; then
+   # master branch MUST ALWAYS refer to next version!
+   version=$(cat "$(dirname "${0}")"/../VERSION)
 else
-   version=$parent
+   # branches which are not master or base off master MUST ALWAYS refer to their base release branch
+   version="${parent}"
 fi
-vsn=$(git describe --abbrev=0 --tags --match "$version*" 2>/dev/null || echo $version.0)
-increment_version $vsn 3
+
+vsn=$(git describe --abbrev=0 --tags --match "${version}*" 2>/dev/null)
+if [ -z "${vsn}" ]; then
+   echo "$0: no tag in in the branch, treat this as first release of the branch" >&2
+   echo "${version}.0"
+else
+   increment_version "${vsn}" 3
+fi
