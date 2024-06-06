@@ -6,7 +6,7 @@ orbs:
 
 filters: &on-tagging-only
   tags:
-    only: /^\d+\.\d+\.\d+$/
+    only: /^\d+\.\d+\.\d+(\.\d+)?$/
   branches:
     ignore: /.*/
 
