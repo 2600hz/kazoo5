@@ -91,6 +91,5 @@ option_spec_list() ->
     ,{'script', $s, "script", 'undefined', "Path to relx.config.script"}
     ,{'V', $V, "verbose", {'integer', 1}, "Logging verbosity"}
     ,{'relname', $n, "relname", {'binary', <<"kazoo">>}, "Release name"}
-    ,{'dev-mode', $d, "dev_mode", 'undefined', "Relx dev mode"}
     ,{'output_dir', $o, "output_dir", {'string', "_rel"}, "Output directory for the built release"}
     ].
