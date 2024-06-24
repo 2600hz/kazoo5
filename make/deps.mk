@@ -211,8 +211,7 @@ dep_meta = git https://github.com/2600hz/erlang-meta 0.1.3
 dep_geas = git https://github.com/crownedgrouse/geas 2.7.14
 
 # used for WSDL->record and WSDL RPC calls
-# branch: 2600Hz
-dep_soap = git https://github.com/2600hz/erlang-soap dbdca669b4b0ef5d4ee25e60a36db9f6b2a4599e
+dep_soap = git https://github.com/2600hz/erlang-soap dbdca66
 
 # XML lib
 # branch: 2600Hz
