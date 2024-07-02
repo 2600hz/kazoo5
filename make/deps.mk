@@ -70,8 +70,8 @@ dep_esaml = git https://github.com/2600hz/erlang-esaml.git 9fe06697234113eb1a64a
 # used by apns4erl
 # dep_chatterbox = hex 0.7.0
 
-# branch: 2600hz-otp26
-dep_couchbeam = git https://github.com/2600hz/erlang-couchbeam 2687ae6969390c4f733196552716db41f4d9ac93
+# branch: 2600hz-otp26-view_stream
+dep_couchbeam = git https://github.com/2600hz/erlang-couchbeam 4e88273636ac51c5a457b27edd4e5217b100403a
 
 # branch: 2600Hz
 dep_hackney = git https://github.com/2600hz/erlang-hackney 7ae3831c1a56896d05d862de2c44cc751ae7790f
