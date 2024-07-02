@@ -215,7 +215,7 @@
  {<<"samovar">>,{pkg,<<"samovar">>,<<"1.0.2">>},1},
  {<<"soap">>,
   {git,"https://github.com/2600hz/erlang-soap",
-       {ref,"77b595ab133636a8dacb9dd7b5a81f873b5c1a5a"}},
+       {ref,"dbdca669b4b0ef5d4ee25e60a36db9f6b2a4599e"}},
   0},
  {<<"ssl_verify_fun">>,{pkg,<<"ssl_verify_fun">>,<<"1.1.7">>},1},
  {<<"syslog">>,
