@@ -767,7 +767,6 @@ Searches for undocumented source files:
     -- applications/cccp/src/cccp_shared_listener.erl [undocumented functions: 1/9 (%11)]
     -- applications/ecallmgr/src/ecallmgr_fs_conferences_shared.erl [undocumented functions: 1/9 (%11)]
     -- applications/webhooks/src/webhooks_listener.erl [undocumented functions: 1/9 (%11)]
-    -- core/amqp_cron/src/amqp_cron_task.erl [undocumented functions: 1/9 (%11)]
     -- core/amqp_leader/src/amqp_leader_listener.erl [undocumented functions: 1/9 (%11)]
     -- core/braintree/src/braintree_customer.erl [undocumented functions: 2/21 (%9)]
     [more_files]

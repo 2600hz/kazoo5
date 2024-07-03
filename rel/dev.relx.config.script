@@ -10,8 +10,7 @@ Apps = [list_to_atom(App)  || "applications/"++App = Dir <- filelib:wildcard("ap
 Core = [list_to_atom(App)  ||         "core/"++App = Dir <- filelib:wildcard(        "core/*"), filelib:is_dir(Dir)],
 Deps = [list_to_atom(App)  ||         "deps/"++App = Dir <- filelib:wildcard(        "deps/*"), filelib:is_dir(Dir)],
 
-ToFilterOut = [rabbitmq_codegen
-              ,'.erlang.mk'
+ToFilterOut = ['.erlang.mk'
               ,'ci.erlang.mk'
               ,'.settings'
               ,'.git'
@@ -19,10 +18,7 @@ ToFilterOut = [rabbitmq_codegen
               ,skel
               ,parse_trans
               ,meck
-              ,'exml'
-              ,'escalus'
               ,'ananke'
-              ,'amqp_cron'
               ,'amqp_leader'
               ,elvis_mk
               ],
