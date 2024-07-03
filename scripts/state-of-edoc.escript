@@ -11,7 +11,6 @@
 -include_lib("xmerl/include/xmerl.hrl").
 
 main(Args) ->
-    _ = io:setopts(user, [{encoding, unicode}]),
     io:format("State of EDoc~n"),
     ScriptsDir = filename:dirname(escript:script_name()),
     ok = file:set_cwd(filename:absname(ScriptsDir ++ "/..")),

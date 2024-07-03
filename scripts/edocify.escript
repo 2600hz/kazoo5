@@ -28,7 +28,6 @@ search_paths(Changed, _) ->
     lists:join(" ", Changed ++ ["scripts/edocify.escript", "scripts/state-of-edoc.escript"]).
 
 main(_) ->
-    _ = io:setopts(user, [{encoding, unicode}]),
     check_ag_available(),
     ScriptsDir = filename:dirname(escript:script_name()),
     'ok' = file:set_cwd(filename:absname(ScriptsDir ++ "/..")),
