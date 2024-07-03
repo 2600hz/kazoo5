@@ -240,7 +240,6 @@ beam_to_source(BeamPath) ->
                       ).
 
 usage() ->
-    %% ok = io:setopts([{encoding, unicode}]),
     Arg0 = escript:script_name(),
     io:format("Usage: ~s  <path to ebin/>+\n", [filename:basename(Arg0)]).
 

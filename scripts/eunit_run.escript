@@ -9,7 +9,6 @@
 -export([main/1]).
 
 main(Args) ->
-    _ = io:setopts('user', [{'encoding', 'unicode'}]),
     maybe_add_ebin(),
     run_eunit(parse_args(Args, #{modules => []})).
 
