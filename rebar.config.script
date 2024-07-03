@@ -2,20 +2,14 @@
 %% vim: set ft=erlang:
 
 RelxConfig = fun() ->
-                     ToFilterOut = ["rabbitmq_codegen"
-                                   ,".erlang.mk"
+                     ToFilterOut = [".erlang.mk"
                                    ,"ci.erlang.mk"
                                    ,".settings"
                                    ,".git"
                                    ,".circleci"
                                    ,"skel"
-                                   ,"parse_trans"
-                                   ,"meck"
-                                   ,"escalus"
                                    ,"ananke"
-                                   ,"amqp_cron"
                                    ,"amqp_leader"
-                                   ,"elvis_mk"
                                    ],
                      Base = [runtime_tools
                             ,tools

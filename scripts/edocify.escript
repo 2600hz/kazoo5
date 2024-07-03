@@ -335,15 +335,6 @@ move_file_specs(Lines, LinesAdded, [#{fun_pos := Pos, spec := Spec, spec_length 
 %%------------------------------------------------------------------------------
 
 -define(DONT_BUMP, [<<"core/kazoo_stdlib/src/kz_mochinum.erl">>
-                   ,<<"core/gcm/src/gcm.erl">>
-                   ,<<"core/gcm/src/gcm_api.erl">>
-                   ,<<"core/gcm/src/gcm_sup.erl">>
-                   ,<<"core/gcm/src/gcm_app.erl">>
-                   ,<<"core/amqp_cron/src/amqp_cron_sup.erl">>
-                   ,<<"core/amqp_cron/src/amqp_cron_app.erl">>
-                   ,<<"core/amqp_cron/src/amqp_cron_task.erl">>
-                   ,<<"core/amqp_cron/src/amqp_cron.erl">>
-                   ,<<"core/kazoo_ast/src/kz_edoc_layout.erl">>
                    ]).
 
 
