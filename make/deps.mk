@@ -135,7 +135,7 @@ dep_jesse = git https://github.com/2600hz/erlang-jesse 86174cc16f18002ad640e62b2
 dep_jiffy = git https://github.com/2600hz/erlang-jiffy c3b68f0dba2851bc7b2c79abe802ed9bab57c887
 
 # used everywhere
-dep_lager = git https://github.com/2600hz/erlang-lager 3.9.2
+dep_lager = git https://github.com/2600hz/erlang-lager 6159a9497be54ac94fe00d9b9940b1bb7e423021
 
 dep_lager_syslog = git https://github.com/2600hz/erlang-lager_syslog 3.0.3
 
