@@ -133,7 +133,7 @@ dep_jiffy = git https://github.com/2600hz/erlang-jiffy c3b68f0dba2851bc7b2c79abe
 # includes changes from lazedo/utf8
 # used by kz_json, nklib, jesse, lager, maybe couchbeam if compiled
 
-dep_lager = git https://github.com/2600hz/erlang-lager 3.9.2
+dep_lager = git https://github.com/2600hz/erlang-lager 6159a9497be54ac94fe00d9b9940b1bb7e423021
 # used everywhere
 
 dep_lager_syslog = git https://github.com/2600hz/erlang-lager_syslog 3.0.3
