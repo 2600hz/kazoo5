@@ -15,17 +15,19 @@ if [ -z "$1" ]; then
 fi
 
 # reading lines and redirect to while to avoid word splitting in file paths
-MACTHES="$(grep -Erl "lager:\w+\(\"[a-z]{1}[a-z]" "${@}")"
+MATCHES="$(grep -Erl "lager:\w+\(\"[A-Z]{1}[a-z]" "${@}" || exit 0)"
 while IFS='' read -r ERL; do
     # lager:critical_unsafe has _ in it
     # sed captures lager:[word](" as \1
     # captures A-Z as \2
     # captures the rest of the line as \3
     # changes \2 to the lowercase version using \l
-    sed -r -i 's/(lager:[a-z_]+\(")([A-Z]{1})([a-z].+)/\1\l\2\3/g' "${ERL}"
-    errors=1
-    erls="$erls$ERL:1: log lines starting with capital letters"$'\n'
-done <<< "${MACTHES}"
+    if [ -n "$ERL" ]; then
+        sed -r -i 's/(lager:[a-z_]+\(")([A-Z]{1})([a-z].+)/\1\l\2\3/g' "${ERL}"
+        errors=1
+        erls="$erls$ERL:1: log lines starting with capital letters"$'\n'
+    fi
+done <<< "${MATCHES}"
 
 if [ $errors = 1 ]; then
     echo "$erls"
