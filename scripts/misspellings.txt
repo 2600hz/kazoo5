@@ -137,6 +137,7 @@ outrageous|outragous
 parliament|parliment
 pastime|passtime pasttime
 perceive|percieve
+perform|preform
 perseverance|perseverence
 persist|presist
 personnel|personell personel
