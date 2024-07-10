@@ -190,6 +190,8 @@ surprise|suprise surprize
 temporary|temprorary
 tomatoes|tomatos
 tomorrow|tommorow tommorrow
+transferring|transfering
+transferred|transfered
 twelfth|twelth
 tyranny|tyrany
 underrate|underate
