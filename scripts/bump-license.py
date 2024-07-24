@@ -20,7 +20,7 @@ module_end = """%%% @end
 %%%-----------------------------------------------------------------------------"""
 
 def update_license(filename):
-    with open(filename, 'r') as fd:
+    with open(filename) as fd:
         whole_doc = fd.read()
 
         apa_found = re.findall(apa_license, whole_doc)

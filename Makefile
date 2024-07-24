@@ -61,6 +61,7 @@ CHANGED_APPS=$(filter $(APPS_DIR)%,$(CHANGED_ERL))
 CHANGED_JSON=$(filter %.json,$(CHANGED))
 CHANGED_YML=$(filter %.yml,$(CHANGED))
 CHANGED_DOCS=$(filter %.md,$(CHANGED))
+CHANGED_PYTHON=$(filter %.py,$(CHANGED))
 
 PRINTABLE_CHANGED=$(subst $(ROOT),,$(CHANGED))
 PRINTABLE_ERL=$(subst $(ROOT),,$(CHANGED_ERL))
@@ -68,6 +69,7 @@ PRINTABLE_APPS=$(sort $(foreach app,$(CHANGED_APPS),$(firstword $(subst /, ,$(su
 PRINTABLE_JSON=$(subst $(ROOT),,$(CHANGED_JSON))
 PRINTABLE_YML=$(subst $(ROOT),,$(CHANGED_YML))
 PRINTABLE_DOCS=$(subst $(ROOT),,$(CHANGED_DOCS))
+PRINTABLE_PYTHON=$(subst $(ROOT),,$(CHANGED_PYTHON))
 
 # exporting these so they are used in targets
 export CHANGED
@@ -77,6 +79,7 @@ export CHANGED_APPS
 export CHANGED_JSON
 export CHANGED_YML
 export CHANGED_DOCS
+export CHANGED_PYTHON
 
 # You can override this when calling make, e.g. make JOBS=1
 # to prevent parallel builds, or make JOBS="8".
@@ -94,6 +97,7 @@ changed:
 	@$(ROOT)/scripts/pretty-print-files.bash "changed JSON:" $(PRINTABLE_JSON)
 	@$(ROOT)/scripts/pretty-print-files.bash "changed YML:" $(PRINTABLE_YML)
 	@$(ROOT)/scripts/pretty-print-files.bash "changed docs:" $(PRINTABLE_DOCS)
+	@$(ROOT)/scripts/pretty-print-files.bash "changed PY:" $(PRINTABLE_PYTHON)
 
 .PHONY: unstaged
 unstaged:
@@ -358,7 +362,7 @@ check_stacktrace:
 ## Adding this format couchdb view target to circleci steps for every app is painful
 ## also this formatting is better to be done before validate-js ci step to make sure
 ## the view is still in correct shape
-apis: schemas api_endpoints kzd_builder
+apis: schemas api_endpoints kzd_builder validate-py
 	@$(ROOT)/scripts/generate-doc-schemas.py `egrep -rl '(#+) Schema' core/ applications/ | grep -v '.[h|e]rl'`
 	@$(ROOT)/scripts/format-json.py $(APPS_DIR)/crossbar/priv/api/swagger.json
 	@$(ROOT)/scripts/format-json.py $(shell find $(APPS_DIR) $(CORE_DIR) -wholename '*/api/*.json')
@@ -393,6 +397,13 @@ validate-swagger:
 .PHONY: validate-js
 validate-js:
 	@$(ROOT)/scripts/validate-js.py $(CHANGED_JSON)
+
+.PHONY: validate-py
+PYUPGRADE = $(shell { command -v pyupgrade } 2>/dev/null)
+validate-py:
+ifneq ($(CHANGED_PYTHON),)
+	@$(PYUPGRADE) $(CHANGED_PYTHON)
+endif
 
 .PHONY: sdks
 sdks:

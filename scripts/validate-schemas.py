@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 # Validate JSON schemas using python3's jsonschema tool
 
@@ -99,7 +98,7 @@ def validate(json_file):
         validator.check_schema(JSON)
     except jsonschema.exceptions.SchemaError as e:
         print('Bad schema:', json_file)
-        with open(json_file, 'r') as fd:
+        with open(json_file) as fd:
             print(fd.read())
         print(e)
         print()

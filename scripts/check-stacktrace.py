@@ -23,7 +23,7 @@ for erl in sys.argv[1::]:
         print("Failed to find file ", erl, file=sys.stderr)
         continue
 
-    with open(erl, 'r') as r:
+    with open(erl) as r:
         whole_doc = r.read()
         replaced = match_stacktraces(whole_doc)
 

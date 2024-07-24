@@ -9,7 +9,7 @@ import datetime
 import os.path
 
 def get_copyright(filename):
-    with open(filename, 'r') as fd:
+    with open(filename) as fd:
         ref = fd.read()
         found = re.findall('copyright.+2600Hz', ref)
         if len(found) == 1:

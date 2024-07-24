@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 import sys
 import json
@@ -212,9 +211,9 @@ def main():
                 global exit_code
                 exit_code=1
     print(':: Listing of which view belongs to which database:')
-    print((json.dumps(all_view_destinations, sort_keys=True, indent=4)))
+    print(json.dumps(all_view_destinations, sort_keys=True, indent=4))
     print(':: Listing doc_id of view definitions in system_data database')
-    print((json.dumps(view_definition_ids, sort_keys=True, indent=4)))
+    print(json.dumps(view_definition_ids, sort_keys=True, indent=4))
 
 main()
 exit(exit_code)

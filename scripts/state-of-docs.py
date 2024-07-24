@@ -13,9 +13,9 @@ os.chdir(script_dir)
 print('Undocumented API endpoints:')
 
 def endpoints(wildcard_path):
-    APIs = set([])
+    APIs = set()
     for fn in glob(wildcard_path):
-        with open(fn, 'r') as fd:
+        with open(fn) as fd:
             ref = fd.read()
             APIs = set.union(APIs, re.findall(r'> [A-Z]+ [^?\s\n]+', ref))
     return APIs
