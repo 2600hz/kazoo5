@@ -472,8 +472,6 @@ kz_type_modules() {
                     handle_fsm_ret
                     handle_sync_event_ret
                     server_ref
-                    gen_server_name
-                    gen_server_option
                     gen_server_options
                     xml_attrib_name
                     xml_attrib_value
