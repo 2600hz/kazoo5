@@ -415,3 +415,4 @@ geas:
 
 include $(ROOT)/make/splchk.mk
 include $(ROOT)/make/fmt.mk
+include $(ROOT)/make/kz.elp.mk

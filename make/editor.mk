@@ -36,6 +36,32 @@ copy-erlang-ls:
 clean-erlang-ls:
 	@rm $(ERLANG_LS)
 
+ELP_DIR = $(ROOT)/.elp
+ELP_PROJECT_JSON = $(ELP_DIR)/project.json
+ELP_BUILD_JSON = $(ELP_DIR)/build_info.json
+ELP_TOML = $(ROOT)/.elp.toml
+ELP ?= elp
+
+.PHONY: elp clean-elp elp-lint
+elp: deps fetch-core fetch-apps $(ELP_PROJECT_JSON) $(ELP_BUILD_JSON) $(ELP_TOML)
+
+clean-elp:
+	@rm -f $(ELP_PROJECT_JSON) $(ELP_BUILD_JSON) $(ELP_TOML)
+
+$(ELP_PROJECT_JSON):
+	@mkdir -p $(ELP_DIR)
+	ERL_LIBS=$(ROOT)/deps:$(ROOT)/core $(ROOT)/scripts/elp.escript $(ROOT) $@
+
+$(ELP_BUILD_JSON):
+	$(ELP) build-info --project $(ELP_PROJECT_JSON) --json --to $(ELP_BUILD_JSON)
+
+$(ELP_TOML):
+	printf "[build_info]\nfile = \"$(ELP_BUILD_JSON)\"\n" > $(@)
+
+elp-lint:
+	$(ELP) --project $(ELP_PROJECT_JSON) lint
+
+
 .PHONY: kazoo-code-workspace
 kazoo-code-workspace: $(KZ_VSCODE) $(KZ_VSCODE_DEBUGGER) $(KZ_VSCODE_SETTINGS)
 

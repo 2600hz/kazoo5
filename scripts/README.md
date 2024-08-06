@@ -518,7 +518,6 @@ kz_dataconfig.erl:32: Function connection_options/1 will never be called
 done (warnings were emitted)
 ```
 
-
 ## ecallmgr-process-count.sh
 
 Connects to the ecallmgr VM and outputs a count of running Erlang processes.
@@ -552,6 +551,11 @@ Edocify Kazoo...
 
 Already EDocified! 🎉
 ```
+
+## elp.escript
+
+Script to generate the `project.json` file used by the [Erlang Language Platform](https://github.com/WhatsApp/erlang-language-platform/) CLI tooling
+
 
 ## `empty_schema_descriptions.bash`
 

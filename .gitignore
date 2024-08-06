@@ -94,3 +94,6 @@ compile_commands.json
 # asdf-vm "local" versions handler
 /make/more_apps.mk
 /applications/Makefile
+/project.json
+/.elp/
+/.elp.toml
