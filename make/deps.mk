@@ -127,8 +127,8 @@ dep_gproc = git https://github.com/2600hz/erlang-gproc 9f71a37fce4d58480a742b444
 dep_inet_cidr = git https://github.com/2600hz/erlang-inet_cidr.git 1.0.2
 
 # used by kazoo_schemas primarily
-# branch: otp-26
-dep_jesse = git https://github.com/2600hz/erlang-jesse 86174cc16f18002ad640e62b2b3a8d9bcb33b05d
+# branch: otp-26 + external format validator
+dep_jesse = git https://github.com/2600hz/erlang-jesse 35eabb4
 
 # used by kz_json, nklib, jesse, lager, maybe couchbeam if compiled
 # branch: 2600hz
