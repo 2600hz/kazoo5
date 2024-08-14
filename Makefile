@@ -38,7 +38,7 @@ CORE_HASH := $(shell md5sum $(ROOT)/make/Makefile.core | cut -d' ' -f1)
 CORE_HASH_FILE := $(ROOT)/make/.core.mk.$(CORE_HASH)
 
 APPS := $(dir $(wildcard $(APPS_DIR)/*/.git))
-CORE := $(wildcard $(CORE_DIR))
+CORE := $(wildcard $(CORE_DIR))/
 
 KAST = $(APPS_DIR)/ast
 

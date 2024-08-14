@@ -6,7 +6,7 @@ set -e
 
 pushd "$(dirname "$0")" > /dev/null
 
-ROOT=$(readlink -f "$(pwd -P)"/..)
+ROOT=$(readlink -f "$(pwd -P)/..")
 
 _ci_debug() {
     msg="$1"
