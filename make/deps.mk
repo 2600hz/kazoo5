@@ -28,6 +28,7 @@ DEPS ?= amqp_client \
 	plists \
 	poolboy \
 	proper \
+	qrcode \
 	ra \
 	ranch \
 	recon \
@@ -191,3 +192,6 @@ dep_soap = git https://github.com/2600hz/erlang-soap dbdca66
 
 # XML lib
 dep_erlsom = git https://github.com/2600hz/erlang-erlsom 2600Hz
+
+# 2600Hz branch
+dep_qrcode = git https://github.com/2600hz/erlang-qrcode 650d9bc0d3d052cb5689a4b4fda161eb8d72a888

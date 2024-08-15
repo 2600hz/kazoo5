@@ -9,7 +9,7 @@ if len(sys.argv) < 2:
     sys.exit(1)
 
 def find_schema(txt):
-    found = re.findall('^#{2,} Schema\n\n[^>]*?(?=\n{3}\#{1,4}|\Z)', txt, re.MULTILINE | re.DOTALL)
+    found = re.findall(r'^#{2,} Schema\n\n[^>]*?(?=\n{3}\#{1,4}|\Z)', txt, re.MULTILINE | re.DOTALL)
     return found[0]
 
 def public_doc(ref_path):
