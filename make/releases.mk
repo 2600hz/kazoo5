@@ -5,7 +5,7 @@ RELX_CONFIG_SCRIPT = $(RELX_CONFIG).script
 
 .PHONY: clean-release
 clean-release:
-	$(if $(wildcard _rel/), rm -r _rel/)
+	$(if $(wildcard _rel/), rm -rf _rel/)
 
 .PHONY: build-release
 build-release: $(RELX) clean-release $(RELX_CONFIG) $(RELX_CONFIG_SCRIPT) $(ROOT)/rel/sys.config $(ROOT)/rel/vm.args

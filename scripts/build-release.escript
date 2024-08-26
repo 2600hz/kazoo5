@@ -19,7 +19,7 @@ main(CommandLineArgs) ->
 
     StartTime = kz_time:start_time(),
     relx_release(Options, RelxConfig),
-    io:format("built release in ~p ms~n", [kz_time:elapsed_ms(StartTime)]).
+    io:format("~nbuilt release in ~p ms~n", [kz_time:elapsed_ms(StartTime)]).
 
 relx_release(Options, RelxConfig) ->
     relx_release(Options, RelxConfig, lists:keyfind('release', 1, RelxConfig)).
@@ -41,6 +41,7 @@ relx_release(Options, RelxConfig, {'release', {Name, Vsn}, _}) ->
     build_release(Options, RelxConfig, Name, Vsn).
 
 build_release(Options, RelxConfig, Name, Vsn) ->
+    io:format("building relx release for ~s(~s)~n", [Name, Vsn]),
     {'ok', _Built} = relx:build_release(#{name => Name, vsn => Vsn}
                                        ,[{'output_dir', props:get_value('output_dir', Options)}
                                         | RelxConfig
