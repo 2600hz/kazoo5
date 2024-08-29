@@ -38,10 +38,11 @@ DebugInfo = case os:getenv("BEAM_LEAN") of
             end,
 
 BASE = [{release, {kazoo, VSN}
+       ,Base ++ Preparer(Apps ++ Core ++ Deps)
+        }
        ,{mode, prod}
        ,{debug_info, DebugInfo}
-       ,Base ++ Preparer(Apps ++ Core ++ Deps)
-       }],
+	   ],
 
 APPS = [begin
           {ok, [{application, App, Settings}]} = file:consult(list_to_binary(["applications/", atom_to_list(App), "/ebin/", atom_to_list(App), ".app"])),
