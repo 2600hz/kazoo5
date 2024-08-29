@@ -38,7 +38,7 @@ BASE = [{default_release, {kazoo, VSN}}
         },
        ,{mode, prod}
        ,{debug_info, DebugInfo}
-	   ],
+       ],
 
 Overlay = proplists:get_value(overlay, CONFIG, []),
 OTP_VERSON_FILE = filename:join([code:root_dir(), "releases", erlang:system_info(otp_release), "OTP_VERSION"]),
