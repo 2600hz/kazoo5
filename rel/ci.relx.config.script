@@ -43,8 +43,15 @@ Base = [runtime_tools
        ,common_test
        ],
 
+DebugInfo = case os:getenv("BEAM_LEAN") of
+                "true" -> 'strip';
+                _ -> 'keep'
+            end,
+
 BASE = [{release
-        ,{kazoo, VSN}
+       ,{kazoo, VSN}
+       ,{mode, prod}
+       ,{debug_info, DebugInfo}
         ,Base ++ Preparer(Apps ++ Core ++ Deps)
         }
        ],

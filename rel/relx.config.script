@@ -31,7 +31,14 @@ Base = [runtime_tools
        ,sasl
        ],
 
+DebugInfo = case os:getenv("BEAM_LEAN") of
+                "true" -> 'strip';
+                _ -> 'keep'
+            end,
+
 BASE = [{release, {kazoo, VSN}
+       ,{mode, prod}
+       ,{debug_info, DebugInfo}
        ,Base ++ Preparer(Apps ++ Core ++ Deps)
        }],
 
