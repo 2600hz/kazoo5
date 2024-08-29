@@ -34,10 +34,11 @@ DebugInfo = case os:getenv("BEAM_LEAN") of
 
 BASE = [{default_release, {kazoo, VSN}}
        ,{release, {kazoo, VSN}
+        ,Base ++ Preparer(Core ++ Deps)
+        },
        ,{mode, prod}
        ,{debug_info, DebugInfo}
-        ,Base ++ Preparer(Core ++ Deps)
-        }],
+	   ],
 
 Overlay = proplists:get_value(overlay, CONFIG, []),
 OTP_VERSON_FILE = filename:join([code:root_dir(), "releases", erlang:system_info(otp_release), "OTP_VERSION"]),

@@ -50,10 +50,10 @@ DebugInfo = case os:getenv("BEAM_LEAN") of
 
 BASE = [{release
        ,{kazoo, VSN}
-       ,{mode, prod}
-       ,{debug_info, DebugInfo}
         ,Base ++ Preparer(Apps ++ Core ++ Deps)
         }
+       ,{mode, prod}
+       ,{debug_info, DebugInfo}
        ],
 
 ReleaseFun3 = fun(_App, Acc, 'true') -> Acc;
