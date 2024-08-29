@@ -41,7 +41,7 @@ BASE = [{release, {kazoo, VSN}
         }
        ,{mode, prod}
        ,{debug_info, DebugInfo}
-	   ],
+       ],
 
 APPS = [begin
           {ok, [{application, App, Settings}]} = file:consult(list_to_binary(["applications/", atom_to_list(App), "/ebin/", atom_to_list(App), ".app"])),
