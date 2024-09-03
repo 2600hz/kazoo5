@@ -32,15 +32,22 @@ add_dir(SrcDir) ->
     App = filename:basename(AppDir),
 
     io:format("adding ~s: ~s~n", [App, AppDir]),
-    SrcDirs = [kz_term:to_binary(string:replace(Dir, AppDir, <<>>))
+    SrcDirs = [kz_term:to_binary(string:replace(Dir, AppDir ++ "/", <<>>))
                || Dir <- filelib:wildcard([AppDir, "/src/*"]), filelib:is_dir(Dir)
               ],
+
+    IncludeDir = filename:join([AppDir, "include"]),
+
+    IncludeDirs = case filelib:is_dir(IncludeDir) of
+                      'true' -> [kz_term:to_binary(string:replace(IncludeDir, AppDir ++ "/", <<>>))];
+                      'false' -> []
+                  end,
 
     kz_json:from_list([{<<"name">>, kz_term:to_binary(App)}
                       ,{<<"dir">>, kz_term:to_binary(AppDir)}
                       ,{<<"src_dirs">>, [<<"src">> | SrcDirs]}
                       ,{<<"extra_src_dirs">>, []}
-                      ,{<<"ebin">>, kz_term:to_binary(filename:join([AppDir, "ebin"]))}
-                      ,{<<"include_dirs">>, []}
+                      ,{<<"ebin">>, <<"ebin">>}
+                      ,{<<"include_dirs">>, IncludeDirs}
                       ,{<<"macros">>, kz_json:new()}
                       ]).
