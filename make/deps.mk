@@ -93,7 +93,7 @@ dep_epgsql = git https://github.com/epgsql/epgsql 7ba52768cf0ea7d084df24d4275a88
 
 # used by kazoo_attachments
 # branch: 2600hz-otp-26
-dep_erlazure = git https://github.com/2600hz/erlang-erlazure.git 0b5a53e2d5e18f3dbe05a891596b607e7ca3989b
+dep_erlazure = git https://github.com/2600hz/erlang-erlazure.git 06e9834509dfb882d9a34e5f4d9e009d9ed54d6d
 
 # used by kazoo_attachments and a crossbar test (cb_storage_tests)
 # branch: 2600Hz-otp-26
