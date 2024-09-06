@@ -218,7 +218,7 @@ dep_soap = git https://github.com/2600hz/erlang-soap dbdca66
 dep_erlsom = git https://github.com/2600hz/erlang-erlsom fb5f88a7635341520e3251b5354479ceee5fa8b1
 
 # OTP release builder
-dep_relx = git https://github.com/erlware/relx v4.9.0
+dep_relx = git https://github.com/erlware/relx a9c35b6a159662cfae9ed8beaa62b7756b48765c
 
 # Used by kazoo_auth
 # branch: 2600Hz-otp-26
