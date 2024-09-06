@@ -68,12 +68,11 @@ dep_esaml = git https://github.com/2600hz/erlang-esaml.git 9fe06697234113eb1a64a
 # dep_chatterbox = hex 0.7.0
 # used by apns4erl
 
-# PRs merged!
-# Based off latest commit on '2600hz-otp26' branch
-dep_couchbeam = git https://github.com/2600hz/erlang-couchbeam 2687ae6969390c4f733196552716db41f4d9ac93
+# branch: 2600hz-otp26
+dep_couchbeam = git https://github.com/2600hz/erlang-couchbeam b48830cd95aa61f86c7f6479f4425e80985802da
 
-# 2600Hz branch
-dep_hackney = git https://github.com/2600hz/erlang-hackney 7ae3831c1a56896d05d862de2c44cc751ae7790f
+# branch: fix-intermittent-chunked-response-hang (until PR merged)
+dep_hackney = git https://github.com/2600hz/erlang-hackney 1a13c8f8148e1e94ac633e905fc62bca78a483bf
 
 # Based off 2600Hz-2.12.0 branch
 dep_cowboy = git https://github.com/2600hz/erlang-cowboy 50c21ad
