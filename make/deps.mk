@@ -71,10 +71,10 @@ dep_esaml = git https://github.com/2600hz/erlang-esaml.git 9fe06697234113eb1a64a
 # dep_chatterbox = hex 0.7.0
 
 # branch: 2600hz-otp26-view_stream
-dep_couchbeam = git https://github.com/2600hz/erlang-couchbeam 4e88273636ac51c5a457b27edd4e5217b100403a
+dep_couchbeam = git https://github.com/2600hz/erlang-couchbeam bf430566bbac3a485234aa69e6f59aaa85510689
 
-# branch: 2600Hz
-dep_hackney = git https://github.com/2600hz/erlang-hackney 7ae3831c1a56896d05d862de2c44cc751ae7790f
+# branch: fix-intermittent-chunked-response-hang (until PR merged)
+dep_hackney = git https://github.com/2600hz/erlang-hackney 1a13c8f8148e1e94ac633e905fc62bca78a483bf
 
 # branch: 2600Hz-2.12.0
 dep_cowboy = git https://github.com/2600hz/erlang-cowboy 50c21ad
