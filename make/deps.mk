@@ -128,7 +128,7 @@ dep_inet_cidr = git https://github.com/2600hz/erlang-inet_cidr.git 1.0.2
 
 # used by kazoo_schemas primarily
 # branch: otp-26 + external format validator
-dep_jesse = git https://github.com/2600hz/erlang-jesse 35eabb4
+dep_jesse = git https://github.com/2600hz/erlang-jesse 35eabb483c3541ca0ad631b7bc5e333655303205
 
 # used by kz_json, nklib, jesse, lager, maybe couchbeam if compiled
 # branch: 2600hz
