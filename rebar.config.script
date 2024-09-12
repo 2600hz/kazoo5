@@ -1,40 +1,55 @@
 %% -*- mode: erlang; -*-
 %% vim: set ft=erlang:
 
-RelxConfig = fun() ->
-                     ToFilterOut = [".erlang.mk"
-                                   ,"ci.erlang.mk"
-                                   ,".settings"
-                                   ,".git"
-                                   ,".circleci"
-                                   ,"skel"
-                                   ,"ananke"
-                                   ,"amqp_leader"
-                                   ],
-                     Base = [runtime_tools
-                            ,tools
-                            ,wx
-                            ,observer
-                            ,debugger
-                            ,sasl
-                            ,eunit
-                            ,common_test
-                            ],
-                     ProjectApps = [{list_to_atom(App), 'load'}
-                                    || TopDir <- ["applications", "core"],
-                                       Dir <- filelib:wildcard(filename:join([TopDir, "*"])),
-                                       App <- [filename:basename(Dir)],
-                                       filelib:is_dir(Dir),
-                                       filelib:is_dir(filename:join([Dir, "ebin"])),
-                                       not lists:member(App, ToFilterOut)
-                                   ],
-                     APPS = Base ++ ProjectApps,
-                     {relx, Releases} = case lists:keyfind(relx, 1, CONFIG) of
-                                            'false' ->
-                                                {relx, []};
-                                            Relx -> Relx
-                                        end,
+{relx, Releases} = case lists:keyfind(relx, 1, CONFIG) of
+                       'false' ->
+                           {relx, []};
+                       Relx -> Relx
+                   end,
 
+IsDev = lists:foldl(fun(_, true) -> true;
+                       ({release, _Name, _Apps}, Acc) -> Acc;
+                       ({release, _Name, _Apps, RelConfig}, _Acc) ->
+                           proplists:get_value('mode', RelConfig) =:= 'dev'
+                               orelse proplists:get_value('dev_mode', RelConfig) =:= true;
+                       ({mod, dev}, _Acc) ->
+                            true;
+                       ({dev_mod, true}, _Acc) ->
+                            false;
+                       (_Other, Acc) ->
+                            Acc
+                    end
+                   ,false
+                   ,Releases
+                   ),
+ToFilterOut = [".erlang.mk"
+              ,"ci.erlang.mk"
+              ,".settings"
+              ,".git"
+              ,".circleci"
+              ,"skel"
+              ,"ananke"
+              ,"amqp_leader"
+              ],
+
+ProjectApps = [{list_to_atom(App), 'load'}
+               || TopDir <- ["applications", "core"],
+                  Dir <- filelib:wildcard(filename:join([TopDir, "*"])),
+                  App <- [filename:basename(Dir)],
+                  filelib:is_dir(Dir),
+                  filelib:is_dir(filename:join([Dir, "ebin"]))
+                      orelse filelib:is_dir(filename:join([Dir, "src"])),
+                  not lists:member(App, ToFilterOut)
+              ],
+
+BaseApps = [runtime_tools
+           ,tools
+           ,debugger
+           ,sasl
+           ],
+
+RelxConfig = fun() ->
+                     APPS = BaseApps ++ ProjectApps,
                      lists:foldr(fun({release, Name, Apps}, Acc) ->
                                          [{release, Name, Apps ++ APPS}|Acc];
                                     ({release, Name, Apps, RelConfig}, Acc) ->
@@ -100,5 +115,19 @@ PrepareRebarConfig = fun(MyConfig) ->
 
 
 %% Hopefuly temporary, see note above hash file
-NewConfig = DynamicConfig(),
-PrepareRebarConfig(NewConfig).
+NewConfig = PrepareRebarConfig(DynamicConfig()),
+
+case filelib:is_file("rebar.local.config") of
+    true ->
+        Bindings = lists:foldr(fun({Key, Value}, Acc) -> erl_eval:add_binding(Key, Value, Acc) end
+                              ,[{'CONFIG', NewConfig}
+                               ,{'BASE_APPS', BaseApps}
+                               ,{'PROJECT_APPS', ProjectApps}
+                               ]
+                              ,erl_eval:new_bindings()
+                              ),
+        {ok, ConfigTerms} = file:script("rebar.local.config", Bindings),
+        ConfigTerms;
+    Error ->
+        NewConfig
+end.

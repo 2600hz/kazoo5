@@ -4,10 +4,10 @@
 
 Since Rebar3 is now mature enough and adopted by almost all Erlang projects, by supporting in Kazoo can now benefit of supporting Rebar3 and have better integration and interoperability with other tools such as code editors, other Erlang libraries and Erlang tools (such as [ErlangLS](https://github.com/erlang-ls/erlang_ls)) and way much faster build time.
 
-Rebar3 in Kazoo still and experimental and won't replace the existing make build system.
-Make is still the official build system supported by Kazoo.
+Rebar3 in Kazoo is still experimental and won't replace the existing make build system.
+Current Make build system is still the official build system supported by Kazoo.
 
-This an umbrella app Rebar configuration and each application (in `core/` and `applications/`) can have their own `rebar.config` with any customizations needed by that particular application.
+The umbrella Rebar configuration in provided by kazoo5 repository and each application (in `core/` and `applications/`) can have their own `rebar.config` with any customizations needed by that particular application.
 
 > **NOTE** All Rebar commands must be run from root of Kazoo source code.
 
@@ -35,8 +35,8 @@ Consult [Installation](../installation.md) and [Installing on macOS](./installin
 ## Fetch Core and Kazoo Apps
 
 You still need to manually fetch Kazoo Core and Kazoo Applications. Go ahead and copy
-`make/more_apps.mk.default` to `make/mores_apps.mk` if you have't already. Add any other
-Kazoo applications extra repository you want to fetch and run the command in the root of
+`make/more_apps.mk.default` to `make/mores_apps.mk` if you have't already. Add any other extra
+Kazoo application repositories you want to fetch and run the command in the root of
 Kazoo source code directory:
 
 ```shell
@@ -103,49 +103,66 @@ In rare case it is better to remove `_build` directory and start over.
 
 ## Erlang Releases
 
-### Building Dev Release
+### `kazoo_dev` Release
 
-This is the only configured release provided by `rebar.config`. If you need more you can
-create a new config file for and/or use rebar3 release option to use it.
+For most dev time cases, a default relx release is provided with name `kazoo_dev`.
+If you need more release targets, see section about local rebar3 config.
 
-For building dev release:
-
-```
-rebar3 release
-```
-
-Please be advise that we use special `vm.args` and `sys.config` for rebar releases. Newer
-`relx` support `.src` for those file so we can dynamically configure them for runtime.
-
-### Running Dev release
-
-Simply use this to run a kazoo dev release with `reloader` attached:
+For building the `kazoo_dev` release:
 
 ```
-_build/default/rel/kazoo_dev/bin/kazoo_dev console
+rebar3 release -n kazoo_dev
 ```
 
-You will get an Erlang shell. Consult that `kazoo_dev` script for more sub-commands.
+Please be advise that we use special `vm.args` and `sys.config` for rebar releases (check `rel/rebar.dev.*` files).
 
-#### Controlling NODE_NAME and COOKIE
+#### Kazoo `config.ini`
 
-As you see from `rel/rebar.dev.vm.args.src`, you can set shell enviroment variable to
-customize the node name and cookie:
+To run Kazoo you may need create a `config.init`. A bare minimum config file is provided in `rel/rebar.dev.kazoo-config.ini`.
+Copy the file to `/etc/kazoo/core/config.init`:
+
+```shell
+sudo mkdir -p /etc/kazoo/core
+sudo cp -n rel/rebar.dev.kazoo-config.ini /etc/kazoo/core/config.ini
+```
+
+#### Running `kazoo_dev` release
+
+Simply use this to run a kazoo dev release (`reloader` is attached to track recompile beam files):
 
 ```
-KAZOO_NODE=ecallmgr KAZOO_COOKIE=mycookie _build/default/rel/kazoo_dev/bin/kazoo_dev console
+_build/default/rel/kazoo_dev/bin/official_kazoo console
 ```
 
-Default values are:
+You will get an Erlang shell. Consult that `official_kazoo` script for more sub-commands.
 
-- `KAZOO_NODE`: `kazoo_apps`
-- `KAZOO_COOKIE`: `change_me`
+#### Log files
 
+Log files are in `_build/default/rel/kazoo_dev/log/`. `ra` directory is at `_build/default/rel/kazoo_dev/ra`.
 
-Also note that `rel/rebar.dev.sys.config.src` will put `ra` data_dir in `_build`.
+#### Changing Erlang node name
 
-No not forget that you need at least `KAZOO_CONFIG` variable too, unless the default Kazoo
-config is enough for you.
+Before running the release `official_kazoo` script, export your node name in `KAZOO_NODE` variable:
+
+```shell
+export KAZOO_NODE=ecallmgr
+
+# or combine it with running release
+KAZOO_NODE=ecallmgr _build/default/rel/kazoo_dev/bin/kazoo_dev console
+```
+
+By default `kazoo_apps` is used as node name.
+
+#### Changing Erlang Cookie
+
+Before running the release `official_kazoo` script, define your cookie for the node name in your Kazoo config file
+in `/etc/kazoo/core/config.ini`. Default cookie is `change_me`.
+
+```
+; example cookie configuration for kazoo_apps node
+[kazoo_apps]
+cookie = mycookie_is_awesome
+```
 
 ## Dialyzer
 
@@ -187,4 +204,80 @@ then to create and print coverage:
 
 ```
 rebar3 cover -v
+```
+
+## Local custom Rebar3 configuration
+
+If you need to customize rebar3 configuration to your needs (add extra release targets, deps and etc...), you may
+create `rebar.local.config` in the root of Kazoo source directory. Our `rebar.config.script` will consult this file if exists.
+These variables are bounded and can be use in your config file:
+
+- `CONFIG`: Updated Rebar3 config variable, you MUST return this after updating it to your liking.
+- `PROJECT_APPS`: A variable that holds all Kazoo and Core applications, useful to use as a list of apps when adding a new release target.
+- `BASE_APPS`: Our list of recommaned Erlang system apps.
+
+Your file need to return an updated rebar3 config.
+
+Example `rebar.local.config` to add new release targets, one simulating a procution, and another one only generating a release for `ecallmgr` app):
+
+```erlang
+{relx, Releases} = case lists:keyfind(relx, 1, CONFIG) of
+                       'false' ->
+                           {relx, []};
+                       Relx -> Relx
+                   end,
+
+
+MyReleases =
+        [{release
+         %% release name and version
+         ,{kazoo_next, "5.5"}
+         %% add apps to included in this release, required. You can use provided Kazoo PROJECT_APPS and BASE_APPS if you like.
+         ,BASE_APPS ++ PROJECT_APPS
+         %% release configuration
+         ,[{mode, prod}
+          ,{include_src, false}
+          ,{include_erts, false}
+          ,{dev_mode, false}
+          ,{generate_start_script, false}
+          ,{extended_start_script, false}
+          ,{sys_config, "rel/rebar.dev.sys.config.src"}
+          ,{vm_args, "rel/rebar.dev.vm.args.src"}
+          ,{check_for_undefined_functions, false}
+          ,{overlay, [{copy, "core/sup/priv/sup", "{{output_dir}}/bin/"}
+                     ,{copy, "rel/nodetool", "{{output_dir}}/bin/"}
+                     ,{template, "rel/kazoo", "{{output_dir}}/bin/kazoo"}
+                     ,{chmod, 8#00755, "{{output_dir}}/bin/kazoo"}
+                     ,{copy, "rel/rebar.dev.kazoo-config.ini", "etc/kazoo.ini"}
+                     ]
+           }
+          ]
+         }
+        ,{release
+         %% release name and version
+         ,{ecallmgr, {git, short}}
+         %% add apps to included in this release, required. You can use provided Kazoo PROJECT_APPS and BASE_APPS if you like.
+         ,[ecallmgr]
+         %% release configuration
+         ,[{mode, dev}
+          ,{include_src, false}
+          ,{include_erts, false}
+          ,{dev_mode, true}
+          ,{generate_start_script, false}
+          ,{extended_start_script, false}
+          ,{sys_config, "rel/rebar.dev.sys.config.src"}
+          ,{vm_args, "rel/rebar.dev.vm.args.src"}
+          ,{check_for_undefined_functions, false}
+          ,{overlay, [{copy, "core/sup/priv/sup", "{{output_dir}}/bin/"}
+                     ,{copy, "rel/nodetool", "{{output_dir}}/bin/"}
+                     ,{template, "rel/kazoo", "{{output_dir}}/bin/kazoo"}
+                     ,{chmod, 8#00755, "{{output_dir}}/bin/kazoo"}
+                     ,{copy, "rel/rebar.dev.kazoo-config.ini", "etc/kazoo.ini"}
+                     ]
+           }
+          ]
+         }
+        ],
+
+lists:keystore(relx, 1, CONFIG, {relx, Releases ++ MyReleases}).
 ```

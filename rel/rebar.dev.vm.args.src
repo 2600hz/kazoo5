@@ -31,6 +31,3 @@
 
 -s kazoo_apps_app
 -s reloader
-
--name ${KAZOO_NODE:-kazoo_apps}
--setcookie ${KAZOO_COOKIE:-change_me}
