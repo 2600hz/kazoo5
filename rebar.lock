@@ -206,7 +206,7 @@
   0},
  {<<"relx">>,
   {git,"https://github.com/erlware/relx",
-       {ref,"a772620a7b30227ffa320325fb548d8f9d218337"}},
+       {ref,"a9c35b6a159662cfae9ed8beaa62b7756b48765c"}},
   0},
  {<<"rfc3339">>,
   {git,"https://github.com/andreineculau/rfc3339.git",
