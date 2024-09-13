@@ -128,13 +128,22 @@ sudo cp -n rel/rebar.dev.kazoo-config.ini /etc/kazoo/core/config.ini
 
 #### Running `kazoo_dev` release
 
-Simply use this to run a kazoo dev release (`reloader` is attached to track recompile beam files):
+After release is created, you can use the release script created to start applications in that release. In `kazoo_dev`
+case you can start Kazoo dev this way (`reloader` is attached to track recompile beam files):
+
+```
+_build/default/rel/kazoo_dev/bin/kazoo_dev console
+```
+
+You will get an Erlang shell. Consult that `kazoo_dev` script for more sub-commands.
+
+#### Using custom Kazoo relx script
+
+The `kazoo_dev` includes Kazoo's custom release script if you perfer to use that one:
 
 ```
 _build/default/rel/kazoo_dev/bin/official_kazoo console
 ```
-
-You will get an Erlang shell. Consult that `official_kazoo` script for more sub-commands.
 
 #### Log files
 
@@ -142,7 +151,7 @@ Log files are in `_build/default/rel/kazoo_dev/log/`. `ra` directory is at `_bui
 
 #### Changing Erlang node name
 
-Before running the release `official_kazoo` script, export your node name in `KAZOO_NODE` variable:
+Before running the release `kazoo_dev` script, export your node name in `KAZOO_NODE` variable:
 
 ```shell
 export KAZOO_NODE=ecallmgr
@@ -155,7 +164,7 @@ By default `kazoo_apps` is used as node name.
 
 #### Changing Erlang Cookie
 
-Before running the release `official_kazoo` script, define your cookie for the node name in your Kazoo config file
+Before running the release `kazoo_dev` script, define your cookie for the node name in your Kazoo config file
 in `/etc/kazoo/core/config.ini`. Default cookie is `change_me`.
 
 ```
@@ -163,6 +172,11 @@ in `/etc/kazoo/core/config.ini`. Default cookie is `change_me`.
 [kazoo_apps]
 cookie = mycookie_is_awesome
 ```
+
+#### SUP command
+
+The `kazoo_dev` provdes the `sup` script at `_build/default/rel/kazoo_dev/bin/sup`.
+
 
 ## Dialyzer
 
