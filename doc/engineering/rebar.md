@@ -214,11 +214,11 @@ These variables are bounded and can be use in your config file:
 
 - `CONFIG`: Updated Rebar3 config variable, you MUST return this after updating it to your liking.
 - `PROJECT_APPS`: A variable that holds all Kazoo and Core applications, useful to use as a list of apps when adding a new release target.
-- `BASE_APPS`: Our list of recommaned Erlang system apps.
+- `BASE_APPS`: Our list of recommend Erlang system apps.
 
 Your file need to return an updated rebar3 config.
 
-Example `rebar.local.config` to add new release targets, one simulating a procution, and another one only generating a release for `ecallmgr` app):
+Example `rebar.local.config` to add new release targets, one simulating a production, and another one only generates a release for `ecallmgr` app):
 
 ```erlang
 {relx, Releases} = case lists:keyfind(relx, 1, CONFIG) of
@@ -233,7 +233,7 @@ MyReleases =
          %% release name and version
          ,{kazoo_next, "5.5"}
          %% add apps to included in this release, required. You can use provided Kazoo PROJECT_APPS and BASE_APPS if you like.
-         ,BASE_APPS ++ PROJECT_APPS
+         ,PROJECT_APPS
          %% release configuration
          ,[{mode, prod}
           ,{include_src, false}
