@@ -222,7 +222,7 @@ dep_relx = git https://github.com/erlware/relx a9c35b6a159662cfae9ed8beaa62b7756
 
 # Used by kazoo_auth
 # branch: 2600Hz-otp-26
-dep_qrcode = git https://github.com/2600hz/erlang-qrcode 7faa72913a4f8267c10d8f4a82685f73122f00d6
+dep_qrcode = git https://github.com/2600hz/erlang-qrcode cbb74b45d513dddae34e40740d399d04c1946ba0
 
 # branch: master
 dep_qdate = git https://github.com/2600hz/erlang-qdate 2072b49220dc0cfad59f1163119e1e76e55240a1
