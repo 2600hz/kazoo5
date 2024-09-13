@@ -4,7 +4,7 @@
 -boot start_sasl
 
 -kernel inet_dist_listen_min 11500 inet_dist_listen_max 11999
-# sorry Luis I need my inet_dist interface accessible over remote host :)
+# sorry Luis but I need my inet_dist interface accessible to remote host :)
 # -kernel inet_dist_use_interface {127,0,0,1}
 -kernel start_pg true
 
@@ -28,6 +28,9 @@
 
 # When crashing, write dump with highest priority
 -env ERL_CRASH_DUMP_NICE 1
+
+-proto_dist kz amqp
+-name ${KAZOO_NODE:-kazoo_apps}
 
 -s kazoo_apps_app
 -s reloader
