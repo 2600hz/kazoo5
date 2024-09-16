@@ -200,6 +200,12 @@ $(DEPS_HASH_FILE):
 	ROOT=$(ROOT) $(MAKE) -C $(DEPS_DIR)/ deps
 	@touch $(DEPS_HASH_FILE)
 
+.PHONY: deps-direct
+deps-direct:
+	@$(MAKE) $(DEPS_DIR)/Makefile
+	ROOT=$(ROOT) $(MAKE) -C $(DEPS_DIR)/ deps
+	@touch $(DEPS_HASH_FILE)
+
 $(DEPS_DIR)/Makefile: $(DOT_ERLANG_MK) $(DEPS_DIR) clean-plt
 	@cp $(ROOT)/make/Makefile.deps $(DEPS_DIR)/Makefile
 	@$(MAKE) -f $(ERLANG_MK) deps

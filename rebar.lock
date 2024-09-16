@@ -184,7 +184,7 @@
   0},
  {<<"qrcode">>,
   {git,"https://github.com/2600hz/erlang-qrcode",
-       {ref,"cbb74b45d513dddae34e40740d399d04c1946ba0"}},
+       {ref,"1ce2d131f670a9ea89123694419e144047c8d362"}},
   0},
  {<<"ra">>,
   {git,"https://github.com/2600hz/erlang-ra.git",
