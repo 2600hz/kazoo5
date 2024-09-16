@@ -32,24 +32,41 @@ ToFilterOut = [".erlang.mk"
               ,"amqp_leader"
               ],
 
-ProjectApps = [{list_to_atom(App), 'load'}
-               || TopDir <- ["applications", "core"],
-                  Dir <- filelib:wildcard(filename:join([TopDir, "*"])),
-                  App <- [filename:basename(Dir)],
-                  filelib:is_dir(Dir),
-                  filelib:is_dir(filename:join([Dir, "ebin"]))
-                      orelse filelib:is_dir(filename:join([Dir, "src"])),
-                  not lists:member(App, ToFilterOut)
-              ],
+CORE_APPS = lists:usort(
+             [{'amqp_dist', 'load'}
+              | [{list_to_atom(App), 'load'}
+                  || TopDir <- ["core"],
+                     Dir <- filelib:wildcard(filename:join([TopDir, "*"])),
+                     App <- [filename:basename(Dir)],
+                     filelib:is_dir(Dir),
+                     filelib:is_dir(filename:join([Dir, "ebin"]))
+                         orelse filelib:is_dir(filename:join([Dir, "src"])),
+                     not lists:member(App, ToFilterOut)
+                ]
+             ]
+            ),
+KAPPS = lists:usort(
+         [{list_to_atom(App), 'load'}
+           || TopDir <- ["applications"],
+              Dir <- filelib:wildcard(filename:join([TopDir, "*"])),
+              App <- [filename:basename(Dir)],
+              filelib:is_dir(Dir),
+              filelib:is_dir(filename:join([Dir, "ebin"]))
+                  orelse filelib:is_dir(filename:join([Dir, "src"])),
+              not lists:member(App, ToFilterOut)
+         ]
+        ),
 
-BaseApps = [runtime_tools
-           ,tools
-           ,debugger
-           ,sasl
-           ],
+PROJECT_APPS = CORE_APPS ++ KAPPS,
+
+BASE_APPS = [runtime_tools
+            ,tools
+            ,debugger
+            ,sasl
+            ],
 
 RelxConfig = fun() ->
-                     APPS = ProjectApps,
+                     APPS = PROJECT_APPS,
                      lists:foldr(fun({release, Name, Apps}, Acc) ->
                                          [{release, Name, Apps ++ APPS}|Acc];
                                     ({release, Name, Apps, RelConfig}, Acc) ->
@@ -121,8 +138,10 @@ case filelib:is_file("rebar.local.config") of
     true ->
         Bindings = lists:foldr(fun({Key, Value}, Acc) -> erl_eval:add_binding(Key, Value, Acc) end
                               ,[{'CONFIG', NewConfig}
-                               ,{'BASE_APPS', BaseApps}
-                               ,{'PROJECT_APPS', ProjectApps}
+                               ,{'BASE_APPS', BASE_APPS}
+                               ,{'CORE_APPS', CORE_APPS}
+                               ,{'KAPPS', KAPPS}
+                               ,{'PROJECT_APPS', PROJECT_APPS}
                                ]
                               ,erl_eval:new_bindings()
                               ),

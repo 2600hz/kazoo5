@@ -227,8 +227,10 @@ create `rebar.local.config` in the root of Kazoo source directory. Our `rebar.co
 These variables are bounded and can be use in your config file:
 
 - `CONFIG`: Updated Rebar3 config variable, you MUST return this after updating it to your liking.
-- `PROJECT_APPS`: A variable that holds all Kazoo and Core applications, useful to use as a list of apps when adding a new release target.
 - `BASE_APPS`: Our list of recommend Erlang system apps.
+- `CORE_APPS`: List of app Kazoo Core apps (fetched by `make fetch-core`).
+- `KAPPS`:  List of all Kazoo applications in `applications/` folder (fetched by `make fetch-kapps`).
+- `PROJECT_APPS`: A variable that holds all Kazoo and Core applications, useful to use as a list of apps when adding a new release target.
 
 Your file need to return an updated rebar3 config.
 
