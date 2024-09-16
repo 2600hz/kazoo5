@@ -31,6 +31,7 @@
 
 -proto_dist kz amqp
 -name ${KAZOO_NODE:-kazoo_apps}
+-setcookie ${KAZOO_COOKIE:-change_me}
 
 -s kazoo_apps_app
 -s reloader
