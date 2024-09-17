@@ -66,5 +66,5 @@
         ,{poll_interval, 20000}
         ,{heartbeat_interval, 10000}
         ]}
-,{ra, [{data_dir, "${ROOTDIR:-.}/ra"}]}
+,{ra, [{data_dir, "./ra"}]}
 ].

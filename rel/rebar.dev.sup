@@ -1,0 +1,54 @@
+#!/bin/sh
+
+# look for kazoo release root directory
+DEFAULT_ROOT="{{output_dir}}"
+_root=
+_script_name="{{release_name}}"
+if [ -f "$DEFAULT_ROOT/bin/{{release_name}}" ]; then
+    _root="$DEFAULT_ROOT"
+elif [ -f "$DEFAULT_ROOT/bin/official_kazoo" ]; then
+    _root="$DEFAULT_ROOT"
+    _script_name="official_kazoo"
+elif [ -f "$DEFAULT_ROOT/bin/kazoo_dev" ]; then
+    _root="$DEFAULT_ROOT"
+    _script_name="kazoo_dev"
+elif [ -f "$DEFAULT_ROOT/bin/kazoo" ]; then
+    _root="$DEFAULT_ROOT"
+    _script_name="kazoo"
+elif [ -d "$KAZOO_ROOT" ]; then
+    _root="$KAZOO_ROOT"
+    _root="kazoo"
+else
+    echo "Can't find Kazoo release root directory, is the release built?"
+    exit -1
+fi
+
+while getopts "n:c:" optname
+do
+    case "$optname" in
+        "n")
+            SUP_NODE_ARG=$OPTARG
+            ;;
+        "c")
+            SUP_COOKIE_ARG=$OPTARG
+            ;;
+        *)
+            ;;
+    esac
+done
+
+shift $(($OPTIND - 1))
+
+KAZOO_NODE=${SUP_NODE_ARG:-${KAZOO_NODE:-kazoo_apps}}
+KAZOO_COOKIE=${SUP_COOKIE_ARG:-${KAZOO_COOKIE:-change_me}}
+
+_sup="$(echo "{{output_dir}}"/lib/sup-*/priv/sup.escript)"
+if [ ! -f "$_sup" ]; then
+    echo "Failed to find sup.escript file at $_sup"
+    exit 1
+fi
+
+_sup="lib/$(basename "$(dirname "$(dirname "$_sup")")")/priv/sup.escript"
+
+${DEFAULT_ROOT}/bin/${_script_name} escript "$_sup" -n "${KAZOO_NODE}" -c "${KAZOO_COOKIE}" "$@"
+exit $?

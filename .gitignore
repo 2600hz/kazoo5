@@ -97,3 +97,4 @@ compile_commands.json
 /project.json
 /.elp/
 /.elp.toml
+/rebar.local.config
