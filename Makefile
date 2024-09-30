@@ -405,7 +405,7 @@ validate-js:
 	@$(ROOT)/scripts/validate-js.py $(CHANGED_JSON)
 
 .PHONY: validate-py
-PYUPGRADE = $(shell { command -v pyupgrade } 2>/dev/null)
+PYUPGRADE = $(shell command -v pyupgrade)
 validate-py:
 ifneq ($(CHANGED_PYTHON),)
 	@$(PYUPGRADE) $(CHANGED_PYTHON)
