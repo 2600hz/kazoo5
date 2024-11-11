@@ -43,11 +43,11 @@ The truth is, billing is a complicated topic. It helps to break it into pieces. 
 
 -----
 
-## Rating & Routing in Kazoo
+## Rating & Routing in {% BRAND_NAME %}
 
 Today, we're NOT going to cover all these things. It's too much. We will give you a general overview of what exists today, how to configure it, how to monitor it, and how to parse the logs a bit to see what's going on.
 
-Kazoo's rating and routing functions are actually quite robust.
+{% BRAND_NAME %}'s rating and routing functions are actually quite robust.
 
 But they are not well documented so it can be easy to get lost in them.
 
@@ -72,7 +72,7 @@ But they are not well documented so it can be easy to get lost in them.
 
 -----
 
-## How Kazoo rates
+## How {% BRAND_NAME %} rates
 
 Rating is done by Hotornot:
 
@@ -109,7 +109,7 @@ Matching:
 ```
 
 # Limits
-## How Kazoo does limits
+## How {% BRAND_NAME %} does limits
 
 Limits are a concept of limiting how many flat-rate (included) calls are available which WON'T actually result in a charge.
 
@@ -280,7 +280,7 @@ sup jonny5_maintenance limits_summary [{ACCOUNT_ID}]
 
 ## How to credit/debit an account
 
-Credit in Kazoo is not tied to a billing system. Administrators can add or remove funds from an account as they need:
+Credit in {% BRAND_NAME %} is not tied to a billing system. Administrators can add or remove funds from an account as they need:
 
 * `sup kazoo_services_maintenance credit {ACCOUNT_ID} 5.0`
 * `sup kazoo_services_maintenance debit {ACCOUNT_ID} 5.0`

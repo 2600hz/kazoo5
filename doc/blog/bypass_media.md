@@ -10,7 +10,7 @@
 <li><a href="#sec-1-1-2">1.1.2. Drawbacks</a></li>
 </ul>
 </li>
-<li><a href="#sec-1-2">1.2. Bypassing Kazoo for media handling</a>
+<li><a href="#sec-1-2">1.2. Bypassing {% BRAND_NAME %} for media handling</a>
 <ul>
 <li><a href="#sec-1-2-1">1.2.1. Bypass for device(s):</a></li>
 <li><a href="#sec-1-2-2">1.2.2. Bypass for resource(s):</a></li>
@@ -33,14 +33,14 @@
 
 When we talk about media, we are talking about the audio packets going to and from an endpoint, where an endpoint could be your desk phone, fax machine, an upstream carrier, etc.
 
-Let's assume you're calling a number not managed by the Kazoo installation.
+Let's assume you're calling a number not managed by the {% BRAND_NAME %} installation.
 
 When you make the phone call, the default scenario is:
-1.  Your phone calls Kazoo. Specifically:
+1.  Your phone calls {% BRAND_NAME %}. Specifically:
     1.  Your phone sends an INVITE to the configured Kamailio server
     2.  Kamailio forwards the INVITE to a FreeSWITCH server
-    3.  Once FreeSWITCH authenticates your phone, it will then ask Kazoo for instructions on how to route your call
-2.  Kazoo determines the call cannot be handled locally and thus instructs FreeSWITCH to send the call to the configured carrier(s).
+    3.  Once FreeSWITCH authenticates your phone, it will then ask {% BRAND_NAME %} for instructions on how to route your call
+2.  {% BRAND_NAME %} determines the call cannot be handled locally and thus instructs FreeSWITCH to send the call to the configured carrier(s).
     1.  FreeSWITCH sends an INVITE (different Call-ID) as instructed.
 3.  Once the carrier (and resultant callee) answers, FreeSWITCH handles taking audio from your phone and sending it to the other end (and vice versa).
 
@@ -62,11 +62,11 @@ FreeSWITCH is actually in the middle of the call, listening for your audio packe
     a. There are ways around this using ZRTP. 'zrtp-passthru', and 'proxy-media' mode
 3.  Taking media on taxes the CPUs of the FreeSWITCH server more, reducing the number of calls processable.
 
-## Bypassing Kazoo for media handling<a id="sec-1-2" name="sec-1-2"></a>
+## Bypassing {% BRAND_NAME %} for media handling<a id="sec-1-2" name="sec-1-2"></a>
 
 In our default example above, there are two streams of data flowing, independent of each other: SIP signaling and RTP (the audio/video packets). In the default example, these streams both flow through FreeSWITCH. However, it is possible to instruct the endpoints to send their RTP streams directly to each other while keeping the SIP signaling going through FreeSWITCH (so you get paid!).
 
-In Kazoo, this is controlled by the **callee's** configuration.
+In {% BRAND_NAME %}, this is controlled by the **callee's** configuration.
 
 ### Bypass for device(s):<a id="sec-1-2-1" name="sec-1-2-1"></a>
 

@@ -1,4 +1,4 @@
-- [Alternative Storage Options for Kazoo](#org8916b87)
+- [Alternative Storage Options for {% BRAND_NAME %}](#org8916b87)
   - [Scenarios](#orgdbd1b36)
   - [Introducing Storage Plans](#orga265582)
   - [Getting started](#org6770240)
@@ -14,11 +14,11 @@
 
 <a id="org8916b87"></a>
 
-# Alternative Storage Options for Kazoo
+# Alternative Storage Options for {% BRAND_NAME %}
 
-Kazoo has long been opinionated about where it stores its data - [CouchDB](https://en.wikipedia.org/wiki/CouchDB). Historically, the project relied on [BigCouch](https://en.wikipedia.org/wiki/BigCouch) but with the release of CouchDB 2.0 and Kazoo 4.0, modern installations of Kazoo can leverage the new codebase.
+{% BRAND_NAME %} has long been opinionated about where it stores its data - [CouchDB](https://en.wikipedia.org/wiki/CouchDB). Historically, the project relied on [BigCouch](https://en.wikipedia.org/wiki/BigCouch) but with the release of CouchDB 2.0 and {% BRAND_NAME %} 4.0, modern installations of {% BRAND_NAME %} can leverage the new codebase.
 
-However, while CouchDB serves the majority of Kazoo's needs well, there are scenarios where CouchDB isn't the best option. We'll try to cover some of those scenarios as well as provide step-by-step instructions for how to take advantage of alternative storage options.
+However, while CouchDB serves the majority of {% BRAND_NAME %}'s needs well, there are scenarios where CouchDB isn't the best option. We'll try to cover some of those scenarios as well as provide step-by-step instructions for how to take advantage of alternative storage options.
 
 
 <a id="orgdbd1b36"></a>
@@ -42,7 +42,7 @@ Other possibilities include:
 
 ## Introducing Storage Plans
 
-With Kazoo 4.0, the 'storage plan' concept is introduced to allow system administrators, resellers, and account holders, to configure alternative storage options for their needs. Storage is configured in two phases:
+With {% BRAND_NAME %} 4.0, the 'storage plan' concept is introduced to allow system administrators, resellers, and account holders, to configure alternative storage options for their needs. Storage is configured in two phases:
 
 1.  Configure 'storage', what storage engines are available (such as adding AWS credentials for S3).
 2.  Configure 'plans', to determine what types of data will use which configured 'storage' option.
@@ -215,7 +215,7 @@ Our base "plan" will look like this:
 
 ### MODB plan
 
-For the modb plan, we want to only store certain types of attachments (voicemails) so we define a 'types' object that will configure Kazoo to store voicemails to our S3. In Kazoo, voicemails are known as 'mailbox messages' since we plan on supporting video voicemail and other things in the future.
+For the modb plan, we want to only store certain types of attachments (voicemails) so we define a 'types' object that will configure {% BRAND_NAME %} to store voicemails to our S3. In {% BRAND_NAME %}, voicemails are known as 'mailbox messages' since we plan on supporting video voicemail and other things in the future.
 
 Augmenting our plan to add the 'types' restriction:
 

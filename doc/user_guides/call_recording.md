@@ -174,20 +174,20 @@ Key | Description | Type | Default | Required | Support Level
 
 ### Interpreting call recordings and call direction
 
-Call direction is a field found in CDRs that indicates, from KAZOO's perspective, from whence the call was started. `inbound` indicates that the phone/carrier has sent the INVITE to Kazoo (inbound to KAZOO). `outbound` indicates that KAZOO is sending the INVITE to the phone/carrier (outbound from KAZOO).
+Call direction is a field found in CDRs that indicates, from {% BRAND_NAME %}'s perspective, from whence the call was started. `inbound` indicates that the phone/carrier has sent the INVITE to {% BRAND_NAME %} (inbound to {% BRAND_NAME %}). `outbound` indicates that {% BRAND_NAME %} is sending the INVITE to the phone/carrier (outbound from {% BRAND_NAME %}).
 
 ```
-inbound: PHONE ==INVITE==> KAZOO
-outbound: PHONE <==INVITE== KAZOO
+inbound: PHONE ==INVITE==> {% BRAND_NAME %}
+outbound: PHONE <==INVITE== {% BRAND_NAME %}
 ```
 
 Now a lot of calls will involve two phones:
 
 ```
-PHONE_A ==INVITE==> KAZOO ==INVITE==> PHONE_B
+PHONE_A ==INVITE==> {% BRAND_NAME %} ==INVITE==> PHONE_B
 ```
 
-The INVITE from `PHONE_A` is the `inbound` call leg while the INVITE from KAZOO to `PHONE_B` is the `outbound` leg.
+The INVITE from `PHONE_A` is the `inbound` call leg while the INVITE from {% BRAND_NAME %} to `PHONE_B` is the `outbound` leg.
 
 However, these directions are often not intuitive to end users. Most folks would say a call coming in from the PSTN is an `inbound` call while the call they place *to* the PSTN is an `outbound` call. UI clients, therefore, can't rely on just displaying the `call_direction` field of a call to indicate the direction of the call from the end user's perspective.
 
