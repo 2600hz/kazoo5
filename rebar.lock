@@ -96,7 +96,7 @@
  {<<"gen_batch_server">>,{pkg,<<"gen_batch_server">>,<<"0.8.2">>},1},
  {<<"gen_smtp">>,
   {git,"https://github.com/2600hz/erlang-gen_smtp",
-       {ref,"aa45101978aabb38af9156e18ba37b9dc2fa3d83"}},
+       {ref,"04c8bcbaafff47f8c15f30d6255c726402e836c6"}},
   0},
  {<<"getopt">>,
   {git,"https://github.com/2600hz/erlang-getopt",
