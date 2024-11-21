@@ -189,7 +189,7 @@ $(DOT_ERLANG_MK): $(ERLANG_MK)
 
 $(ERLANG_MK):
 	curl -O https://erlang.mk/erlang.mk
-	#@wget 'https://raw.githubusercontent.com/2600hz/erlang.mk/master/erlang.mk' -O $(ERLANG_MK)
+	# curl 'https://raw.githubusercontent.com/2600hz/erlang.mk/master/erlang.mk' -o $(ERLANG_MK)
 
 .PHONY: deps
 deps: $(DEPS_HASH_FILE)

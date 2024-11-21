@@ -55,7 +55,7 @@ ifeq ($(CIRCLECI),true)
     dep_coveralls = git https://github.com/markusn/coveralls-erl 1.4.0
 endif
 
-dep_amqp_client = hex 3.12.13
+dep_amqp_client = hex 3.12.14
 
 # branch: otp-26
 dep_amqp_dist = git https://github.com/2600hz/erlang-amqp_dist.git 581d4b53e1fb3e8247ad856bef106015304d1906
@@ -152,6 +152,8 @@ dep_nklib = git https://github.com/2600hz/erlang-nklib ed8097b4e3bac43864cfe5d52
 # used by a handful of core apps
 # branch: 2600Hz-otp-26
 dep_plists = git https://github.com/2600hz/erlang-plists 909aec1ffc2dfd651b880af8138346daff1cc407
+
+dep_poolboy = git https://github.com/2600hz/erlang-poolboy 9212a8770edb149ee7ca0bca353855e215f7cba5
 
 # used by kazoo_proper, knm, kazoo_caches, kazoo_bindings, kz_util_tests, kazoo_token_buckets, kazoo_stdlib
 # used by apps hotornot and callflow

@@ -1,7 +1,10 @@
 CWD = $(shell pwd -P)
 ROOT ?= $(realpath $(CWD)/..)
+ERLANG_MK_FILENAME = $(ROOT)/erlang.mk
 
-DEPS_DIR ?= $(CURDIR)
+DEPS_MK ?= $(ROOT)/make/deps.mk
+
+DEPS_DIR ?= $(ROOT)/deps
 
 ERLC_OPTS += +debug_info -DWITH_JIFFY=1
 
