@@ -1,5 +1,5 @@
 PIP := $(shell { command -v pip; } 2>/dev/null)
-CI_DIR := $(CURDIR)/make
+CI_DIR := $(ROOT)/make
 CI_VALIDATOR := $(CI_DIR)/circleci
 CI_CONFIG := $(CURDIR)/.circleci/config.yml
 
