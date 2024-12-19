@@ -1,6 +1,6 @@
 # Introduction
 
-Kazoo gives you the tools to develop high-quality unified telecom applications. Crossbar REST API interface provides a simple way for external application to talk to Kazoo by making HTTP requests.
+{% BRAND_NAME %} gives you the tools to develop high-quality unified telecom applications. Crossbar REST API interface provides a simple way for external application to talk to {% BRAND_NAME %} by making HTTP requests.
 
 ## Introduction to Crossbar REST APIS
 

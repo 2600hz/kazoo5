@@ -1,8 +1,8 @@
 # How to Write Erlang Documentation
 
-Having user end documentation is good, having developer's documentation is awesome. Kazoo has a big code base which makes it difficult to remember all good code stuff. New developers want to start coding but don't know where or how. There are so many other arguments why to write an Erlang reference manual.
+Having user end documentation is good, having developer's documentation is awesome. {% BRAND_NAME %} has a big code base which makes it difficult to remember all good code stuff. New developers want to start coding but don't know where or how. There are so many other arguments why to write an Erlang reference manual.
 
-Kazoo uses [Edoc](http://erlang.org/doc/apps/edoc/chapter.html) to generate a reference of all modules. All comments for exported functions and types are used as description. Before Kazoo 4.2, the code base was not EDoc friendly, an attempt to generate doc is failing. Some part was related to some issues in the comment or code itself, also the fact EDoc is not compatible a multi applications project like Kazoo.
+{% BRAND_NAME %} uses [Edoc](http://erlang.org/doc/apps/edoc/chapter.html) to generate a reference of all modules. All comments for exported functions and types are used as description. Before {% BRAND_NAME %} 4.2, the code base was not EDoc friendly, an attempt to generate doc is failing. Some part was related to some issues in the comment or code itself, also the fact EDoc is not compatible a multi applications project like {% BRAND_NAME %}.
 
 EDoc use comments at top of the module for description of module, an every comments before **exported** function as function's description and functions type declaration/definition (the `spec` tag) for data type descriptions of the function.
 
@@ -191,7 +191,7 @@ Write the comment immediately after the dot in type specification (you can some 
 
 ## Edocify Script
 
-Comments in Kazoo source code was not formatted correctly to consume by EDoc. Since there was a lot of issues to fix, a [script](https://github.com/2600hz/kazoo/blob/master/scripts/edocify.escript) was written to find the problematic issues in the code using regex and [`ag` The Silver Searcher](https://github.com/ggreer/the_silver_searcher) and fix them.
+Comments in {% BRAND_NAME %} source code was not formatted correctly to consume by EDoc. Since there was a lot of issues to fix, a [script](https://github.com/2600hz/kazoo/blob/master/scripts/edocify.escript) was written to find the problematic issues in the code using regex and [`ag` The Silver Searcher](https://github.com/ggreer/the_silver_searcher) and fix them.
 
 To avoid repeating the same issues again this script is running as part of CI.
 
@@ -233,6 +233,6 @@ After running the script you can use `git status` or `git diff` to see the chang
 
 ## State of EDoc script
 
-Just like state of doc for API endpoints, [state of EDoc](https://github.com/2600hz/kazoo/blob/master/scripts/state-of-edoc.escript) will run EDoc on all non-test Kazoo Erlang file to make sure that the EDoc can read/parse and creates documentation. This script runs in CI as well.
+Just like state of doc for API endpoints, [state of EDoc](https://github.com/2600hz/kazoo/blob/master/scripts/state-of-edoc.escript) will run EDoc on all non-test {% BRAND_NAME %} Erlang file to make sure that the EDoc can read/parse and creates documentation. This script runs in CI as well.
 
 If EDoc is failing, usually it says which line of the comment is problematic, so you can fix it.

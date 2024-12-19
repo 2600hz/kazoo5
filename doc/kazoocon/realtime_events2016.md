@@ -7,7 +7,7 @@
 1.  About Myself
 
     -   James Aimonetti
-    -   Kazoo Architect and Community at 2600Hz
+    -   {% BRAND_NAME %} Architect and Community at 2600Hz
     -   mc\_ on libera.chat #2600hz
 
 2.  Presenter
@@ -27,7 +27,7 @@
 
 ## Webhooks
 
--   Simple HTTP request is sent from Kazoo to your server
+-   Simple HTTP request is sent from {% BRAND_NAME %} to your server
     -   Respond with 200 only (auto-disabled otherwise)
     -   If possible, relay data to separate process for use
 -   Update rows in a database or spreadsheet
@@ -101,8 +101,8 @@ http://{CB_SERVER}:8000/v2/accounts/{ACCOUNT_ID}/webhooks
 
 -   Persistent connection
 -   Lower overhead (no polling)
--   Get events **and** issue commands to Kazoo
--   Richer UI interactions with Kazoo (operator console)
+-   Get events **and** issue commands to {% BRAND_NAME %}
+-   Richer UI interactions with {% BRAND_NAME %} (operator console)
 
 
 ## Anatomy of websocket connection

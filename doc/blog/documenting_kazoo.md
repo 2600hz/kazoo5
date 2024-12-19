@@ -1,4 +1,4 @@
-# Documenting Kazoo
+# Documenting {% BRAND_NAME %}
 
 
 ## The Problem
@@ -54,8 +54,8 @@ Every request we get for documentation is different and typically asking somethi
 
 ### We Have Different Audiences!
 
-1.  Backend Kazoo developers (2600Hz Core and community)
-2.  Frontend Kazoo developers (2600Hz UI, 2600Hz Aux, community)
+1.  Backend {% BRAND_NAME %} developers (2600Hz Core and community)
+2.  Frontend {% BRAND_NAME %} developers (2600Hz UI, 2600Hz Aux, community)
 3.  Sysadmins (2600Hz OPS and community)
 4.  Resellers (2600Hz Sales, business/sales-type people)
 5.  End users (UI to check voicemail, simply provision a phone, etc)
@@ -80,12 +80,7 @@ Only after that do they want more thorough documentation and reference, and they
 
 ### What we have
 
-Site dedicated to the different audiences: [docs.2600hz.com](https://docs.2600hz.com)
-
--   Kazoo APIs: [Dev](https://docs.2600hz.com/dev)
--   Kazoo UI: [Monster UI](https://docs.2600hz.com/ui/)
--   Sysadmins: [Sysadmin](https://docs.2600hz.com/sysadmin)
--   Resellers: [User Guides](https://docs.2600hz.com/user_guides/)
+You can find the {% BRAND_NAME %} documention at [docs.2600hz.com](https://docs.2600hz.com).
 
 Each site is backed by a git repo.
 
@@ -105,7 +100,7 @@ The app that builds the doc sites and manages the webhooks also files an issue o
 -   Internationalization
 
 
-## Automating Kazoo doc generation
+## Automating {% BRAND_NAME %} doc generation
 
 
 ### Docs go stale
@@ -206,9 +201,9 @@ Again, we just look for usages of the JSON object `JObj` in that function (and a
 
 ### FreeSWITCH properties
 
-We rely on [FreeSWITCH](https://freeswitch.org/) to handle much of our SIP and audio/video around active calls. We have a module, [`mod_kazoo`](https://freeswitch.org/stash/projects/FS/repos/freeswitch/browse/src/mod/event_handlers/mod_kazoo), that presents FreeSWITCH as a [C-Node](http://erlang.org/doc/tutorial/cnode.html) to Kazoo's `ecallmgr` application. Each event that happens in FreeSWITCH has various key-value pairs which mod\_kazoo filters to only include the fields we care about.
+We rely on [FreeSWITCH](https://freeswitch.org/) to handle much of our SIP and audio/video around active calls. We have a module, [`mod_kazoo`](https://freeswitch.org/stash/projects/FS/repos/freeswitch/browse/src/mod/event_handlers/mod_kazoo), that presents FreeSWITCH as a [C-Node](http://erlang.org/doc/tutorial/cnode.html) to {% BRAND_NAME %}'s `ecallmgr` application. Each event that happens in FreeSWITCH has various key-value pairs which mod\_kazoo filters to only include the fields we care about.
 
-We wanted to build this list dynamically so that we could change/update mod\_kazoo's filter list form Kazoo (instead of having to update XML files on all FreeSWITCH servers and reloading mod\_kazoo, impacting the servers' ability to process calls for Kazoo while the reload occurred.
+We wanted to build this list dynamically so that we could change/update mod\_kazoo's filter list form {% BRAND_NAME %} (instead of having to update XML files on all FreeSWITCH servers and reloading mod\_kazoo, impacting the servers' ability to process calls for {% BRAND_NAME %} while the reload occurred.
 
 Similar to tracing usage of the `kz_json` module in callflows or conferences, we trace usage of our proplist module, [props](https://github.com/2600hz/kazoo/blob/master/core/kazoo/src/props.erl), for the keys used to extract values from the FreeSWITCH-supplied proplist.
 
@@ -219,9 +214,9 @@ The code is in the [fs\_prop\_usage](https://github.com/2600hz/kazoo/blob/master
 
 ### System configuration
 
-Kazoo uses a database in [CouchDB](https://couchdb.apache.org/) called `system_config`. It contains JSON objects related to configuration data for the cluster, for each zone, or for an individual node in the cluster. Again, there was no listing of what fields were possible in Kazoo for these documents. Data would be added when code accessed the config data for the first time, populating defaults when the code supplied them.
+{% BRAND_NAME %} uses a database in [CouchDB](https://couchdb.apache.org/) called `system_config`. It contains JSON objects related to configuration data for the cluster, for each zone, or for an individual node in the cluster. Again, there was no listing of what fields were possible in {% BRAND_NAME %} for these documents. Data would be added when code accessed the config data for the first time, populating defaults when the code supplied them.
 
-As we built cluster manager, our Aux team was reading through the Kazoo source trying to find all the possible data stored in these documents and manually creating schemas to reflect their findings.
+As we built cluster manager, our Aux team was reading through the {% BRAND_NAME %} source trying to find all the possible data stored in these documents and manually creating schemas to reflect their findings.
 
 We built [kapps\_config\_usage](https://github.com/2600hz/kazoo/blob/master/core/kazoo_ast/src/kapps_config_usage.erl) to walk the entire project looking for places where the [kapps\_config](https://github.com/2600hz/kazoo/blob/master/core/kazoo_config/src/kapps_config.erl) module was used to access config data and generate appropriate schemas.
 
@@ -249,7 +244,7 @@ So we added checks to read the actual Erlang source and see if the macros are in
 
 Right now, the modules in the `kazoo_ast` application are rather ad-hoc and a shameful amount of copy-pasta exists. Refactoring the walker into [kazoo\_ast](https://github.com/2600hz/kazoo/blob/master/core/kazoo_ast/src/kazoo_ast.erl) and providing hooks for the above modules is underway. All the AST forms, expressions, clauses, functions, etc, are defined in an [include file](https://github.com/2600hz/kazoo/blob/master/core/kazoo_ast/include/kz_ast.hrl) for all to share.
 
-We have a layer of internal JSON payloads that are passed over [AMQP](https://en.wikipedia.org/wiki/Advanced_Message_Queuing_Protocol) right now that are undocumented and no JSON schema exists. Up to this point, very few people outside 2600Hz were interested in building their own applications that would sit on the AMQP bus - this has changed and more people are asking to tie in custom services (like managing phone credentials in LDAP for instance) in their private Kazoo installations.
+We have a layer of internal JSON payloads that are passed over [AMQP](https://en.wikipedia.org/wiki/Advanced_Message_Queuing_Protocol) right now that are undocumented and no JSON schema exists. Up to this point, very few people outside 2600Hz were interested in building their own applications that would sit on the AMQP bus - this has changed and more people are asking to tie in custom services (like managing phone credentials in LDAP for instance) in their private {% BRAND_NAME %} installations.
 
 The AST walkers are fairly naive, as mentioned in the callflow walker. Improving what code paths can be followed will help find more nooks and crannies to expose.
 
@@ -259,7 +254,7 @@ Similarly, a webhooks interface lacks details on what will be included in the va
 
 A real-time call control application, [Pivot](https://github.com/2600hz/kazoo/blob/master/applications/pivot/doc/README.md), also doesn't have a proper listing of possible request data that could be present.
 
-JSON schemas continue to evolve as Kazoo grows; new fields allowed in the various entities' data objects aren't automatically checked to exist in the corresponding schema and still relies on the developer to include an updated schema in the PR.
+JSON schemas continue to evolve as {% BRAND_NAME %} grows; new fields allowed in the various entities' data objects aren't automatically checked to exist in the corresponding schema and still relies on the developer to include an updated schema in the PR.
 
 Currently, the way Crossbar endpoint modules work, it is hard to extract the content types accepted and provided by the various URI paths of an endpoint. Either refactoring all modules to be easier to parse, or improving parsing of the existing code, would allow us to create better ref docs and fill in the swagger JSON file more authoritatively.
 
@@ -270,7 +265,7 @@ Developers have lots of time constraints; building tools to help them (or the PR
 
 Moving the docs out of Confluence and into the git repo was a big move. Each developer can update the docs in their editor of choice and the tooling enforces some measure of strictness on what that looks like.
 
-Speaking of, consistent looking code is a Godsend! While style guides may irk some, we've found overall that adherence to a style produces more benefits than drawbacks, especially once you get past the [bike-shedding](https://en.wikipedia.org/wiki/Law_of_triviality) phase (**cough** [atom ticky policy](https://github.com/2600hz/kazoo/pull/2724) **cough**). `make fmt` enforces a style across all Erlang code in Kazoo, regardless of what editor is used.
+Speaking of, consistent looking code is a Godsend! While style guides may irk some, we've found overall that adherence to a style produces more benefits than drawbacks, especially once you get past the [bike-shedding](https://en.wikipedia.org/wiki/Law_of_triviality) phase (**cough** [atom ticky policy](https://github.com/2600hz/kazoo/pull/2724) **cough**). `make fmt` enforces a style across all Erlang code in {% BRAND_NAME %}, regardless of what editor is used.
 
 Management has to buy-in to the importance of docs. We had a 3-day retreat to Tahoe for skiing and documentation writing with the two co-founders and CTO present and writing docs. The message is clear to all - long live documentation!
 

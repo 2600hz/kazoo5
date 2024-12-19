@@ -1,8 +1,8 @@
 # System Prompts
 
-Kazoo provides many prompts, such as during voicemail, to instruct callers on things to do. The default prompts that ship with Kazoo are provided in English, but as is often the case, supporting callers who don't speak English requires alternative language prompts.
+{% BRAND_NAME %} provides many prompts, such as during voicemail, to instruct callers on things to do. The default prompts that ship with {% BRAND_NAME %} are provided in English, but as is often the case, supporting callers who don't speak English requires alternative language prompts.
 
-Similar to i18n efforts on the front end, Kazoo is now configurable to provide these system prompts in alternative languages. The language is selected from one of several places:
+Similar to i18n efforts on the front end, {% BRAND_NAME %} is now configurable to provide these system prompts in alternative languages. The language is selected from one of several places:
 
 * The account processing the call
 * Manually set during a callflow
@@ -14,7 +14,7 @@ L'amélioration des différents messages vocaux multilingues a été rendu possi
 
 ## Prompt Installation
 
-The first step, on a new installation or existing installations prior to v3.14, is to import the existing system prompts that come with Kazoo. They are the default English prompts and can be imported via SUP:
+The first step, on a new installation or existing installations prior to v3.14, is to import the existing system prompts that come with {% BRAND_NAME %}. They are the default English prompts and can be imported via SUP:
 
     sup kazoo_media_maintenance import_prompts /path/to/kazoo/system_media/en-us/
 

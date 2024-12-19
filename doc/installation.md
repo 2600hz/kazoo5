@@ -1,6 +1,6 @@
-# Kazoo Installation Guide
+# {% BRAND_NAME %} Installation Guide
 
-This is a guide to building Kazoo from source on a Debian 8 (Jessie) base installation. Other GNU/Linux distros should work similarly, though the dependencies may differ a bit. If you want to just install and use Kazoo (and not build it) try using the [installation instructions](https://docs.2600hz.com/sysadmin/doc/install/install_via_centos7/). The rest of this guide assumes you want to run a development environment for Kazoo.
+This is a guide to building {% BRAND_NAME %} from source on a Debian 8 (Jessie) base installation. Other GNU/Linux distros should work similarly, though the dependencies may differ a bit. If you want to just install and use {% BRAND_NAME %} (and not build it) try using the [installation instructions](https://docs.2600hz.com/sysadmin/doc/install/install_via_centos7/). The rest of this guide assumes you want to run a development environment for {% BRAND_NAME %}.
 
 If your development is on macOS, here are [extra steps](https://github.com/2600hz/kazoo/blob/master/doc/engineering/installing-on-mac.md) for set up.
 
@@ -10,13 +10,13 @@ If your development is on macOS, here are [extra steps](https://github.com/2600h
 
 Erlang/OTP is required for both run time and build time. Usually the official Erlang package provided by distributions is not up-to-date, please follow this section to install it from source code or using other options.
 
-* Kazoo version 4.3 requires Erlang version 19 specifically 19.3.x
-* Kazoo version 5.x is currently targets Erlang version 23 (specifically 23.0.3)
-* Kazoo master branch targets Erlang 23+ (specifically 23.0.3 but consult [`make/erlang_version`](https://github.com/2600hz/kazoo/blob/master/make/erlang_version) to be sure).
+* {% BRAND_NAME %} version 4.3 requires Erlang version 19 specifically 19.3.x
+* {% BRAND_NAME %} version 5.x is currently targets Erlang version 23 (specifically 23.0.3)
+* {% BRAND_NAME %} master branch targets Erlang 23+ (specifically 23.0.3 but consult [`make/erlang_version`](https://github.com/2600hz/kazoo/blob/master/make/erlang_version) to be sure).
 
 #### Installing Erlang/OTP from source code
 
-We recommend to use a tool like [kerl](https://github.com/kerl/kerl) to manage Erlang/OTP installations. If you want to play around with multiple versions of Erlang while hacking on Kazoo, this is probably the best way. For compiling Erlang you need some dependencies, see [Build time requirements](#build-time-requirements)
+We recommend to use a tool like [kerl](https://github.com/kerl/kerl) to manage Erlang/OTP installations. If you want to play around with multiple versions of Erlang while hacking on {% BRAND_NAME %}, this is probably the best way. For compiling Erlang you need some dependencies, see [Build time requirements](#build-time-requirements)
 
 ```shell
     curl -O https://raw.githubusercontent.com/kerl/kerl/master/kerl
@@ -68,7 +68,7 @@ Main functionality requirements:
 * RabbitMQ
     * Please consult [RabbitMQ installation doc](https://www.rabbitmq.com/download.html)
     * Recommended official 2600Hz [RabbitMQ configurations](https://github.com/2600hz/kazoo-configs-rabbitmq)
-    * **Note:** Kazoo 5 (master) requires `rabbitmq_consistent_hash_exchange` plug-in to be enabled for Kazoo Fax application
+    * **Note:** {% BRAND_NAME %} 5 (master) requires `rabbitmq_consistent_hash_exchange` plug-in to be enabled for {% BRAND_NAME %} Fax application
 
 Voice/Video and SIP functionality requirements:
 
@@ -104,7 +104,7 @@ sudo apt-get install apt-transport-https
 echo "deb https://apache.bintray.com/couchdb-deb stretch main" | sudo tee -a /etc/apt/sources.list
 curl -L https://couchdb.apache.org/repo/bintray-pubkey.asc | sudo apt-key add -
 
-## Kazoo buildtime dependencies
+## {% BRAND_NAME %} buildtime dependencies
 sudo apt-get install \
     build-essential libxslt-dev \
     zip unzip expat zlib1g-dev libssl-dev curl \
@@ -118,7 +118,7 @@ sudo apt-get install \
 ## doc build target
 sudo pip3 install pyembed mkdocs-bootstrap mkdocs-bootswatch pymdown-extensions
 
-## Kazoo runtime dependencies
+## {% BRAND_NAME %} runtime dependencies
 sudo apt-get install \
     htmldoc sox libsox-fmt-all ghostscript \
     imagemagick libtiff-tools openjdk-8-jre libreoffice-writer
@@ -149,11 +149,11 @@ EOF
 sudo yum install epel-release
 sudo yum update
 
-## kazoo master (5.0+) needs git2
+## {% BRAND_NAME %} master (5.0+) needs git2
 sudo yum remove -y git*
 sudo yum install https://centos7.iuscommunity.org/ius-release.rpm
 
-## Kazoo buildtime dependencies
+## {% BRAND_NAME %} buildtime dependencies
 sudo yum install \
     autoconf automake bzip2-devel elfutils expat-devel gcc-c++ gcc \
     git2u-all glibc-devel libcurl libcurl-devel libstdc++-devel \
@@ -167,7 +167,7 @@ sudo pip3 install pyyaml markdown jsonschema jsbeautifier
 ## doc build target
 sudo pip3 install pyembed mkdocs-bootstrap mkdocs-bootswatch pymdown-extensions
 
-## Kazoo runtime dependencies
+## {% BRAND_NAME %} runtime dependencies
 sudo yum install \
     htmldoc sox ghostscript \
     ImageMagick libtiff-tools libreoffice-writer
@@ -176,7 +176,7 @@ sudo yum install \
 localedef -v -c -i en_US -f UTF-8 en_US.UTF-8
 ```
 
-## Building Kazoo
+## Building {% BRAND_NAME %}
 
 ### Short version
 
@@ -200,13 +200,13 @@ If you have a custom theme, you can copy it to `doc/mkdocs/theme` and build the 
 
 ### Longer version
 
-1.  Clone the Kazoo repo:
+1.  Clone the {% BRAND_NAME %} repo:
 
     ```shell
       git clone https://github.com/2600Hz/kazoo.git
     ```
 
-2.  Build Kazoo:
+2.  Build {% BRAND_NAME %}:
 
     ```shell
     cd kazoo
@@ -242,7 +242,7 @@ If you have a custom theme, you can copy it to `doc/mkdocs/theme` and build the 
 
     `make build-release` will generate a [deployable release](http://learnyousomeerlang.com/release-is-the-word)
 
-    -   [More on using releases with Kazoo](https://github.com/2600Hz/kazoo/blob/master/doc/engineering/releases.md)
+    -   [More on using releases with {% BRAND_NAME %}](https://github.com/2600Hz/kazoo/blob/master/doc/engineering/releases.md)
 
 6.  Generate an Erlang development release
 
@@ -250,13 +250,13 @@ If you have a custom theme, you can copy it to `doc/mkdocs/theme` and build the 
 
 7.  Start an Erlang development release
 
-    CouchDB2 and RabbitMQ server have to be up and running prior to start Kazoo. The Development Environment Dependency section describes how these components should be built or installed.
+    CouchDB2 and RabbitMQ server have to be up and running prior to start {% BRAND_NAME %}. The Development Environment Dependency section describes how these components should be built or installed.
 
-    `make release REL=<node name>` will start Kazoo dev release with an Erlang shell accessible.
+    `make release REL=<node name>` will start {% BRAND_NAME %} dev release with an Erlang shell accessible.
 
     The node name will become the longname in distributed Erlang, therefore, it is very important to set up local domain or DNS to resolve FQDN. To verify long name resolution, `erl -name test` should be able to start an Erlang shell with `node@fqdn` as the prompt. It's not uncommon for a dev machine without DNS set up that can result `erl -name test` to crash, which has been seen on Mac.
 
-    After the dev shell starts, we can verify Kazoo's epmd registration with the proper longname by this command under Kazoo Erlang shell expected to return a valid port instead of `noport`.
+    After the dev shell starts, we can verify {% BRAND_NAME %}'s epmd registration with the proper longname by this command under {% BRAND_NAME %} Erlang shell expected to return a valid port instead of `noport`.
     `erlang-shell> erl_epmd:port_please("<your node name>", "<fqdn of the server>").
 
 ## SUP
@@ -267,7 +267,7 @@ The SUP command (`sup`) is found under `core/sup/priv/sup` and should be copied 
 sudo ln -s core/sup/priv/sup /usr/bin/sup
 ```
 
-Make sure that the path to Kazoo's installation directory is right (in `/usr/bin/sup`). Otherwise you can change it by setting the `KAZOO_ROOT` environment variable (not set by default). If one needs `KAZOO_ROOT`, an alias should be created:
+Make sure that the path to {% BRAND_NAME %}'s installation directory is right (in `/usr/bin/sup`). Otherwise you can change it by setting the `KAZOO_ROOT` environment variable (not set by default). If one needs `KAZOO_ROOT`, an alias should be created:
 
 ```shell
 alias sup='KAZOO_ROOT=/opt/kazoo sup'
@@ -290,7 +290,7 @@ To start out fresh, we recommend to run admin party with CouchDB that allows req
 dev/run --with-admin-party-please -n 3 --with-haproxy
 ```
 
-Once CouchDB, rabbitmq-server, and kazoo are all started. You should be able to verify their names registered with epmd with this command.
+Once CouchDB, rabbitmq-server, and {% BRAND_NAME %} are all started. You should be able to verify their names registered with epmd with this command.
 
 ```shell
 epmd -names

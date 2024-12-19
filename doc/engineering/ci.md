@@ -1,10 +1,10 @@
 # Continuous Integration
 
-Kazoo makes use of [TravisCI](https://travis-ci.org/2600hz/kazoo/) and [CircleCI](https://circleci.com/gh/2600hz/kazoo/).
+{% BRAND_NAME %} makes use of [TravisCI](https://travis-ci.org/2600hz/kazoo/) and [CircleCI](https://circleci.com/gh/2600hz/kazoo/).
 
 ## TravisCI
 
-Travis is tasked with building Kazoo against various versions of Erlang and running the test suites (core/ and applications/).
+Travis is tasked with building {% BRAND_NAME %} against various versions of Erlang and running the test suites (core/ and applications/).
 
 ## CircleCI
 

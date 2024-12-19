@@ -1,7 +1,7 @@
 # Installing on Mac (for development)
 
 ## Prerequisite
-These steps are required mostly to build Erlang using Kerl and later build Kazoo. Kerl is recommended although brew can manage multiple Erlang versions.
+These steps are required mostly to build Erlang using Kerl and later build {% BRAND_NAME %}. Kerl is recommended although brew can manage multiple Erlang versions.
 
 If macOS version is older than 10.14, Mojave, please make sure you have run `xcode-select --install` to install various build tools that are available(such as zlib).
 
@@ -88,7 +88,7 @@ You may also want to do this for `/bin/bash` for consistency but it is not requi
 them via brew they give you the instructions on what to add.
 
 You will also want to add a symlink for libreoffice somewhere in your path because the default
-executable name is `soffice` but kazoo expects it to be `libreoffice`. Something like:
+executable name is `soffice` but {% BRAND_NAME %} expects it to be `libreoffice`. Something like:
 
 ```
 ln -s /usr/local/bin/soffice /usr/local/bin/libreoffice
@@ -108,5 +108,5 @@ Brew directly installs Erlang version. It's also tested but offers less version 
 
 You have to use Brew link and unlink to switch between version.
 
-## Build Kazoo
+## Build {% BRAND_NAME %}
 The generic build [instruction](https://github.com/2600hz/kazoo/blob/master/doc/installation.md#longer-version) works on macOS.

@@ -9,7 +9,7 @@
     -   James Aimonetti
         -   `Eye-Moe-Net-Tea`
         -   Commit to memory Patrick!
-    -   Kazoo Architect and Community at 2600Hz
+    -   {% BRAND_NAME %} Architect and Community at 2600Hz
     -   mc\_ on libera.chat #2600hz
 
 2.  Presenter
@@ -23,7 +23,7 @@
 
 -   Point a callflow at your server
 -   Process the call against your business logic
--   Return Kazoo callflow JSON
+-   Return {% BRAND_NAME %} callflow JSON
 
 
 ## Flow
@@ -31,7 +31,7 @@
 ![img](./images/pivot_flow.png)
 
 
-## Setting up Kazoo
+## Setting up {% BRAND_NAME %}
 
 -   create a callflow
 -   set the pivot action as the child
@@ -71,7 +71,7 @@ Pivot will attempt to reach your server for calls to that callflow.
 | Request          | SIP Request user  |
 | To               | SIP To user       |
 | From             | SIP From user     |
-| Account-ID       | Kazoo Account ID  |
+| Account-ID       | {% BRAND_NAME %} Account ID  |
 | Caller-ID-Name   | CID Name          |
 | Caller-ID-Number | CID Number        |
 
@@ -88,7 +88,7 @@ Pivot will attempt to reach your server for calls to that callflow.
 ## Create a handler
 
 -   Create the script that Pivot will call
--   Process and build the Kazoo callflow JSON
+-   Process and build the {% BRAND_NAME %} callflow JSON
 -   Set **Content-Type** to **application/json**
 -   Return the JSON as the body of the HTTP response
 

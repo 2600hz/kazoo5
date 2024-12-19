@@ -1,4 +1,4 @@
-# Announcements for Kazoo
+# Announcements for {% BRAND_NAME %}
 
 This file will serve as a reference point for upcoming announcements, both of the temporal nature (this library will be deprecated in 6 months) and version-specific (upgrading from X to Y will require A, B, and C).
 
@@ -6,11 +6,11 @@ This file will serve as a reference point for upcoming announcements, both of th
 
 ### 5.0
 
-The 5.0 release will start Kazoo's official support for OTP 21 ([21.3](http://www.erlang.org/news/127) currently being the preferred version).
+The 5.0 release will start {% BRAND_NAME %}'s official support for OTP 21 ([21.3](http://www.erlang.org/news/127) currently being the preferred version).
 
 1. The big change for Erlang code is the deprecation of using `erlang:get_stacktrace()`. There is a target in the root Makefile `make check_stacktrace` that will update uses of `get_stacktrace()` from `try/catch` clauses. Please ensure any private code is adjusted accordingly.
-2. Community-supported and deprecated apps will be moved out of Kazoo and into a [kazoo-community](https://github.com/kazoo-community) organization. De-factor maintainers of the community apps have been added to remove 2600Hz from blocking PR and code management for those apps. Tooling will continue to be improved for those apps (and 3rd party apps in general). If you would like to take on a maintainer's role for any of the kazoo-community apps, let us know!
-3. Dependencies have been re-evaluated, updated, or removed as necessary. Please check that your use of them is still available. We're thinking on how community/private apps can include unique dependencies within themselves without impacting core Kazoo's dependency list.
+2. Community-supported and deprecated apps will be moved out of {% BRAND_NAME %} and into a [kazoo-community](https://github.com/kazoo-community) organization. De-factor maintainers of the community apps have been added to remove 2600Hz from blocking PR and code management for those apps. Tooling will continue to be improved for those apps (and 3rd party apps in general). If you would like to take on a maintainer's role for any of the kazoo-community apps, let us know!
+3. Dependencies have been re-evaluated, updated, or removed as necessary. Please check that your use of them is still available. We're thinking on how community/private apps can include unique dependencies within themselves without impacting core {% BRAND_NAME %}'s dependency list.
 4. All Crossbar API version 1 modules are removed. The supported API version is now version 2. Please upgrade your applications, UI or scripts to work with version 2.
 5. These long deprecated and unused Crossbar modules are remove:
     * `cb_bulk `: Old unused, error prone, and version 1 API. There is no substituted API.
@@ -28,11 +28,11 @@ The 5.0 release will start Kazoo's official support for OTP 21 ([21.3](http://ww
     * `simple_provisioner`
     * Database `global_provisioner` used by these provisioners are remove.
 
-5. Kazoo Number Manager core application has been renamed to `kazoo_numbers`. This should be almost transparent to the client users. Applications not included in KAZOO repo should do this rename if they are depending on knm app or include one of its header files. `scripts/kz_diaspora.bash` script has been updated to do this rename.
+5. {% BRAND_NAME %} Number Manager core application has been renamed to `kazoo_numbers`. This should be almost transparent to the client users. Applications not included in {% BRAND_NAME %} repo should do this rename if they are depending on knm app or include one of its header files. `scripts/kz_diaspora.bash` script has been updated to do this rename.
 
 ### 4.3
 
-1. The Kazoo services have been significantly refactored.  This has resulted in changes to the APIs related to services (prior service_plans), ledgers and transactions as well as the documents in the services database and service plans.  See the documentation in `core/kazoo_services/doc` for more information.
+1. The {% BRAND_NAME %} services have been significantly refactored.  This has resulted in changes to the APIs related to services (prior service_plans), ledgers and transactions as well as the documents in the services database and service plans.  See the documentation in `core/kazoo_services/doc` for more information.
 
 2. `kz_datamgr:ensure_saved` deprecated
 
@@ -46,20 +46,20 @@ The old `save/2` took an updater function and tried to save the result. Because 
 
 4. New parameters were added to the account, user and device documents to set the asserted identity.  These parameters are currently free-form but will be strictly verified by default in the future!
 
-5. Crossbar API version 1 has been deprecated. This is the last major version of Kazoo with support of `v1`. Please consider migrating your customize Crossbar modules from version 1 to version 2. Also upgrade your applications, UI or scripts to use version 2. This is the last version of Kazoo which is deprecated Kazoo-UI works with.
+5. Crossbar API version 1 has been deprecated. This is the last major version of Crossbar with support of `v1`. Please consider migrating your customize Crossbar modules from version 1 to version 2. Also upgrade your applications, UI or scripts to use version 2. This is the last version of {% BRAND_NAME %} which is deprecated Kazoo-UI works with.
 
 6. The default prompt for the voicemail configuration menu has changed.
 
-Two new **en-US** prompts have been added to handle this feature and should be imported in conjunction with the upgrade of KAZOO.
+Two new **en-US** prompts have been added to handle this feature and should be imported in conjunction with the upgrade of {% BRAND_NAME %}.
 
 * vm-settings\_menu\_announcement_on
 * vm-settings\_menu\_announcement_off
 
-For instructions on how to import prompts please consult the [Kazoo Core Media](https://github.com/2600hz/kazoo-sounds/tree/master/kazoo-core#importing-prompts-for-a-language) documentation.
+For instructions on how to import prompts please consult the [{% BRAND_NAME %} Core Media](https://github.com/2600hz/kazoo-sounds/tree/master/kazoo-core#importing-prompts-for-a-language) documentation.
 
 7. Adds kazoo_telemetry application
 
-KAZOO collects anonymous telemetry data by default so that we can provide you with the best performance, stability, and security. It enables us to continuously improve the platform for you and helps inform our roadmap decisions so we can create the products, features, and functionality that will best serve you. Rest assured — no sensitive data is transmitted and metrics are limited to aggregate values, aggregate statistics, and software version information. By allowing us to collect this data, you are making a contribution to the KAZOO community and are helping us make KAZOO better for you and the entire KAZOO community. You can opt-out at any time by consulting the configuration document in the system_config database.
+{% BRAND_NAME %} collects anonymous telemetry data by default so that we can provide you with the best performance, stability, and security. It enables us to continuously improve the platform for you and helps inform our roadmap decisions so we can create the products, features, and functionality that will best serve you. Rest assured — no sensitive data is transmitted and metrics are limited to aggregate values, aggregate statistics, and software version information. By allowing us to collect this data, you are making a contribution to the {% BRAND_NAME %} community and are helping us make {% BRAND_NAME %} better for you and the entire {% BRAND_NAME %} community. You can opt-out at any time by consulting the configuration document in the system_config database.
 
 Here are a few examples:
 - https://success.trendmicro.com/data-collection-disclosure
@@ -70,17 +70,17 @@ Here are a few examples:
 
 1.  Erlang Version Support
 
-    Starting with Kazoo 4.2 Erlang support will target 19+ and will not be backward compatible with prior Erlang versions.
+    Starting with {% BRAND_NAME %} 4.2 Erlang support will target 19+ and will not be backward compatible with prior Erlang versions.
 
 2. Time
 
-    In accordance with the new [time correction](http://erlang.org/doc/apps/erts/time_correction.html) work in Erlang 19+, cleanup of [kz_time](https://github.com/2600hz/kazoo/blob/master/core/kazoo_stdlib/src/kz_time.erl) has been done to ensure Kazoo uses the proper time functions.
+    In accordance with the new [time correction](http://erlang.org/doc/apps/erts/time_correction.html) work in Erlang 19+, cleanup of [kz_time](https://github.com/2600hz/kazoo/blob/master/core/kazoo_stdlib/src/kz_time.erl) has been done to ensure {% BRAND_NAME %} uses the proper time functions.
 
     The big change (that should be mostly transparent) is that `kz_time:now_s/0` returns Gregorian seconds instead of Unix Epoch seconds. The majority of code either doesn't care or expected Gregorian seconds, so this change should have minimal impact on existing code. If you need a Unix timestamp, `kz_time:current_unix_tstamp/0` is what you want.
 
 3. System Teletype Templates
 
-    Starting with Kazoo 4.2 Teletype templates are using their own Teletype specific Email configuration from system configuration. Previously some properties like `from`, `to`, `cc`, `bcc`, etc... were read from `notify.{TEMPLATE_ID}` documents in `system_config` database to initialize the system templates. This has been changed to read from `notification.{TEMPLATE_ID}` which it's the place actual Teletype templates are saved.
+    Starting with {% BRAND_NAME %} 4.2 Teletype templates are using their own Teletype specific Email configuration from system configuration. Previously some properties like `from`, `to`, `cc`, `bcc`, etc... were read from `notify.{TEMPLATE_ID}` documents in `system_config` database to initialize the system templates. This has been changed to read from `notification.{TEMPLATE_ID}` which it's the place actual Teletype templates are saved.
 
     If you directly made configurations to these documents, you need to re-configure them in the Teletype templates documents.
 
@@ -94,7 +94,7 @@ Here are a few examples:
 
     In order to reduce pagination problems, increase maintainability and standardizing Crossbar view operations on multiple databases and handling huge number of documents properly, [`crossbar_doc:load_view/3,4,5,6`](https://github.com/2600hz/kazoo/blob/873dc106c7a7330393201207eddc365837c3dbe6/applications/crossbar/src/crossbar_doc.erl#L15) has been deprecated in favor of new module `crossbar_view`. Please migrate your current Crossbar modules or write your new modules to use this new Crossbar view functionality.
 
-    Starting with Kazoo 4.2, helper functions for creating range view options in [`cb_module_utils`](https://github.com/2600hz/kazoo/blob/873dc106c7a7330393201207eddc365837c3dbe6/applications/crossbar/src/modules/cb_modules_util.erl#L23-L26) has been removed. Instead several options has been introduced in `crossbar_view` to generating correct range view options according to query string parameters or module's options and requested sort direction.
+    Starting with {% BRAND_NAME %} 4.2, helper functions for creating range view options in [`cb_module_utils`](https://github.com/2600hz/kazoo/blob/873dc106c7a7330393201207eddc365837c3dbe6/applications/crossbar/src/modules/cb_modules_util.erl#L23-L26) has been removed. Instead several options has been introduced in `crossbar_view` to generating correct range view options according to query string parameters or module's options and requested sort direction.
 
     Crossbar View module introduce new functions to simple load view (`load/2,3`), ranged load (`load_range/2,3`) and ranged load from MODBs (`load_modb/2,3`). It has several ways to configure the `startkey` and `endkey` and the time range and a new generic way to return chunked base response.
 
@@ -110,7 +110,7 @@ Here are a few examples:
 
 3. The configuration /etc/kazoo/core/vm.args should no longer be modified locally
 
-    Changes to vm.args is resulting in .rpmnew files that will keep kazoo from starting - simply overwrite the vm.args with vm.args.rpmnew
+    Changes to vm.args is resulting in .rpmnew files that will keep {% BRAND_NAME %} from starting - simply overwrite the vm.args with vm.args.rpmnew
 
     Also, you should no longer edit vm.args all parameters are now pulled from config.ini.
 
@@ -126,7 +126,7 @@ Here are a few examples:
 
 1.  Erlang Version Support
 
-    Starting with Kazoo 4.0 Erlang support will target 18+ and will not be backward compatible with prior Erlang versions.
+    Starting with {% BRAND_NAME %} 4.0 Erlang support will target 18+ and will not be backward compatible with prior Erlang versions.
 
 2.  Consistent naming (removal of references to whistle)
 
@@ -138,7 +138,7 @@ Here are a few examples:
 
 4.  CouchDB
 
-    Upgrading will change the way Kazoo interacts with CouchDB (including deprecating using BigCouch and recommending CouchDB!). For most operations, nothing will be noticeably different.
+    Upgrading will change the way {% BRAND_NAME %} interacts with CouchDB (including deprecating using BigCouch and recommending CouchDB!). For most operations, nothing will be noticeably different.
 
 5.  Authorizing-ID
 
@@ -169,7 +169,7 @@ Here are a few examples:
 
 9.  Voicemail Messages
 
-    Starting with Kazoo 4.0 all new voicemail messages goes into modb. All Kazoo Administrators need to migrate their voicemail messages from Kazoo version 3.22 to MODB. There is maintenance command for this transition. For more information about this change please see documentation for the new kazoo\\\_voicemail core application and crossbar voicemail documentation.
+    Starting with {% BRAND_NAME %} 4.0 all new voicemail messages goes into modb. All {% BRAND_NAME %} Administrators need to migrate their voicemail messages from {% BRAND_NAME %} version 3.22 to MODB. There is maintenance command for this transition. For more information about this change please see documentation for the new kazoo\\\_voicemail core application and crossbar voicemail documentation.
 
 10. Removing socket.io support from Websockets
 
@@ -204,7 +204,7 @@ Here are a few examples:
 
 4.  Default WebRTC Port change
 
-    The default ports that Kamailio listens to for the WebRTC websocket have changed, this was due to a port conflict on all-in-one installs with TLS enabled Kazoo APIs. The standard HTTP websocket port was 8080 and is now 5064. The TLS HTTP websocket port was 8443 and is now 5065. If you would like to continue using the old ports please update "/etc/kazoo/kamailio/local.cfg" after an update to kazoo-configs 3.22.12+
+    The default ports that Kamailio listens to for the WebRTC websocket have changed, this was due to a port conflict on all-in-one installs with TLS enabled {% BRAND_NAME %} APIs. The standard HTTP websocket port was 8080 and is now 5064. The TLS HTTP websocket port was 8443 and is now 5065. If you would like to continue using the old ports please update "/etc/kazoo/kamailio/local.cfg" after an update to kazoo-configs 3.22.12+
 
 
 ## Upcoming
@@ -214,7 +214,7 @@ Here are a few examples:
 
 1.  Deprecating `deps/mochiweb`
 
-    Most operations have been moved to the Cowboy or Cowlib projects. We will formally remove mochiweb from `deps/`. If you maintain code apart from Kazoo that uses mochiweb, please either covert to equivalent functionality with Cowboy/Cowlib or plan how you'll build your custom code with your own dependency of mochiweb.
+    Most operations have been moved to the Cowboy or Cowlib projects. We will formally remove mochiweb from `deps/`. If you maintain code apart from {% BRAND_NAME %} that uses mochiweb, please either covert to equivalent functionality with Cowboy/Cowlib or plan how you'll build your custom code with your own dependency of mochiweb.
 
 2.  Deprecating `deps/exmpp`
 
@@ -228,4 +228,4 @@ Here are a few examples:
 
     `ibrowse` will be replaced by `core/kazoo_web/kz_http` which is using Erlang `httpc`. `kz_http` is the new HTTP client module now and the previous `kz_http` module is renamed to `kz_http_util`.
 
-    If you maintain code apart from Kazoo that uses `ibrowse`, please either covert to equivalent functionality with `kz_http=/=httpc` or plan how you'll build your custom code with your own dependency of `ibrowse`.
+    If you maintain code apart from {% BRAND_NAME %} that uses `ibrowse`, please either covert to equivalent functionality with `kz_http=/=httpc` or plan how you'll build your custom code with your own dependency of `ibrowse`.

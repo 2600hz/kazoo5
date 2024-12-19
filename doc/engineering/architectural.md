@@ -6,7 +6,7 @@ When creating a Crossbar endpoint to manage settings for an external service, or
 
 A JSON schema should be created for the expected request data to be received.
 
-Once validated, if the data is to be stored on a typical KAZOO document, like a user or device, the endpiont should store/retrieve it as a `pvt_` field.
+Once validated, if the data is to be stored on a typical {% BRAND_NAME %} document, like a user or device, the endpiont should store/retrieve it as a `pvt_` field.
 
 This way, the data can only be accessed via the specific endpoint. If the data was stored on a "public" key in the user doc (for instance), there wouldn't be a way to prevent a client request to the users endpoint to set it directly, bypassing the validation (JSON schema plus extra steps) of the service's endpoint.
 

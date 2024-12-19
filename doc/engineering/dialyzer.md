@@ -1,14 +1,14 @@
 
-# Using Dialyzer on Kazoo
+# Using Dialyzer on {% BRAND_NAME %}
 
 ## Makefile commands
 
-After building the Kazoo project or some of its sub-directories one is able to run Dialyzer on it.
+After building the {% BRAND_NAME %} project or some of its sub-directories one is able to run Dialyzer on it.
 Dialyzer will check `-spec`s and inferred type information to try and find unexpected behaviour or bugs.
 
 ### Run Dialyzer on applications/ and core/
 
-This command, run from the root directory of the Kazoo repository,
+This command, run from the root directory of the {% BRAND_NAME %} repository,
 will find BEAM files under `applications/` and `core/` and scan them with Dialyzer.
 
     make dialyze-kazoo
@@ -42,7 +42,7 @@ Run Dialyzer on source files or whole directories:
 ### Where is the PLT?
 
 This command, run from the root directory, will generate the PLT file Dialyzer needs.
-This PLT includes OTP's main applications as well as Kazoo's `deps/`.
+This PLT includes OTP's main applications as well as {% BRAND_NAME %}'s `deps/`.
 
 Note that including `core/` in the PLT will slow down Dialyzer significantly (and may crash if
 your system does not have enough memory) while not adding much benefits to the scanning process.
@@ -53,7 +53,7 @@ Any `make dialyze` command will automatically build the PLT, if it does not exis
 
 Note that this PLT file is dependent on the Erlang version running,
 which means after switching to another Erlang version the PLT needs to be regenerated.
-One can easily switch between Erlang versions with `kerl` (not part of the Kazoo project).
+One can easily switch between Erlang versions with `kerl` (not part of the {% BRAND_NAME %} project).
 
 
 ## False positives and filters

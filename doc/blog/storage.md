@@ -127,9 +127,9 @@ We'll use the UUID to PATCH the 'storage' document with our 'attachments' object
     "attachments": {
         "{UUID}":{
             "handler":"s3",
-            "name":"Kazoo S3 storage config",
+            "name":"S3 storage config",
             "settings":{
-                "bucket":"my_kazoo_bucket_name",
+                "bucket":"my_bucket_name",
                 "key":"{AWS_ACCESS_KEY}",
                 "secret":"{AWS_SECRET_KEY}"
             }
@@ -147,7 +147,7 @@ curl -v -X PATCH \
     "attachments": {
         "{UUID}":{
             "handler":"s3",
-            "name":"Kazoo S3",
+            "name":"S3",
             "settings":{
                 "bucket":"{S3_BUCKET}",
                 "key":"{AWS_ACCESS_KEY}",
@@ -166,7 +166,7 @@ curl -v -X PATCH \
         "attachments": {
             "{UUID}": {
                 "handler": "s3",
-                "name": "Kazoo S3",
+                "name": "S3",
                 "settings": {
                     "bucket": "{S3_BUCKET}",
                     "key": "{AWS_ACCESS_KEY}",
@@ -283,7 +283,7 @@ curl -v -X PATCH -H "content-type: application/json" -H "X-Auth-Token: $AUTH_TOK
         "attachments": {
             "{UUID}": {
                 "handler": "s3",
-                "name": "Kazoo S3",
+                "name": "S3",
                 "settings": {
                     "bucket": "{S3_BUCKET}",
                     "key": "{AWS_ACCESS_KEY}",

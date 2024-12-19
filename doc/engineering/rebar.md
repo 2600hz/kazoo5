@@ -1,46 +1,46 @@
-# Kazoo Rebar3 built tool support (Experimental)
+# {% BRAND_NAME %} Rebar3 built tool support (Experimental)
 
-[Rebar3](https://rebar3.org) official build tool for Erlang/OTP. When development of Kazoo was started there was no Rebar3 so that is why [GNU `make`](https://www.gnu.org/software/make/) was chosen for its build system.
+[Rebar3](https://rebar3.org) official build tool for Erlang/OTP. When development of {% BRAND_NAME %} was started there was no Rebar3 so that is why [GNU `make`](https://www.gnu.org/software/make/) was chosen for its build system.
 
-Since Rebar3 is now mature enough and adopted by almost all Erlang projects, by supporting in Kazoo can now benefit of supporting Rebar3 and have better integration and interoperability with other tools such as code editors, other Erlang libraries and Erlang tools (such as [ErlangLS](https://github.com/erlang-ls/erlang_ls)) and way much faster build time.
+Since Rebar3 is now mature enough and adopted by almost all Erlang projects, by supporting in {% BRAND_NAME %} can now benefit of supporting Rebar3 and have better integration and interoperability with other tools such as code editors, other Erlang libraries and Erlang tools (such as [ErlangLS](https://github.com/erlang-ls/erlang_ls)) and way much faster build time.
 
-Rebar3 in Kazoo is still experimental and won't replace the existing make build system.
-Current Make build system is still the official build system supported by Kazoo.
+Rebar3 in {% BRAND_NAME %} is still experimental and won't replace the existing make build system.
+Current Make build system is still the official build system supported by {% BRAND_NAME %}.
 
 The umbrella Rebar configuration in provided by kazoo5 repository and each application (in `core/` and `applications/`) can have their own `rebar.config` with any customizations needed by that particular application.
 
-> **NOTE** All Rebar commands must be run from root of Kazoo source code.
+> **NOTE** All Rebar commands must be run from root of {% BRAND_NAME %} source code.
 
 This document present the current workflow of using Rebar3 and track what is working and
 what is not.
 
-Users of macOS and Windows can benefit of this since building and running a dev Kazoo
+Users of macOS and Windows can benefit of this since building and running a dev {% BRAND_NAME %}
 release is now depends less on Makefiles.
 
 
 
 ## Prerequisites
 
-You must have the usual Kazoo dev environment installed, mainly:
+You must have the usual {% BRAND_NAME %} dev environment installed, mainly:
 
-1. A Kazoo supported Erlang/OTP version
+1. A {% BRAND_NAME %} supported Erlang/OTP version
 2. [Rebar3](https://rebar3.org)
 3. Git (at least Git v2)
 4. Essential build tools (`build-essential` in Debian) which may include GCC/G++, make,
    automake, autoconf, zip/unzip and etc...
-5. Other Kazoo required stack if you want to a dev release (CouchDB, RabbitMQ at least).
+5. Other {% BRAND_NAME %} required stack if you want to a dev release (CouchDB, RabbitMQ at least).
 
 Consult [Installation](../installation.md) and [Installing on macOS](./installing-on-mac.md) for more info.
 
-## Fetch Core and Kazoo Apps
+## Fetch Core and {% BRAND_NAME %} Apps
 
-You still need to manually fetch Kazoo Core and Kazoo Applications. Go ahead and copy
+You still need to manually fetch {% BRAND_NAME %} Core and {% BRAND_NAME %} Applications. Go ahead and copy
 `make/more_apps.mk.default` to `make/mores_apps.mk` if you have't already. Add any other extra
-Kazoo application repositories you want to fetch and run the command in the root of
-Kazoo source code directory:
+{% BRAND_NAME %} application repositories you want to fetch and run the command in the root of
+{% BRAND_NAME %} source code directory:
 
 ```shell
-# edit (or copy make/more_apps.mk.default to make/mores_apps.mk) and extra kazoo apps repos
+# edit (or copy make/more_apps.mk.default to make/mores_apps.mk) and extra {% BRAND_NAME %} apps repos
 # if needed
 
 # and now fetch repos by:
@@ -49,7 +49,7 @@ make fetch-core fetch-apps
 
 ## Get yourself familiar with `rebar3`
 
-> **NOTE** All Rebar commands must be run from root of Kazoo source code.
+> **NOTE** All Rebar commands must be run from root of {% BRAND_NAME %} source code.
 
 Running `rebar3` without any argument will print its help. If you need to need more about some
 specific Rebar sub-command or it options, you can use:
@@ -116,9 +116,9 @@ rebar3 release -n kazoo_dev
 
 Please be advise that we use special `vm.args` and `sys.config` for rebar releases (check `rel/rebar.dev.*` files).
 
-#### Kazoo `config.ini`
+#### {% BRAND_NAME %} `config.ini`
 
-To run Kazoo you may need create a `config.init`. A bare minimum config file is provided in `rel/rebar.dev.kazoo-config.ini`.
+To run {% BRAND_NAME %} you may need create a `config.init`. A bare minimum config file is provided in `rel/rebar.dev.kazoo-config.ini`.
 Copy the file to `/etc/kazoo/core/config.init`:
 
 ```shell
@@ -129,7 +129,7 @@ sudo cp -n rel/rebar.dev.kazoo-config.ini /etc/kazoo/core/config.ini
 #### Running `kazoo_dev` release
 
 After release is created, you can use the release script created to start applications in that release. In `kazoo_dev`
-case you can start Kazoo dev this way (`reloader` is attached to track recompile beam files):
+case you can start {% BRAND_NAME %} dev this way (`reloader` is attached to track recompile beam files):
 
 ```
 _build/default/rel/kazoo_dev/bin/kazoo_dev console
@@ -137,9 +137,9 @@ _build/default/rel/kazoo_dev/bin/kazoo_dev console
 
 You will get an Erlang shell. Consult that `kazoo_dev` script for more sub-commands.
 
-#### Using custom Kazoo relx script
+#### Using custom {% BRAND_NAME %} relx script
 
-The `kazoo_dev` includes Kazoo's custom release script if you perfer to use that one:
+The `kazoo_dev` includes {% BRAND_NAME %}'s custom release script if you perfer to use that one:
 
 ```
 _build/default/rel/kazoo_dev/bin/official_kazoo console
@@ -164,7 +164,7 @@ By default `kazoo_apps` is used as node name.
 
 #### Changing Erlang Cookie
 
-Before running the release `kazoo_dev` script, define your cookie for the node name in your Kazoo config file
+Before running the release `kazoo_dev` script, define your cookie for the node name in your {% BRAND_NAME %} config file
 in `/etc/kazoo/core/config.ini`. Default cookie is `change_me`.
 
 ```
@@ -223,14 +223,14 @@ rebar3 cover -v
 ## Local custom Rebar3 configuration
 
 If you need to customize rebar3 configuration to your needs (add extra release targets, deps and etc...), you may
-create `rebar.local.config` in the root of Kazoo source directory. Our `rebar.config.script` will consult this file if exists.
+create `rebar.local.config` in the root of {% BRAND_NAME %} source directory. Our `rebar.config.script` will consult this file if exists.
 These variables are bounded and can be use in your config file:
 
 - `CONFIG`: Updated Rebar3 config variable, you MUST return this after updating it to your liking.
 - `BASE_APPS`: Our list of recommend Erlang system apps.
-- `CORE_APPS`: List of app Kazoo Core apps (fetched by `make fetch-core`).
-- `KAPPS`:  List of all Kazoo applications in `applications/` folder (fetched by `make fetch-kapps`).
-- `PROJECT_APPS`: A variable that holds all Kazoo and Core applications, useful to use as a list of apps when adding a new release target.
+- `CORE_APPS`: List of app {% BRAND_NAME %} Core apps (fetched by `make fetch-core`).
+- `KAPPS`:  List of all {% BRAND_NAME %} applications in `applications/` folder (fetched by `make fetch-kapps`).
+- `PROJECT_APPS`: A variable that holds all {% BRAND_NAME %} and Core applications, useful to use as a list of apps when adding a new release target.
 
 Your file need to return an updated rebar3 config.
 
@@ -248,7 +248,7 @@ MyReleases =
         [{release
          %% release name and version
          ,{kazoo_next, "5.5"}
-         %% add apps to included in this release, required. You can use provided Kazoo PROJECT_APPS and BASE_APPS if you like.
+         %% add apps to included in this release, required. You can use provided {% BRAND_NAME %} PROJECT_APPS and BASE_APPS if you like.
          ,PROJECT_APPS
          %% release configuration
          ,[{mode, prod}
@@ -272,7 +272,7 @@ MyReleases =
         ,{release
          %% release name and version
          ,{ecallmgr, {git, short}}
-         %% add apps to included in this release, required. You can use provided Kazoo PROJECT_APPS and BASE_APPS if you like.
+         %% add apps to included in this release, required. You can use provided {% BRAND_NAME %} PROJECT_APPS and BASE_APPS if you like.
          ,[ecallmgr]
          %% release configuration
          ,[{mode, dev}

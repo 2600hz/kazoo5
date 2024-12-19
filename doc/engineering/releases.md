@@ -1,8 +1,8 @@
 
-# How to use Erlang releases with Kazoo
+# How to use Erlang releases with {% BRAND_NAME %}
 
-Kazoo is bundled and shipped as an Erlang release.
-This means Erlang/OTP's and Kazoo's code are mixed together under `_rel/`, thus creating a standalone Kazoo.
+{% BRAND_NAME %} is bundled and shipped as an Erlang release.
+This means Erlang/OTP's and {% BRAND_NAME %}'s code are mixed together under `_rel/`, thus creating a standalone {% BRAND_NAME %}.
 
 [relx](https://github.com/erlware/relx/wiki) builds the release using
 * `rel/relx.config.script` (this file in fact generates `rel/relx.config`)
@@ -15,7 +15,7 @@ Information on Erlang releases and live-updates:
 
 ## Makefile commands
 
-All the following commands have to be run from the root directory of the Kazoo repository.
+All the following commands have to be run from the root directory of the {% BRAND_NAME %} repository.
 
 ### Build the release
 
@@ -32,7 +32,7 @@ The release can be spawned as either one of the following node types:
 * `ecallmgr`: when booting, the VM will start the `ecallmgr` application and its dependencies
 * `kazoo_apps`: when booting, the VM will start the `kazoo_apps` application and its dependencies
 
-Once booted, the node listens to its assigned ports, writes to the system logs, does everything Kazoo did when it wasn't a release.
+Once booted, the node listens to its assigned ports, writes to the system logs, does everything {% BRAND_NAME %} did when it wasn't a release.
 Releases add no scoping nor sandboxing capabilities.
 
 `REL` is the Makefile variable that stipulates the node type of the starting release.
@@ -79,7 +79,7 @@ This gracefully stops an `ecallmgr` node:
     REL=ecallmgr ACT=stop   make release
 
 
-### Read a release's cookie from Kazoo's configuration
+### Read a release's cookie from {% BRAND_NAME %}'s configuration
 
     REL=kazoo_apps make read-release-cookie
 

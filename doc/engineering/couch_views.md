@@ -1,18 +1,18 @@
 # CouchDB Design Documents
 
-Kazoo uses views to query CouchDB. Basically views are JavaScript codes which will be put in a document inside the database that they operate on. This special document is called Design document in CouchDB. Each Design document can implement multiple view. Please consult [Official CouchDB Design Documents](http://docs.couchdb.org/en/stable/ddocs/index.html) to learn more about how to write view.
+{% BRAND_NAME %} uses views to query CouchDB. Basically views are JavaScript codes which will be put in a document inside the database that they operate on. This special document is called Design document in CouchDB. Each Design document can implement multiple view. Please consult [Official CouchDB Design Documents](http://docs.couchdb.org/en/stable/ddocs/index.html) to learn more about how to write view.
 
-Traditionally Kazoo have all design documents in simple JSON files store in each application's private directory. After a view is updated system administrator required to run a maintenance command (`kapps_maintenance refresh [Database]`) to read the view files and update them in databases. As long as Kazoo is deploy as a single node, there was no issue. Deploying Kazoo in multi-node scenario where each node is just running a subset of applications would potentially result in breaking this refresh maintenance command. For example if you run this command for refreshing views for an account database in a node which doesn't have Crossbar application installed will failed, since it can not find required account's database views.
+Traditionally {% BRAND_NAME %} have all design documents in simple JSON files store in each application's private directory. After a view is updated system administrator required to run a maintenance command (`kapps_maintenance refresh [Database]`) to read the view files and update them in databases. As long as {% BRAND_NAME %} is deploy as a single node, there was no issue. Deploying {% BRAND_NAME %} in multi-node scenario where each node is just running a subset of applications would potentially result in breaking this refresh maintenance command. For example if you run this command for refreshing views for an account database in a node which doesn't have Crossbar application installed will failed, since it can not find required account's database views.
 
-With Kazoo 4.2, some views (account and MODB for example) are read from the JSON files and put in a specific database (`system_data` database). This process is called registering the views. Subsequent refresh command would read the view definitions from this database and is not required to run on a specific node.
+With {% BRAND_NAME %} 4.2, some views (account and MODB for example) are read from the JSON files and put in a specific database (`system_data` database). This process is called registering the views. Subsequent refresh command would read the view definitions from this database and is not required to run on a specific node.
 
-This has been improved in Kazoo 4.3 by putting all views that Kazoo uses into `system_data` database. Upon system startup, each application is now responsible for registering the views that it provides (and creating their specific database if they have one) and optionally refreshing it.
+This has been improved in {% BRAND_NAME %} 4.3 by putting all views that {% BRAND_NAME %} uses into `system_data` database. Upon system startup, each application is now responsible for registering the views that it provides (and creating their specific database if they have one) and optionally refreshing it.
 
 ## `kazoo` key
 
-Starting from Kazoo 4.3, when creating design documents for use in CouchDB, Kazoo requires some metadata to assist in making sure the views in the databases are up to date.
+Starting from {% BRAND_NAME %} 4.3, when creating design documents for use in CouchDB, {% BRAND_NAME %} requires some metadata to assist in making sure the views in the databases are up to date.
 
-At the root level of a design document, add a key `kazoo` with an object that tells Kazoo about which database(s) the design document belongs. This key is required.
+At the root level of a design document, add a key `kazoo` with an object that tells {% BRAND_NAME %} about which database(s) the design document belongs. This key is required.
 
 First, an example:
 
@@ -30,11 +30,11 @@ First, an example:
 }
 ```
 
-The `view_map` is an array of objects that tell Kazoo in what databases should the design document be put. There are two options for the object: `classification` and `database`.
+The `view_map` is an array of objects that tell {% BRAND_NAME %} in what databases should the design document be put. There are two options for the object: `classification` and `database`.
 
 ### Database Classification
 
-Kazoo has the following standard database classifications:
+{% BRAND_NAME %} has the following standard database classifications:
 
 Classification | Description
 -------------- | -----------
@@ -94,9 +94,9 @@ Once registered, `kapps_maintenance:migrate/0` and `kapps_maintenance:refresh/0`
 
 ## Multi-line views
 
-While the `map` functions in Kazoo's CouchDB views are generally pretty small and simple, there are occasions where writing the `map` function as one long string isn't so great for reading the function.
+While the `map` functions in {% BRAND_NAME %}'s CouchDB views are generally pretty small and simple, there are occasions where writing the `map` function as one long string isn't so great for reading the function.
 
-Kazoo thus allows you to specify the `map` function using an array of strings to allow you to write the JavaScript as you might in a normal `.js` file and Kazoo will take care of flattening it into a string before loading into CouchDB.
+{% BRAND_NAME %} thus allows you to specify the `map` function using an array of strings to allow you to write the JavaScript as you might in a normal `.js` file and {% BRAND_NAME %} will take care of flattening it into a string before loading into CouchDB.
 
 Consider the `faxes.json` design doc. The `crossbar_listing` function is defined as:
 

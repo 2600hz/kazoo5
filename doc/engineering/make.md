@@ -1,10 +1,10 @@
-# The Kazoo Makefile
+# The {% BRAND_NAME %} Makefile
 
-Kazoo utilizes [GNU `make`](https://www.gnu.org/software/make/) for its build system. There is a project-level Makefile and each application (in `core/` and `applications/`) have their own Makefiles with any customizations needed by that particular application.
+{% BRAND_NAME %} utilizes [GNU `make`](https://www.gnu.org/software/make/) for its build system. There is a project-level Makefile and each application (in `core/` and `applications/`) have their own Makefiles with any customizations needed by that particular application.
 
 ## Default target
 
-`make` from the root directory will build Kazoo's Erlang dependencies, the core libs, and finally the applications.
+`make` from the root directory will build {% BRAND_NAME %}'s Erlang dependencies, the core libs, and finally the applications.
 
 ## `make deps`
 
@@ -39,7 +39,7 @@ Cleans the `deps/` directory. `make deps` is required to build it again.
 
 ### `make sparkly-clean`
 
-Cleans up kazoo, releases, and deps in one target.
+Cleans up {% BRAND_NAME %}, releases, and deps in one target.
 
 ## `make compile-test`
 
@@ -182,11 +182,11 @@ Runs the security checks against changed (or all project) files and reports pote
 
 ## `make hank` and `make hank-changed`
 
-Does a [https://github.com/AdRoll/rebar3_hank/](`hank`) check for dead code, unused function arguments, records and record fields, and more! `make hank` runs against all of KAZOO while `hank-changed` uses `$(CHANGED)` files only. Always check for false positives!
+Does a [https://github.com/AdRoll/rebar3_hank/](`hank`) check for dead code, unused function arguments, records and record fields, and more! `make hank` runs against all of {% BRAND_NAME %} while `hank-changed` uses `$(CHANGED)` files only. Always check for false positives!
 
 ## Spell checking
 
-With Kazoo's international audience, it is helpful to have a spellchecker available to help all contributors find and fix spelling mistakes.
+With {% BRAND_NAME %}'s international audience, it is helpful to have a spellchecker available to help all contributors find and fix spelling mistakes.
 
 ### `make splchk`
 
@@ -213,7 +213,7 @@ For each Erlang application in `applications` and `core`, the file `make/kz.mk` 
 This target will:
 
 1. Fetch and compile any 3rd party dependencies defined in the `{APP}/deps.mk`
-2. Fetch and compile any KAZOO app dependencies (mostly for apps that have integrations with other apps) in `{APP}/apps.mk`
+2. Fetch and compile any {% BRAND_NAME %} app dependencies (mostly for apps that have integrations with other apps) in `{APP}/apps.mk`
 3. If `{APP}/Makefile` defines a var `COMPILE_MOAR`, it can contain Makefile-specific target such as which modules to compile first (like behaviours)
 4. If missing, build the `ebin/{APP}.app` file
   1. Make the `ebin` directory

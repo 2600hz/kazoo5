@@ -2,7 +2,7 @@
 
 INTRODUCTION
 
-## Kazoo new source directory structure
+## {% BRAND_NAME %} new source directory structure
 
 Write something useful here
 

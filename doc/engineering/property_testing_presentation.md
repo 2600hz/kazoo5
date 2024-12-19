@@ -1,4 +1,4 @@
-# Property-based testing with KAZOO
+# Property-based testing with {% BRAND_NAME %}
 
 
 # Introduction
@@ -8,10 +8,10 @@
 
 -   James Aimonetti
 -   [2600Hz](https://2600hz.com)
--   [KAZOO](https://github.com/2600hz/kazoo)
+-   [{% BRAND_NAME %}](https://github.com/2600hz/kazoo)
 
 
-## KAZOO
+## {% BRAND_NAME %}
 
 -   <https://github.com/2600hz/kazoo>
 -   Started in 2010

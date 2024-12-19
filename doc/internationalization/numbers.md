@@ -1,6 +1,6 @@
 # International Phone Numbers
 
-By default, Kazoo includes appropriate configurations for running the system in the United States. Nothing, however, stops folks from re-configuring the system to support other country's numbering system.
+By default, {% BRAND_NAME %} includes appropriate configurations for running the system in the United States. Nothing, however, stops folks from re-configuring the system to support other country's numbering system.
 
 2600Hz encourages you to consider sticking with the [E.164](https://en.wikipedia.org/wiki/E.164) format for globally rout-able numbers.
 
@@ -30,7 +30,7 @@ This should match calls dialed within France (using the 0 followed by a 9 digit 
 
 ## Converters
 
-This a set of normalization regular expressions used on every number that Kazoo processes. The job of these expressions is to format numbers the same way regardless of where they originated. For example, most US carriers send numbers in E164 format (+14158867900) yet users do not dial +1. One use case is to ensure any US number begins with +1.
+This a set of normalization regular expressions used on every number that {% BRAND_NAME %} processes. The job of these expressions is to format numbers the same way regardless of where they originated. For example, most US carriers send numbers in E164 format (+14158867900) yet users do not dial +1. One use case is to ensure any US number begins with +1.
 
 ```json
 {
@@ -48,9 +48,9 @@ This a set of normalization regular expressions used on every number that Kazoo 
 }
 ```
 
-The first regex, `"^\\+?1?([2-9][0-9]{2}[2-9][0-9]{6})$"` will capture the 10 digit number (ignoring a + or a 1 if present on the front of the dialed number), and adds a "+1" prefix to the captured number. So a dialed number of `4158867900`, `14158867900`, or `+14158867900` will all result in `+14158867900`. This would cover the main ways users and carriers will send numbers to Kazoo.
+The first regex, `"^\\+?1?([2-9][0-9]{2}[2-9][0-9]{6})$"` will capture the 10 digit number (ignoring a + or a 1 if present on the front of the dialed number), and adds a "+1" prefix to the captured number. So a dialed number of `4158867900`, `14158867900`, or `+14158867900` will all result in `+14158867900`. This would cover the main ways users and carriers will send numbers to {% BRAND_NAME %}.
 
-The second regex, `"^011(\\d{5,})$|^00(\\d{5,})$"`, matches how US customers would dial international numbers. `\\d{5,}` indicates there must be at least 5 digits following 011 or 00 (to allow people who want 001, 002, etc as extensions within accounts). The result is the number captured being prefixed by '+'. So if `01133123456789` was dialed, the second regex would match it, resulting in `+33123456789` being the number used for Kazoo's internal routing.
+The second regex, `"^011(\\d{5,})$|^00(\\d{5,})$"`, matches how US customers would dial international numbers. `\\d{5,}` indicates there must be at least 5 digits following 011 or 00 (to allow people who want 001, 002, etc as extensions within accounts). The result is the number captured being prefixed by '+'. So if `01133123456789` was dialed, the second regex would match it, resulting in `+33123456789` being the number used for {% BRAND_NAME %}'s internal routing.
 
 The third regex matches international numbers added to the system and prefixes them with a '+'. This can be further delineated (or removed) if you're not adding numbers to the system from multiple countries.
 
@@ -141,9 +141,9 @@ If you want a literal '#', 'S', or '*', prefix it with a '\' (so '\#', '\S', and
 
 ### Per-Account dial plans
 
-Users can dial local numbers, just as they do with the PSTN, by providing Kazoo with `dial_plan` regular expressions. These regexps will be used on the dialed numbers to correct them to properly routable numbers.
+Users can dial local numbers, just as they do with the PSTN, by providing {% BRAND_NAME %} with `dial_plan` regular expressions. These regexps will be used on the dialed numbers to correct them to properly routable numbers.
 
-It is possible to set these regexps on an account, user, or device basis. All that needs doing is adding a `dial_plan` key at the root level of the account, user, or device document. Kazoo will then apply the regexps in order, preferring the calling device's, then user's (if the calling device has an `owner_id` set), and finally the account's dialplan. Failing any of those, the system `e164_converters` will be employed.
+It is possible to set these regexps on an account, user, or device basis. All that needs doing is adding a `dial_plan` key at the root level of the account, user, or device document. {% BRAND_NAME %} will then apply the regexps in order, preferring the calling device's, then user's (if the calling device has an `owner_id` set), and finally the account's dialplan. Failing any of those, the system `e164_converters` will be employed.
 
 !!! warning
     It is possible that these `dial_plan` rules will interfere with extension dialing within an account. Please take common extension length into consideration when creating these `dial_plan` rules.
@@ -181,7 +181,7 @@ The `dial_plan` key is a regex to match against the dialed number, with `prefix`
 
 ### One locale for all devices in an account
 
-If all of the users/devices in an account are located in the same city, it would be most convenient to place a `dial_plan` at the account level, allowing them to dial as they are used to and converting it for Kazoo processing. For instance, we can poach the "USA/CA/SF" regex from above for an account who's users are all in San Francisco. Then, when a user dials a 7-digit number, it is prepended with the 415 area code (as well as +1).
+If all of the users/devices in an account are located in the same city, it would be most convenient to place a `dial_plan` at the account level, allowing them to dial as they are used to and converting it for {% BRAND_NAME %} processing. For instance, we can poach the "USA/CA/SF" regex from above for an account who's users are all in San Francisco. Then, when a user dials a 7-digit number, it is prepended with the 415 area code (as well as +1).
 
 ### Globally distributed users
 
