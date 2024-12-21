@@ -274,29 +274,6 @@ nav:
 
 # ADD PUSHER DOCS TOO
 
-
-- '2600Hz App Exchange':
-  - 'Intro': 'doc/appexchange/intro.md'
-  - 'Build Your App':
-    - 'Getting Started': 'doc/appexchange/getting_started.md'
-    - 'Planning Your App': 'doc/appexchange/planning.md'
-    - 'App Guidelines': 'doc/appexchange/guidelines.md'
-    - 'Style & Asset Guide': 'doc/appexchange/style_guide.md'
-    - 'Whitelabeling': 'doc/appexchange/whitelabeling.md'
-    - 'FAQ' : 'doc/appexchange/build_faq.md'
-  - 'List Your App':
-    - 'Submit Your App': 'doc/appexchange/submit_app.md'
-    - 'Approval Process': 'doc/appexchange/states_workflows.md'
-    - 'FAQ' : 'doc/appexchange/list_faq.md'
-  - 'Sell Your App':
-    - 'How to Sell Your App': 'doc/appexchange/how_to_sell.md'
-    - 'Pricing': 'doc/appexchange/pricing.md'
-    - 'Financial Terms': 'doc/appexchange/financial_terms.md'
-    - 'Payments': 'doc/appexchange/payments.md'
-    - 'Support & Liability': 'doc/appexchange/support.md'
-    - 'FAQ' : 'doc/appexchange/sell_faq.md'
-
-
 #### ENDS "STILL NEEDS SORTING" SECTION
 
 
