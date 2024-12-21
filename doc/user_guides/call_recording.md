@@ -16,7 +16,7 @@ Call recording can be enabled in a number of ways:
 Call recording requires you to either:
 
 * have a web server capable of receiving an HTTP `PUT` request with the contents of the recording, which you are then free to save in a way that meets your needs
-* configure a [storage plan](../../applications/crossbar/doc/storage.md) for call recordings
+* configure a [Storage Plan](https://docs.2600hz.com/git/2600hz/kazoo-crossbar/doc/storage.md) for call recordings
 
 ### Account, User, or Device
 

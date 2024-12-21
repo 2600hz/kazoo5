@@ -55,7 +55,7 @@ Two new **en-US** prompts have been added to handle this feature and should be i
 * vm-settings\_menu\_announcement_on
 * vm-settings\_menu\_announcement_off
 
-For instructions on how to import prompts please consult the [{% BRAND_NAME %} Core Media](https://github.com/2600hz/kazoo-sounds/tree/master/kazoo-core#importing-prompts-for-a-language) documentation.
+For instructions on how to import prompts please consult the [Kazoo Core Media](https://github.com/2600hz/kazoo-sounds/tree/master/kazoo-core#importing-prompts-for-a-language) documentation.
 
 7. Adds kazoo_telemetry application
 
@@ -92,9 +92,9 @@ Here are a few examples:
 
 4. Crossbar Load View
 
-    In order to reduce pagination problems, increase maintainability and standardizing Crossbar view operations on multiple databases and handling huge number of documents properly, [`crossbar_doc:load_view/3,4,5,6`](https://github.com/2600hz/kazoo/blob/873dc106c7a7330393201207eddc365837c3dbe6/applications/crossbar/src/crossbar_doc.erl#L15) has been deprecated in favor of new module `crossbar_view`. Please migrate your current Crossbar modules or write your new modules to use this new Crossbar view functionality.
+    In order to reduce pagination problems, increase maintainability and standardizing Crossbar view operations on multiple databases and handling huge number of documents properly, `crossbar_doc:load_view/3,4,5,6` has been deprecated in favor of new module `crossbar_view`. Please migrate your current Crossbar modules or write your new modules to use this new Crossbar view functionality.
 
-    Starting with {% BRAND_NAME %} 4.2, helper functions for creating range view options in [`cb_module_utils`](https://github.com/2600hz/kazoo/blob/873dc106c7a7330393201207eddc365837c3dbe6/applications/crossbar/src/modules/cb_modules_util.erl#L23-L26) has been removed. Instead several options has been introduced in `crossbar_view` to generating correct range view options according to query string parameters or module's options and requested sort direction.
+    Starting with {% BRAND_NAME %} 4.2, helper functions for creating range view options in `cb_module_utils` has been removed. Instead several options has been introduced in `crossbar_view` to generating correct range view options according to query string parameters or module's options and requested sort direction.
 
     Crossbar View module introduce new functions to simple load view (`load/2,3`), ranged load (`load_range/2,3`) and ranged load from MODBs (`load_modb/2,3`). It has several ways to configure the `startkey` and `endkey` and the time range and a new generic way to return chunked base response.
 

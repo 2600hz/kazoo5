@@ -191,7 +191,7 @@ Write the comment immediately after the dot in type specification (you can some 
 
 ## Edocify Script
 
-Comments in {% BRAND_NAME %} source code was not formatted correctly to consume by EDoc. Since there was a lot of issues to fix, a [script](https://github.com/2600hz/kazoo/blob/master/scripts/edocify.escript) was written to find the problematic issues in the code using regex and [`ag` The Silver Searcher](https://github.com/ggreer/the_silver_searcher) and fix them.
+Comments in {% BRAND_NAME %} source code was not formatted correctly to consume by EDoc. Since there was a lot of issues to fix, `edocify.escript` was written to find the problematic issues in the code using regex and [`ag` The Silver Searcher](https://github.com/ggreer/the_silver_searcher) and fix them.
 
 To avoid repeating the same issues again this script is running as part of CI.
 
@@ -233,6 +233,6 @@ After running the script you can use `git status` or `git diff` to see the chang
 
 ## State of EDoc script
 
-Just like state of doc for API endpoints, [state of EDoc](https://github.com/2600hz/kazoo/blob/master/scripts/state-of-edoc.escript) will run EDoc on all non-test {% BRAND_NAME %} Erlang file to make sure that the EDoc can read/parse and creates documentation. This script runs in CI as well.
+Just like state of doc for API endpoints, `state-of-edoc.escript` will run EDoc on all non-test {% BRAND_NAME %} Erlang file to make sure that the EDoc can read/parse and creates documentation. This script runs in CI as well.
 
 If EDoc is failing, usually it says which line of the comment is problematic, so you can fix it.

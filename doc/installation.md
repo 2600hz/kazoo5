@@ -1,8 +1,8 @@
 # {% BRAND_NAME %} Installation Guide
 
-This is a guide to building {% BRAND_NAME %} from source on a Debian 8 (Jessie) base installation. Other GNU/Linux distros should work similarly, though the dependencies may differ a bit. If you want to just install and use {% BRAND_NAME %} (and not build it) try using the [installation instructions](https://docs.2600hz.com/sysadmin/doc/install/install_via_centos7/). The rest of this guide assumes you want to run a development environment for {% BRAND_NAME %}.
+This is a guide to building {% BRAND_NAME %} from source on a Debian 8 (Jessie) base installation. Other GNU/Linux distros should work similarly, though the dependencies may differ a bit. If you want to just install and use {% BRAND_NAME %} (and not build it) try using the [installation instructions](https://docs.2600hz.com/git/2600hz/docs-sysadmin/doc/install/install_via_centos7.md). The rest of this guide assumes you want to run a development environment for {% BRAND_NAME %}.
 
-If your development is on macOS, here are [extra steps](https://github.com/2600hz/kazoo/blob/master/doc/engineering/installing-on-mac.md) for set up.
+If your development is on macOS, here are [extra steps](./engineering/installing-on-mac.md) for set up.
 
 ## Dependencies
 
@@ -12,7 +12,7 @@ Erlang/OTP is required for both run time and build time. Usually the official Er
 
 * {% BRAND_NAME %} version 4.3 requires Erlang version 19 specifically 19.3.x
 * {% BRAND_NAME %} version 5.x is currently targets Erlang version 23 (specifically 23.0.3)
-* {% BRAND_NAME %} master branch targets Erlang 23+ (specifically 23.0.3 but consult [`make/erlang_version`](https://github.com/2600hz/kazoo/blob/master/make/erlang_version) to be sure).
+* {% BRAND_NAME %} master branch targets Erlang 23+ (specifically 23.0.3 but consult `make/erlang_version` to be sure).
 
 #### Installing Erlang/OTP from source code
 
@@ -75,11 +75,11 @@ Voice/Video and SIP functionality requirements:
 * FreeSWITCH version 1.10+
     * It is required `mod_kazoo` plug-in to be enabled
     * Official 2600Hz [FreeSWITCH configurations](https://github.com/2600hz/kazoo-configs-freeswitch) is required
-    * It is recommended to install FreeSWITCH from [2600Hz CentOS repository](https://docs.2600hz.com/sysadmin/doc/install/install_via_centos7) to ease the installation.
+    * It is recommended to install FreeSWITCH from [2600Hz CentOS repository](https://docs.2600hz.com/git/2600hz/docs-sysadmin/doc/install/install_via_centos7.md) to ease the installation.
 * Kamailio version 5.2+
     * It is required `kazoo` module to be enabled
     * Official 2600Hz [Kamailio configurations](https://github.com/2600hz/kazoo-configs-kamailio) is required
-    * It is recommended to install Kamailio from [2600Hz CentOS repository](https://docs.2600hz.com/sysadmin/doc/install/install_via_centos7) to ease the installation.
+    * It is recommended to install Kamailio from [2600Hz CentOS repository](https://docs.2600hz.com/git/2600hz/docs-sysadmin/doc/install/install_via_centos7.md) to ease the installation.
     * If you're installing the official Kamailio packages instead, you have to change the database in 2600Hz Kamailio configurations to use `sqlite` or you're choice of database.
 
 

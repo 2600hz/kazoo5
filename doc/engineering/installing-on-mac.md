@@ -109,4 +109,5 @@ Brew directly installs Erlang version. It's also tested but offers less version 
 You have to use Brew link and unlink to switch between version.
 
 ## Build {% BRAND_NAME %}
-The generic build [instruction](https://github.com/2600hz/kazoo/blob/master/doc/installation.md#longer-version) works on macOS.
+
+The generic build [instruction](../installation.md#longer-version) works on macOS.

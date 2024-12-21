@@ -12,7 +12,7 @@ Here are some general resources to keep handy and enjoy your experience with {% 
 * Visit [the community site](http://2600hz.org)
 * Have a look at our:
   * [{% BRAND_NAME %} developer documentation](https://docs.2600hz.com/dev/)
-  * [UI developer documentation](https://docs.2600hz.com/ui/)
+  * [UI developer documentation](https://docs.2600hz.com/git/2600hz/monster-ui/docs/mkdocs/getting-started.md)
   * [System administrator documentation](https://docs.2600hz.com/sysadmin/)
   * [User guides](https://forums.2600hz.com/forums/kazoo-platform-guides/index/)
 * Bugs and feature requests can be found [here](http://tickets.2600hz.org)

@@ -42,7 +42,7 @@ It would be great to have:
 
 ### Reference Template Markdown File
 
-A Reference Template for all Crossbar API can be generate by parsing the Erlang source file of the APIs. This is done by {% BRAND_NAME %} AST [`cb_api_endpoint`](https://github.com/2600hz/kazoo/blob/master/core/kazoo_ast/src/cb_api_endpoints.erl) module and is run every time in CI to make sure the template is updated and alerts developers there has been a change that need to be documented.
+A Reference Template for all Crossbar API can be generate by parsing the Erlang source file of the APIs. This is done by `kazoo_ast` app `cb_api_endpoint` module and is run every time in CI to make sure the template is updated and alerts developers there has been a change that need to be documented.
 
 `cb_api_endpoint` is uses Erlang functionality to generate an Erlang [Abstract Syntax Tree (AST)](http://erlang.org/doc/apps/erts/absform.html) of the source code. It looks for `resource_exists` of each API endpoint to extract what HTTP methods are implemented by the endpoint, and generates a basic reference markdown file for the endpoint with some boilerplate cURL command usage. Also if the endpoint is using JSON schema, it prints it as table in the reference template.
 
@@ -66,7 +66,7 @@ You can use `make apis` on root of the project to run all {% BRAND_NAME %} AST m
 
 These tools are not necessary for documentation, but are helping to generating schemas to use by {% BRAND_NAME %} applications and generates API endpoints ref docs.
 
-* [`generate-api-endpoints.escript`](https://github.com/2600hz/kazoo/blob/master/scripts/generate-api-endpoints.escript): Builds the Crossbar reference docs in 'applications/crossbar/doc/ref'. Helps detect when Crossbar endpoints have changes to their functionality that is client-facing.
-* [`generate-doc-schemas.py`](https://github.com/2600hz/kazoo/blob/master/scripts/generate-doc-schemas.py): Updates crossbar docs with the schema table from the ref (auto-gen) version
-* [`generate-schemas.escript`](https://github.com/2600hz/kazoo/blob/master/scripts/generate-schemas.escript): Parses the core/applications code looking for calls to `kapps_config` (module used to access documents in the `system_config` database) and building a base JSON schema file for each document found. Also parses callflow's action modules looking for keys used to access values in the Data JSON object to build a base JSON schema file for each callflow action.
-* [`format-json.py`](https://github.com/2600hz/kazoo/blob/master/scripts/format-json.py): Python script to format JSON files (like CouchDB views, JSON schemas) and write the formatted version back to the file. 'make apis' runs this as part of its instructions.
+* `generate-api-endpoints.escript`: Builds the Crossbar reference docs in 'applications/crossbar/doc/ref'. Helps detect when Crossbar endpoints have changes to their functionality that is client-facing.
+* `generate-doc-schemas.py`: Updates crossbar docs with the schema table from the ref (auto-gen) version
+* `generate-schemas.escript`: Parses the core/applications code looking for calls to `kapps_config` (module used to access documents in the `system_config` database) and building a base JSON schema file for each document found. Also parses callflow's action modules looking for keys used to access values in the Data JSON object to build a base JSON schema file for each callflow action.
+* `format-json.py`: Python script to format JSON files (like CouchDB views, JSON schemas) and write the formatted version back to the file. 'make apis' runs this as part of its instructions.

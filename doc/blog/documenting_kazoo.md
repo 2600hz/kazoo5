@@ -121,15 +121,15 @@ How could community contributors run a make target locally to let them know they
 
 The first effort was providing automated documentation of our APIs (that UIs and such are built on).
 
-We use [Cowboy](https://github.com/ninenines/cowboy) as our HTTP server and the [rest handlers](https://github.com/ninenines/cowboy/blob/master/doc/src/guide/rest_handlers.asciidoc) to build each endpoint. Most endpoints are only accessed via an account, so most URLs are of the structure `/v2/accounts/{ACCOUNT_ID}/endpoints/{ENDPOINT_ID}` where the collection is followed by an entity.
+We use [Cowboy](https://github.com/ninenines/cowboy) as our HTTP server and the [REST handlers](https://github.com/ninenines/cowboy/blob/master/doc/src/guide/rest_handlers.asciidoc) to build each endpoint. Most endpoints are only accessed via an account, so most URLs are of the structure `/v2/accounts/{ACCOUNT_ID}/endpoints/{ENDPOINT_ID}` where the collection is followed by an entity.
 
-All endpoint modules expose an `allowed_methods` function with varying arities, determined by the number of parameters in the URL. So `/v2/accounts/{ACCOUNT_ID}/vmboxes` would call [`cb_vmboxes:allowed_methods/0`](https://github.com/2600hz/kazoo/blob/master/applications/crossbar/src/modules/cb_vmboxes.erl#L77-L78), `/vmboxes/{VMBOX_ID}` would call [`cb_vmboxes:allowed_methods/1`](https://github.com/2600hz/kazoo/blob/master/applications/crossbar/src/modules/cb_vmboxes.erl#L79-L82), etc.
+All endpoint modules expose an `allowed_methods` function with varying arities, determined by the number of parameters in the URL. So `/v2/accounts/{ACCOUNT_ID}/vmboxes` would call `cb_vmboxes:allowed_methods/0`, `/vmboxes/{VMBOX_ID}` would call `cb_vmboxes:allowed_methods/1`, etc.
 
 We can exploit the clauses in the `allowed_methods` functions to map out exactly what URI structures are accessible and by what HTTP verbs. If we saw `_` or `_ID` or the like, we would assume it was an entity ID.
 
 The first full run found us with endpoints that made no sense but were technically reachable. A great cleanup occurred to tighten up the `allowed_methods` functions, to explicitly define various static path parameters, and to rename all ignored variables to better reflect the contents of that variable (used in other functions later in the processing).
 
-This work created what we call ["ref" docs](https://github.com/2600hz/kazoo/tree/master/applications/crossbar/doc/ref), or bare-bone versions of endpoint documentation, as best as we could do given the constraints of the code.
+This work created what we call a `ref` which will usually will be stored in each application root at `doc/ref` folder, or bare-bone versions of endpoint documentation, as best as we could do given the constraints of the code.
 
 1.  JSON Schemas
 
@@ -139,7 +139,7 @@ This work created what we call ["ref" docs](https://github.com/2600hz/kazoo/tree
 
     A script was then written to automatically migrate the ref doc's table to the "real" doc to keep it up to date as well.
 
-    Finally, we also update a [swagger.json](https://github.com/2600hz/kazoo/blob/master/applications/crossbar/priv/api/swagger.json) file because one of our devs thought it was the trendy thing to do.
+    Finally, we also update a `swagger.json` file in Crossbar `priv/api/swagger.json` because one of our devs thought it was the trendy thing to do.
 
 2.  Build tools
 
@@ -149,7 +149,7 @@ This work created what we call ["ref" docs](https://github.com/2600hz/kazoo/tree
 
 3.  The code
 
-    The code is found in the [cb\_api\_endpoints](https://github.com/2600hz/kazoo/blob/master/core/kazoo_ast/src/cb_api_endpoints.erl) module (part of the [kazoo\_ast](https://github.com/2600hz/kazoo/blob/master/core/kazoo_ast/) core application). It finds all the Crossbar endpoint modules and parses the `allowed_methods` AST of each to find the list of HTTP methods allowed and what parameters are passed to the function (from the URI path).
+    The code is found in the `cb_api_endpoints` module (part of the `kazoo_ast` application). It finds all the Crossbar endpoint modules and parses the `allowed_methods` AST of each to find the list of HTTP methods allowed and what parameters are passed to the function (from the URI path).
 
 
 ### Callflow action data
@@ -158,7 +158,7 @@ Each action in a callflow has an associated data JSON object. If the API endpoin
 
 This work was much different from the Crossbar doc work; in Crossbar's case, we had a known function name and return (list of binaries) to work with. In callflows, we have a `Data` variable passed to the `handle/2` function in each callflow action. From there, we need to trace through all functions where `Data` is accessed using the `kz_json` module to get values out. We collect the keys used, as well as defaults if found, to create the JSON schema.
 
-We create/merge ['ref" docs](https://github.com/2600hz/kazoo/blob/master/applications/callflow/doc/ref/) and [schemas](https://github.com/2600hz/kazoo/tree/master/applications/crossbar/priv/couchdb/schemas) for the actions' `Data` payload.
+We create/merge docs' `ref` (`doc/ref`) and their matching JSON schema from `priv/couchdb/schemas` and  for the actions' `Data` payload.
 
 1.  Challenges
 
@@ -189,14 +189,14 @@ We create/merge ['ref" docs](https://github.com/2600hz/kazoo/blob/master/applica
 
 4.  The code
 
-    The [cf\_data\_usage](https://github.com/2600hz/kazoo/blob/master/core/kazoo_ast/src/cf_data_usage.erl) module takes care of this work.
+    The `cf_data_usage` module takes care of this work.
 
 
 ### Conference Schema
 
-The conference entity was undocumented and had no schema doc to guide developers. We have a module, [kapps\_conference](https://github.com/2600hz/kazoo/blob/master/core/kazoo_call/src/kapps_conference.erl), that represents a conference and all its attributes, including a JSON->record function to build the `#kapps_conference{}` record.
+The conference entity was undocumented and had no schema doc to guide developers. We have a module, `kapps_conference`, that represents a conference and all its attributes, including a JSON->record function to build the `#kapps_conference{}` record.
 
-Again, we just look for usages of the JSON object `JObj` in that function (and any called functions where `JObj` is passed). The code is in the [conference\_schema\_builder](https://github.com/2600hz/kazoo/blob/master/core/kazoo_ast/src/conference_schema_builder.erl) module.
+Again, we just look for usages of the JSON object `JObj` in that function (and any called functions where `JObj` is passed). The code is in the `conference_schema_builder` module.
 
 
 ### FreeSWITCH properties
@@ -205,11 +205,11 @@ We rely on [FreeSWITCH](https://freeswitch.org/) to handle much of our SIP and a
 
 We wanted to build this list dynamically so that we could change/update mod\_kazoo's filter list form {% BRAND_NAME %} (instead of having to update XML files on all FreeSWITCH servers and reloading mod\_kazoo, impacting the servers' ability to process calls for {% BRAND_NAME %} while the reload occurred.
 
-Similar to tracing usage of the `kz_json` module in callflows or conferences, we trace usage of our proplist module, [props](https://github.com/2600hz/kazoo/blob/master/core/kazoo/src/props.erl), for the keys used to extract values from the FreeSWITCH-supplied proplist.
+Similar to tracing usage of the `kz_json` module in callflows or conferences, we trace usage of our proplist module, `props`, for the keys used to extract values from the FreeSWITCH-supplied proplist.
 
-This information is used to generate a header file, [fs\_event\_filters.hrl](https://github.com/2600hz/kazoo/blob/master/applications/ecallmgr/src/fs_event_filters.hrl), used within the ecallmgr application. If a developer accesses new keys in the proplist, this header file should be updated to reflect that (and code can inform mod\_kazoo of the new filter list).
+This information is used to generate a header file, `fs_event_filters.hrl`, used within the ecallmgr application. If a developer accesses new keys in the proplist, this header file should be updated to reflect that (and code can inform mod\_kazoo of the new filter list).
 
-The code is in the [fs\_prop\_usage](https://github.com/2600hz/kazoo/blob/master/core/kazoo_ast/src/fs_prop_usage.erl) module.
+The code is in the `fs_prop_usage` module.
 
 
 ### System configuration
