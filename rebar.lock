@@ -191,7 +191,7 @@
   0},
  {<<"ra">>,
   {git,"https://github.com/2600hz/erlang-ra.git",
-       {ref,"b87cd56393e534ad62f604624e4f0678668423e7"}},
+       {ref,"7b69b45495e3eccaf348a753e3cbcaa747d5f26c"}},
   0},
  {<<"rabbit_common">>,{pkg,<<"rabbit_common">>,<<"3.12.14">>},1},
  {<<"ranch">>,
