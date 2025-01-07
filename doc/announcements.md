@@ -196,7 +196,7 @@ Here are a few examples:
 
 2.  Monster UI Enabled Applications
 
-    The enabled Monster UI applications were moved from an object on the account document to its own document with the id `apps_store`. When you run `sup kapps_maintenance migrate` this will automatically preform this operation but until it is complete users logging into Monster UI may not see their previously enabled applications. Once the migration is complete the change should be transparent to end-users.
+    The enabled Monster UI applications were moved from an object on the account document to its own document with the id `apps_store`. When you run `sup kapps_maintenance migrate` this will automatically perform this operation but until it is complete users logging into Monster UI may not see their previously enabled applications. Once the migration is complete the change should be transparent to end-users.
 
 3.  Company Directory PDF
 
