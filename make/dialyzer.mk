@@ -67,6 +67,14 @@ dialyze-types-kazoo: dialyze-types-it
 dialyze-types: TO_DIALYZE = $(CHANGED)
 dialyze-types: dialyze-types-it
 
+.PHONY: dialyze-types-core
+dialyze-types-core: TO_DIALYZE = $(shell find $(CORE_DIR) -name ebin)
+dialyze-types-core: dialyze-types-it
+
+.PHONY: dialyze-types-apps
+dialyze-types-apps: TO_DIALYZE = $(shell find $(APPS_DIR) -name ebin)
+dialyze-types-apps: dialyze-types-it
+
 .PHONY: dialyze-types-it
 dialyze-types-it: $(PLT)
 	@echo ":: dialyzing types"

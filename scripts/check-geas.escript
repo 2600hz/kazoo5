@@ -53,10 +53,14 @@ info(Path, {Vsns, Min, Max}) ->
             ,lists:max([Min, AppMin])
             ,lists:min([Max, AppMax])
             };
+        {'error', _Msg} ->
+            io:format("failed to get info on ~s: ~s~n", [Path, _Msg]),
+            {Vsns, Min, Max};
         {'error', _Msg, _ST} ->
             io:format("error on ~s: ~s~n", [Path, _Msg]),
             {Vsns, Min, Max}
     catch _E:_R:_ST ->
+            io:format("failed info on path: ~s~n", [Path]),
             {_E, _R, _ST}
     end.
 
