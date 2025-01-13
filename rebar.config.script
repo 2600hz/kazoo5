@@ -66,7 +66,7 @@ BASE_APPS = [runtime_tools
             ],
 
 RelxConfig = fun() ->
-                     APPS = PROJECT_APPS,
+                     APPS = PROJECT_APPS ++ BASE_APPS,
                      lists:foldr(fun({release, Name, Apps}, Acc) ->
                                          [{release, Name, Apps ++ APPS}|Acc];
                                     ({release, Name, Apps, RelConfig}, Acc) ->
