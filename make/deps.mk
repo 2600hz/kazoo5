@@ -189,7 +189,7 @@ dep_trie = git https://github.com/2600hz/erlang-trie v1.7.5
 
 dep_cowlib = git https://github.com/2600hz/erlang-cowlib 2.13.0
 
-dep_gun = git https://github.com/2600hz/erlang-gun 2600hz-2.0.0-pre.3
+dep_gun = git https://github.com/2600hz/erlang-gun 2.1.0
 
 dep_apns = git https://github.com/2600hz/erlang-apns4erl.git 2600hz-2.4.1
 
