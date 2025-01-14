@@ -36,7 +36,9 @@ endif
 ## pipefail enforces that the command fails even when run through a pipe
 SHELL := /bin/bash -o pipefail
 
-FETCH_AS ?= https://github.com/
+ifndef FETCH_AS
+	FETCH_AS = https://github.com/
+endif
 
 BASE_BRANCH := $(shell cat $(ROOT)/.base_branch)
 
@@ -44,16 +46,24 @@ comma := ,
 empty :=
 space := $(empty) $(empty)
 
-KZ_VERSION ?= $(shell $(ROOT)/scripts/next_version)
+ifndef KZ_VERSION
+	KZ_VERSION := $(shell $(ROOT)/scripts/next_version)
+endif
 
 ## SOURCES provides a way to specify compilation order (left to right)
-SOURCES     ?= $(wildcard src/*.erl) $(wildcard src/*/*.erl)
+ifndef SOURCES
+	SOURCES := $(wildcard src/*.erl) $(wildcard src/*/*.erl)
+endif
+
 SOURCES_FULL_PATH = $(realpath $(SOURCES))
 MODULE_NAMES := $(sort $(foreach module,$(SOURCES),$(shell basename $(module) .erl)))
 MODULES := $(shell echo $(MODULE_NAMES) | sed 's/ /,/g')
 BEAMS := $(sort $(foreach module,$(SOURCES),ebin/$(shell basename $(module) .erl).beam))
 JSON := $(shell find $(PROJECT_ROOT) -name "*.json")
-DOCS ?= $(wildcard doc/*.md)
+
+ifndef DOCS
+	DOCS := $(wildcard doc/*.md)
+endif
 
 TEST_SOURCES := $(SOURCES) $(wildcard test/*.erl)
 TEST_MODULE_NAMES := $(sort $(foreach module,$(TEST_SOURCES),$(shell basename $(module) .erl)))
@@ -70,7 +80,9 @@ else
     ERLC_OPTS += $(ERLC_OPTS_SUPERSECRET)
 endif
 
-ELIBS ?= $(if $(ERL_LIBS),$(ERL_LIBS):)$(ROOT)/deps:$(ROOT)/core:$(ROOT)/applications
+ifndef ELIBS
+	ELIBS := $(if $(ERL_LIBS),$(ERL_LIBS):)$(ROOT)/deps:$(ROOT)/core:$(ROOT)/applications
+endif
 
 EBINS += $(ROOT)/deps/lager/ebin
 
@@ -93,7 +105,9 @@ APPS_LIST = $(file < $(APPS_MK))
 APP_DIRS = $(foreach APP,$(APPS_LIST),$(wildcard $(ROOT)/applications/$(APP)))
 APPS_PA = $(foreach APP,$(APP_DIRS), -pa $(APP)/ebin)
 
-CHANGED ?= $(strip $(shell $(ROOT)/scripts/check-changed.bash $(APPS_DIR)/$(PROJECT)))
+ifndef CHANGED
+	CHANGED := $(strip $(shell $(ROOT)/scripts/check-changed.bash $(APPS_DIR)/$(PROJECT)))
+endif
 
 CHANGED_ERL=$(filter %.hrl %.erl %.escript,$(CHANGED))
 CHANGED_JSON=$(filter %.json,$(CHANGED))
@@ -311,7 +325,10 @@ compile-proper: clean-test compile-test-direct
 compile-perf: ERLC_OPTS += -pa $(DEPS_DIR)/horse/ebin -DPERF +'{parse_transform, horse_autoexport}'
 compile-perf: clean-test compile-test-direct
 
-PLT ?= $(ROOT)/.kazoo.plt
+ifndef PLT
+	PLT := $(ROOT)/.kazoo.plt
+endif
+
 $(PLT):
 	@$(MAKE) -C $(ROOT) build-plt
 
@@ -347,7 +364,7 @@ perf.%: compile-perf
 		-eval "horse:mod_perf($*), init:stop()."
 
 fixture_shell: ERL_CRASH_DUMP = "$(ROOT)/$(shell date +%s)_ecallmgr_erl_crash.dump"
-fixture_shell: NODE_NAME ?= fixturedb
+fixture_shell: NODE_NAME = fixturedb
 fixture_shell:
 	@# not re-defining ERL_LIBS in prerequisites to avoid below error:
 	@# *** Recursive variable 'ERL_LIBS' references itself (eventually).  Stop.
@@ -373,7 +390,9 @@ edoc:
 	@CHANGED_ERL="$(SOURCES_FULL_PATH)" $(ROOT)/scripts/edocify.escript
 	@CHANGED="$(SOURCES_FULL_PATH)" $(ROOT)/scripts/state-of-edoc.escript
 
-DOCS_INDEX ?= doc/dev.yml
+ifndef DOCS_INDEX
+	DOCS_INDEX := doc/dev.yml
+endif
 docs_index: pr_template
 	@ERL_LIBS="$(DEPS_DIR):$(CORE_DIR)" $(ROOT)/scripts/build-application-doc-index.escript $(ROOT) $(CURDIR)
 
