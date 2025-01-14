@@ -21,7 +21,9 @@ MORE_APPS_MK = $(ROOT)/make/more_apps.mk
 
 ## If you use SSH keys instead
 ## FETCH_AS = git@github.com:
-FETCH_AS ?= https://github.com/
+ifndef FETCH_AS
+	FETCH_AS := https://github.com/
+endif
 
 BASE_BRANCH := $(shell cat $(ROOT)/.base_branch)
 
@@ -55,7 +57,10 @@ endif
 
 STATUS = $($(ROOT)/scripts/check-git-status.bash $(ROOT) $(CORE_DIR) $(APPS))
 
-CHANGED_SWAGGER ?= $(shell $(ROOT)/kgit -kapps crossbar git --no-pager diff --name-only HEAD $(BASE_BRANCH) -- priv/api/swagger.json)
+ifndef CHANGED_SWAGGER
+	CHANGED_SWAGGER := $(shell $(ROOT)/kgit -kapps crossbar git --no-pager diff --name-only HEAD $(BASE_BRANCH) -- priv/api/swagger.json)
+endif
+
 CHANGED_ERL=$(filter %.hrl %.erl %.escript,$(CHANGED))
 CHANGED_APPS=$(filter $(APPS_DIR)%,$(CHANGED_ERL))
 CHANGED_JSON=$(filter %.json,$(CHANGED))
@@ -83,8 +88,13 @@ export CHANGED_PYTHON
 
 # You can override this when calling make, e.g. make JOBS=1
 # to prevent parallel builds, or make JOBS="8".
-JOBS ?= 1
-CLEAN_JOBS ?=
+ifndef JOBS
+	JOBS = 1
+endif
+
+ifndef CLEAN_JOBS
+	CLEAN_JOBS =
+endif
 
 .PHONY: all
 all: prerequisites compile
@@ -288,7 +298,7 @@ clean-tags:
 .PHONY: fixture_shell
 fixture_shell: ERL_CRASH_DUMP = "$(ROOT)/$(shell date +%s)_ecallmgr_erl_crash.dump"
 fixture_shell: ERL_LIBS = "$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR):$(shell echo $(DEPS_DIR)/rabbitmq_erlang_client-*/deps)"
-fixture_shell: NODE_NAME ?= fixturedb
+fixture_shell: NODE_NAME = fixturedb
 fixture_shell:
 	@ERL_CRASH_DUMP="$(ERL_CRASH_DUMP)" ERL_LIBS="$(ERL_LIBS)" KAZOO_CONFIG=$(ROOT)/rel/config-test.ini \
 		erl -setcookie change_me -name '$(NODE_NAME)' -s reloader "$$@"
