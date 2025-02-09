@@ -69,9 +69,9 @@ kazoo-code-workspace: $(KZ_VSCODE) $(KZ_VSCODE_DEBUGGER) $(KZ_VSCODE_SETTINGS)
 $(KZ_VSCODE): $(APPS_HASH_FILE)
 	@touch $(KZ_VSCODE)
 	@echo '{"folders": [' > $(KZ_VSCODE)
+	@echo '{"name": "kazoo (root)", "path": "." },' >> $(KZ_VSCODE)
 	@for app in $(APPS) ; do echo "{ \"name\": \"kapp/$$(basename $${app})\", \"path\": \"applications/$$(basename $${app})\" }," >> $(KZ_VSCODE); done
-	@echo '{"name": "core", "path": "core" },' >> $(KZ_VSCODE)
-	@echo '{"name": "kazoo (root)", "path": "." }]' >> $(KZ_VSCODE)
+	@echo '{"name": "core", "path": "core" }]' >> $(KZ_VSCODE)
 	@echo '}' >> ${KZ_VSCODE}
 	@$(ROOT)/scripts/format-json.py $(KZ_VSCODE)
 	@echo "generated $(KZ_VSCODE)"
