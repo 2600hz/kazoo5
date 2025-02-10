@@ -419,8 +419,8 @@ change_to_module_type() {
 
     local TYPES="$(echo -n ${TYPES_ARR[@]} | sed -r 's/ +/\|/g; s/\|*$//g')"
 
-    local GREP_PATTERN="(:{0}(:{2})|([ ,([{>]))(?<!\-spec )($TYPES) *\("
-    local PERL_PATTERN="(:{0}(:{2})|([ ,([{>]))(?<!\-spec )($TYPES)(\(\)|\(([a-zA-Z_]|\[\])+\(?\))"
+    local GREP_PATTERN="(:{0}(:{2})|([ ,([{>]))(?<!\-spec |?<!\-callback )($TYPES) *\("
+    local PERL_PATTERN="(:{0}(:{2})|([ ,([{>]))(?<!\-spec |?<!\-callback )($TYPES)(\(\)|\(([a-zA-Z_]|\[\])+\(?\))"
     local REPLACE_TO="\1$MODULE:\4\5"
 
     replace_types "$MODULE" "$GREP_PATTERN" "$PERL_PATTERN" "$REPLACE_TO"
