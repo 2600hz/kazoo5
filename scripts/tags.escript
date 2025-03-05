@@ -15,7 +15,7 @@ main(_TagsFile, 'non_existing') ->
              );
 main(TagsFile, _File) ->
     AppDirs = lists:foldl(fun add_app_dirs/2, [], kz_ast_util:project_apps()),
-    Paths = [app_path(App) || App <- lists:usort(AppDirs)],
+    Paths = [AppPath || App <- lists:usort(AppDirs), AppPath <- [app_path(App)], AppPath =/= 'undefined'],
     tags:subdirs(Paths, [{'outfile', TagsFile}]).
 
 add_app_dirs(App, Dirs) ->
@@ -39,11 +39,9 @@ add_app_dirs(_App, Dirs, _Else) ->
     Dirs.
 
 app_path(App) ->
-    case lists:keyfind(App, 1, application:loaded_applications()) of
-        {App, _, _} -> 'ok';
-        'false' -> 'ok' = application:load(App)
-    end,
+    app_path(App, lists:keyfind(App, 1, application:loaded_applications())).
 
+app_path(App, {App, _, _}) ->
     case application:get_key(App, 'modules') of
         {'ok', [M | _]} ->
             filename:dirname(filename:dirname(code:which(M)));
@@ -51,4 +49,8 @@ app_path(App) ->
             AllKeys = application:get_all_key(App),
             io:format("  failed to find modules for ~s: ~p~n", [App, AllKeys]),
             'undefined'
-    end.
+    end;
+app_path(_App, {'error', _}) -> 'undefined';
+app_path(App, 'false') ->
+    application:load(App),
+    app_path(App, {App, 'ok', 'ok'}).
