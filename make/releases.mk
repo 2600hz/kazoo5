@@ -29,8 +29,11 @@ tar-release: $(RELX) $(RELX_CONFIG) $(RELX_CONFIG_SCRIPT) $(ROOT)/rel/sys.config
 
 ## More ACTs at //github.com/erlware/relx/priv/templates/extended_bin
 .PHONY: release
-release: ACT ?= console # start | attach | stop | console | foreground
-release: REL ?= kazoo_apps # kazoo_apps | ecallmgr | …
+
+# ACT values = start | attach | stop | console | foreground
+# REL values = kazoo_apps | ecallmgr | …
+release: ACT ?= console
+release: REL ?= kazoo_apps
 release: COOKIE ?= change_me
 release:
 	NODE_NAME="$(REL)" COOKIE="$(COOKIE)" $(ROOT)/scripts/dev/kazoo.sh $(ACT) "$$@"
