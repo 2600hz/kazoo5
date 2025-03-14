@@ -14,7 +14,7 @@ fi
 
 vsn=$(git describe --abbrev=0 --tags --match "${version}*" 2>/dev/null)
 if [ -z "${vsn}" ]; then
-   echo "$0: no tag in in the branch, treat this as first release of the branch" >&2
+   [ -n "$CIRCLE_TAG" ] && echo "$0: no tag in in the branch, treat this as first release of the branch" >&2
    echo "${version}.0"
 else
    increment_version "${vsn}" 3
