@@ -19,6 +19,19 @@ ERLANG_MK = $(ROOT)/erlang.mk
 DOT_ERLANG_MK = $(ROOT)/.erlang.mk
 MORE_APPS_MK = $(ROOT)/make/more_apps.mk
 
+# erlang.mk
+ERLANG_MK_REPO ?= https://github.com/ninenines/erlang.mk
+ERLANG_MK_BUILD_CONFIG ?= build.config
+ERLANG_MK_BUILD_DIR ?= .erlang.mk.build
+
+# fixing erlang.mk to a commit, until elixir detection gets fixed
+ERLANG_MK_COMMIT ?= 3f7955bad270767f87272f1066ecb0a7ae0c7914
+export ERLANG_MK_COMMIT
+
+# disabling elixir in erlang.mk
+ELIXIR ?= disable
+export ELIXIR
+
 ## If you use SSH keys instead
 ## FETCH_AS = git@github.com:
 ifndef FETCH_AS
@@ -195,11 +208,19 @@ clean-deps-hash:
 dot_erlang_mk: $(DOT_ERLANG_MK)
 
 $(DOT_ERLANG_MK): $(ERLANG_MK)
-	@$(MAKE) -f $(ERLANG_MK) erlang.mk
 
 $(ERLANG_MK):
-	curl -O https://erlang.mk/erlang.mk
-	# curl 'https://raw.githubusercontent.com/2600hz/erlang.mk/master/erlang.mk' -o $(ERLANG_MK)
+	@# This is the exactly what https://erlang.mk/erlang.mk is doing, just adds the checkout part
+ifdef ERLANG_MK_COMMIT
+	git clone $(ERLANG_MK_REPO) $(ERLANG_MK_BUILD_DIR)
+	cd $(ERLANG_MK_BUILD_DIR) && git checkout $(ERLANG_MK_COMMIT)
+else
+	git clone --depth 1 $(ERLANG_MK_REPO) $(ERLANG_MK_BUILD_DIR)
+endif
+	if [ -f $(ERLANG_MK_BUILD_CONFIG) ]; then cp $(ERLANG_MK_BUILD_CONFIG) $(ERLANG_MK_BUILD_DIR); fi
+	cd $(ERLANG_MK_BUILD_DIR) && $(MAKE)
+	cp $(ERLANG_MK_BUILD_DIR)/erlang.mk ./erlang.mk
+	rm -rf $(ERLANG_MK_BUILD_DIR)
 
 .PHONY: deps
 deps: $(DEPS_HASH_FILE)
