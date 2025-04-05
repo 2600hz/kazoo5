@@ -2,7 +2,7 @@
 [{<<"amqp_client">>,{pkg,<<"amqp_client">>,<<"3.12.14">>},0},
  {<<"amqp_dist">>,
   {git,"https://github.com/2600hz/erlang-amqp_dist.git",
-       {ref,"581d4b53e1fb3e8247ad856bef106015304d1906"}},
+       {ref,"6429a2105d8bb5aa1420faee647e8b576005eda1"}},
   0},
  {<<"apns">>,
   {git,"https://github.com/2600hz/erlang-apns4erl.git",

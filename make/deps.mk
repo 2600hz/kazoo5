@@ -58,7 +58,7 @@ endif
 dep_amqp_client = hex 3.12.14
 
 # branch: otp-26
-dep_amqp_dist = git https://github.com/2600hz/erlang-amqp_dist.git 581d4b53e1fb3e8247ad856bef106015304d1906
+dep_amqp_dist = git https://github.com/2600hz/erlang-amqp_dist.git 6429a2105d8bb5aa1420faee647e8b576005eda1
 
 # priv app usage
 # branch: 2600Hz-otp-26
