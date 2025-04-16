@@ -168,7 +168,7 @@ endif
 
 ## COMPILE_MOAR can contain Makefile-specific targets (see CLEAN_MOAR, compile-test)
 .PHONY: compile compile-direct compile-lean compile-timed
-compile: deps apps $(TEST_DEPS) $(COMPILE_MOAR) ebin/$(PROJECT).app json depend $(BEAMS) $(DOCS_INDEX)
+compile: deps apps ebin $(TEST_DEPS) $(COMPILE_MOAR) ebin/$(PROJECT).app json depend $(BEAMS) $(DOCS_INDEX)
 compile-direct: $(COMPILE_MOAR) ebin/$(PROJECT).app json $(BEAMS) $(DOCS_INDEX)
 
 .PHONY: recompile
@@ -180,19 +180,21 @@ compile-lean: compile
 compile-timed: ERLC_OPTS := +time $(ERLC_OPTS)
 compile-timed: compile
 
-ebin/$(PROJECT).app:
+ebin:
 	@mkdir -p ebin/
+
+ebin/$(PROJECT).app:
 	ERL_LIBS=$(ELIBS) erlc -v $(ERLC_OPTS) $(PA) $(APPS_PA) -o ebin/ $(SOURCES)
 	@sed "s/{modules,[[:space:]]*\[\]}/{modules, \[$(MODULES)\]}/" src/$(PROJECT).app.src \
 	| sed -e "s!{vsn,\([^}]*\)}!\{vsn,\"$(KZ_VERSION)\"}!" > $@
 
-ebin/%.beam: src/%.erl
+ebin/%.beam: ebin src/%.erl
 	ERL_LIBS=$(ELIBS) erlc -v $(ERLC_OPTS) $(PA) $(APPS_PA) -o ebin/ $<
 
-ebin/%.beam: src/*/%.erl
+ebin/%.beam: ebin src/*/%.erl
 	ERL_LIBS=$(ELIBS) erlc -v $(ERLC_OPTS) $(PA) $(APPS_PA) -o ebin/ $<
 
-ebin/%.beam: test/%.erl
+ebin/%.beam: ebin test/%.erl
 	ERL_LIBS=$(ELIBS) erlc -v $(ERLC_OPTS) $(PA) $(APPS_PA) -o ebin/ $<
 
 .PHONY: depend

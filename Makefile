@@ -1,3 +1,7 @@
+ifndef VERBOSE
+MAKEFLAGS += --no-print-directory
+endif
+
 ROOT := $(shell cd "$(dirname '.')" && pwd -P)
 
 DEPS_DIR = $(ROOT)/deps
