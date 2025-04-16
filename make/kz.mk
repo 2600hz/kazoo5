@@ -43,6 +43,7 @@ space := $(empty) $(empty)
 KZ_VERSION ?= $(shell $(ROOT)/scripts/next_version)
 
 ## SOURCES provides a way to specify compilation order (left to right)
+EBIN = $(CWD)/ebin
 SOURCES     ?= $(wildcard src/*.erl) $(wildcard src/*/*.erl)
 SOURCES_FULL_PATH = $(realpath $(SOURCES))
 MODULE_NAMES := $(sort $(foreach module,$(SOURCES),$(shell basename $(module) .erl)))
@@ -168,8 +169,8 @@ endif
 
 ## COMPILE_MOAR can contain Makefile-specific targets (see CLEAN_MOAR, compile-test)
 .PHONY: compile compile-direct compile-lean compile-timed
-compile: deps apps ebin $(TEST_DEPS) $(COMPILE_MOAR) ebin/$(PROJECT).app json depend $(BEAMS) $(DOCS_INDEX)
-compile-direct: $(COMPILE_MOAR) ebin/$(PROJECT).app json $(BEAMS) $(DOCS_INDEX)
+compile: deps apps $(EBIN) $(TEST_DEPS) $(COMPILE_MOAR) ebin/$(PROJECT).app json depend $(BEAMS) $(DOCS_INDEX)
+compile-direct: $(EBIN) $(COMPILE_MOAR) ebin/$(PROJECT).app json $(BEAMS) $(DOCS_INDEX)
 
 .PHONY: recompile
 recompile: clean compile
@@ -180,21 +181,21 @@ compile-lean: compile
 compile-timed: ERLC_OPTS := +time $(ERLC_OPTS)
 compile-timed: compile
 
-ebin:
-	@mkdir -p ebin/
+$(EBIN):
+	@mkdir -p $(EBIN)
 
 ebin/$(PROJECT).app:
 	ERL_LIBS=$(ELIBS) erlc -v $(ERLC_OPTS) $(PA) $(APPS_PA) -o ebin/ $(SOURCES)
 	@sed "s/{modules,[[:space:]]*\[\]}/{modules, \[$(MODULES)\]}/" src/$(PROJECT).app.src \
 	| sed -e "s!{vsn,\([^}]*\)}!\{vsn,\"$(KZ_VERSION)\"}!" > $@
 
-ebin/%.beam: ebin src/%.erl
+ebin/%.beam: src/%.erl
 	ERL_LIBS=$(ELIBS) erlc -v $(ERLC_OPTS) $(PA) $(APPS_PA) -o ebin/ $<
 
-ebin/%.beam: ebin src/*/%.erl
+ebin/%.beam: src/*/%.erl
 	ERL_LIBS=$(ELIBS) erlc -v $(ERLC_OPTS) $(PA) $(APPS_PA) -o ebin/ $<
 
-ebin/%.beam: ebin test/%.erl
+ebin/%.beam: test/%.erl
 	ERL_LIBS=$(ELIBS) erlc -v $(ERLC_OPTS) $(PA) $(APPS_PA) -o ebin/ $<
 
 .PHONY: depend
