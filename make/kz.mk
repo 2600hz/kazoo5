@@ -215,10 +215,10 @@ json:
 	@$(ROOT)/scripts/format-json.py $(JSON)
 
 .PHONY: compile-test compile-test-direct
-compile-test: deps $(TEST_DEPS) compile-test-kz-deps compile-test-direct json
+compile-test: deps $(EBIN) $(TEST_DEPS) compile-test-kz-deps compile-test-direct json
 
 compile-test-direct: ERLC_OPTS := -DTEST $(filter-out +warn_missing_spec,$(ERLC_OPTS))
-compile-test-direct: deps apps-test $(COMPILE_MOAR) test/$(PROJECT).app $(TEST_BEAMS)
+compile-test-direct: deps apps-test $(EBIN) $(COMPILE_MOAR) test/$(PROJECT).app $(TEST_BEAMS)
 
 $(TEST_DEPS):
 	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(ROOT)/scripts/calculate-dep-targets.escript $(ROOT) $(PROJECT) > $(TEST_DEPS)
