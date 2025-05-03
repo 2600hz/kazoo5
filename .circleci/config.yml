@@ -4,7 +4,6 @@ version: 2.1
 orbs:
   kazoo: official-2600hz/kazoo@dev:alpha
   
-
 filters: &on-tagging-only
   tags:
     only: /^\d+\.\d+\.\d+(\.\d+)?$/
