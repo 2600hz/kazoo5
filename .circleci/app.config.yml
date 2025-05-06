@@ -16,7 +16,7 @@ filters: &on-tagging-only
 parameters:
   otp-version:
     type: string
-    default: '26.2.5'
+    default: '27.3.3'
 
 workflows:
   version: 2

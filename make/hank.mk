@@ -3,7 +3,7 @@ DEPS =  rebar3_hank \
 	katana_code
 
 dep_rebar3_hank = hex 1.1.1
-dep_katana_code = hex 1.1.2
+dep_katana_code = hex 2.2.0
 
 HANK_DEP_DIR = $(DEPS_DIR)/rebar3_hank
 

@@ -55,7 +55,7 @@ ifeq ($(CIRCLECI),true)
     dep_coveralls = git https://github.com/markusn/coveralls-erl 1.4.0
 endif
 
-dep_amqp_client = hex 3.12.14
+dep_amqp_client = hex 4.0.3
 
 # branch: otp-26
 dep_amqp_dist = git https://github.com/2600hz/erlang-amqp_dist.git 6429a2105d8bb5aa1420faee647e8b576005eda1
@@ -210,7 +210,7 @@ dep_hep = git https://github.com/2600hz/hep-erlang 5f18e91e45d49d3d7013fc93897d5
 dep_meta = git https://github.com/2600hz/erlang-meta 0.1.3
 
 # Detect OTP versions available given the codebase
-dep_geas = git https://github.com/crownedgrouse/geas 2.7.14
+dep_geas = git https://github.com/crownedgrouse/geas 2.9.1
 
 # used for WSDL->record and WSDL RPC calls
 dep_soap = git https://github.com/2600hz/erlang-soap dbdca66
@@ -227,10 +227,11 @@ dep_relx = git https://github.com/erlware/relx a9c35b6a159662cfae9ed8beaa62b7756
 dep_qrcode = git https://github.com/2600hz/erlang-qrcode 1ce2d131f670a9ea89123694419e144047c8d362
 
 # branch: master
-dep_qdate = git https://github.com/2600hz/erlang-qdate 2072b49220dc0cfad59f1163119e1e76e55240a1
+dep_qdate = git https://github.com/2600hz/erlang-qdate 108c79668779bcbfb37f130ce31cb08f2483bd1d
+
 
 # branch: master
 dep_qdate_localtime = git https://github.com/2600hz/erlang-qdate_localtime cee705be45df8bcdcc7f77d371d4b34ef52d369b
 
-# branch: 2600Hz
-dep_elvis = git https://github.com/2600hz/erlang-elvis 26ef5f27b4c2bca711e0623caf1d2c3127e5e4b8
+# branch: 2600Hz-OTP27
+dep_elvis = git https://github.com/2600hz/erlang-elvis 8ebeb66775f82bcf813d39a98f2564850e810cfc
