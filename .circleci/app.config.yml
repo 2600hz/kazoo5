@@ -39,7 +39,7 @@ workflows:
             parameters:
               platform: [centos-7, rockylinux-8, rockylinux-9]
           requires:
-            - kazoo/build-preparation
+            - preparation-<< matrix.platform >>
       - kazoo/eunit-tests:
           context: Private-Builds
           otp-version: << pipeline.parameters.otp-version >>
