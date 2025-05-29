@@ -11,22 +11,30 @@ If your development is on macOS, here are [extra steps](https://github.com/2600h
 Erlang/OTP is required for both run time and build time. Usually the official Erlang package provided by distributions is not up-to-date, please follow this section to install it from source code or using other options.
 
 * Kazoo version 4.3 requires Erlang version 19 specifically 19.3.x
-* Kazoo version 5.x is currently targets Erlang version 23 (specifically 23.0.3)
-* Kazoo master branch targets Erlang 23+ (specifically 23.0.3 but consult [`make/erlang_version`](https://github.com/2600hz/kazoo/blob/master/make/erlang_version) to be sure).
+* Kazoo version 5.x is currently targets Erlang version 23+
+* Kazoo version 5.4.x is currently targets Erlang version 26+ (at least 26.3.5)
+* Kazoo master branch targets Erlang 27+ (consult [`../.tool-versions`](../.tool-versions) to be sure).
 
 #### Installing Erlang/OTP from source code
 
-We recommend to use a tool like [kerl](https://github.com/kerl/kerl) to manage Erlang/OTP installations. If you want to play around with multiple versions of Erlang while hacking on Kazoo, this is probably the best way. For compiling Erlang you need some dependencies, see [Build time requirements](#build-time-requirements)
+We recommend to use a tool like like [asdf](https://asdf-vm.com/guide/getting-started.html) or [mise](https://mise.jdx.dev/lang/erlang.html)
+or at low-level [kerl](https://github.com/kerl/kerl) to manage Erlang/OTP installations.
+If you want to play around with multiple versions of Erlang while hacking on Kazoo,
+this is probably the best way. For compiling Erlang you need some dependencies. See [Build time requirements](#build-time-requirements) for other dependecies.
 
 ```shell
     curl -O https://raw.githubusercontent.com/kerl/kerl/master/kerl
     chmod +x kerl
     mv kerl /usr/bin
     kerl list releases
-    kerl build 21.3 21.3 # this takes a while
-    kerl install 21.3 /usr/local/otp-21.3
-    . /usr/local/otp-19.3/activate
+    KERL_BUILD_DOCS=true KERL_DOC_TARGETS="man chunks" kerl build 26.3.5 27.3.4 # this takes a while
+    kerl install 26.3.5 /usr/local/otp26
+    kerl install 27.3.4 /usr/local/otp27
+    . /usr/local/otp27/activate
 ```
+
+> You can use `KERL_BUILD_DOCS=true KERL_DOC_TARGETS="man chunks"` with both `mise` and `asdf` too. This instruct kerl to build Erlang with documentation and also embed it
+> in beam files which newer Erlang OTP supports to get documentation right from Erlang shell.
 
 You will probably want to add the `activate` command to your `.bashrc` or similar to make sure the proper OTP version is running.
 
