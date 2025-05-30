@@ -28,7 +28,7 @@ workflows:
           target-type: kazoo
           matrix:
             parameters:
-              platform: [centos-7, rockylinux-8, rockylinux-9]
+              platform: [rockylinux-9]
       - kazoo/build:
           context: Private-Builds
           otp-version: << pipeline.parameters.otp-version >>
@@ -36,7 +36,7 @@ workflows:
           name: beams-<< matrix.platform >>
           matrix:
             parameters:
-              platform: [centos-7, rockylinux-8, rockylinux-9]
+              platform: [rockylinux-9]
           requires:
             - preparation-<< matrix.platform >>
       - kazoo/eunit-tests:
@@ -60,18 +60,6 @@ workflows:
           otp-version: << pipeline.parameters.otp-version >>
           requires:
             - beams-rockylinux-9
-      - kazoo/build-centos7:
-          context: Private-Builds
-          otp-version: << pipeline.parameters.otp-version >>
-          target-type: kazoo
-          requires:
-            - beams-centos-7
-      - kazoo/build-rockylinux8:
-          context: Private-Builds
-          otp-version: << pipeline.parameters.otp-version >>
-          target-type: kazoo
-          requires:
-            - beams-rockylinux-8
       - kazoo/build-rockylinux9:
           context: Private-Builds
           otp-version: << pipeline.parameters.otp-version >>
@@ -89,7 +77,7 @@ workflows:
           target-type: kazoo
           matrix:
             parameters:
-              platform: [centos-7, rockylinux-8, rockylinux-9]
+              platform: [rockylinux-9]
           for-packager: "true"
           filters: *on-tagging-only
       - kazoo/build:
@@ -99,7 +87,7 @@ workflows:
           name: beams-<< matrix.platform >>
           matrix:
             parameters:
-              platform: [centos-7, rockylinux-8, rockylinux-9]
+              platform: [rockylinux-9]
           requires:
             - preparation-<< matrix.platform >>
           filters: *on-tagging-only
@@ -128,20 +116,6 @@ workflows:
           otp-version: << pipeline.parameters.otp-version >>
           requires:
             - beams-rockylinux-9
-          filters: *on-tagging-only
-      - kazoo/build-centos7:
-          context: Private-Builds
-          otp-version: << pipeline.parameters.otp-version >>
-          target-type: kazoo
-          requires:
-            - beams-centos-7
-          filters: *on-tagging-only
-      - kazoo/build-rockylinux8:
-          context: Private-Builds
-          otp-version: << pipeline.parameters.otp-version >>
-          target-type: kazoo
-          requires:
-            - beams-rockylinux-8
           filters: *on-tagging-only
       - kazoo/build-rockylinux9:
           context: Private-Builds
