@@ -9,7 +9,7 @@ BRANCH = $(subst origin/,,$(BASE_BRANCH))
 
 
 dep_blackhole = git $(FETCH_AS)2600hz/kazoo-blackhole.git $(BRANCH)
-dep_braintree = git $(LAB_FETCH_AS)2600hz/kazoo-braintree master
+dep_braintree = git $(LAB_FETCH_AS)2600hz/kazoo-braintree $(BRANCH)
 dep_call_inspector = git $(FETCH_AS)2600hz/kazoo-call-inspector.git $(BRANCH)
 dep_callflow = git $(FETCH_AS)2600hz/kazoo-callflow.git $(BRANCH)
 dep_cdr = git $(FETCH_AS)2600hz/kazoo-cdr.git $(BRANCH)
@@ -23,7 +23,7 @@ dep_hotornot = git $(FETCH_AS)2600hz/kazoo-hotornot.git $(BRANCH)
 dep_jonny5 = git $(FETCH_AS)2600hz/kazoo-jonny5.git $(BRANCH)
 dep_media_mgr = git $(FETCH_AS)2600hz/kazoo-media-mgr.git $(BRANCH)
 dep_milliwatt = git $(FETCH_AS)2600hz/kazoo-milliwatt.git $(BRANCH)
-dep_omnipresence = git $(LAB_FETCH_AS)2600hz/kazoo-omnipresence master
+dep_omnipresence = git $(LAB_FETCH_AS)2600hz/kazoo-omnipresence $(BRANCH)
 dep_pivot = git $(FETCH_AS)2600hz/kazoo-pivot.git $(BRANCH)
 dep_pusher = git $(FETCH_AS)2600hz/kazoo-pusher.git $(BRANCH)
 dep_registrar = git $(FETCH_AS)2600hz/kazoo-registrar.git $(BRANCH)
