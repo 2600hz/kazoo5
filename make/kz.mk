@@ -4,6 +4,10 @@ ifndef VERBOSE
 MAKEFLAGS += --no-print-directory
 endif
 
+ifndef DOCS_INDEX
+	DOCS_INDEX := doc/dev.yml
+endif
+
 include $(ROOT)/make/rebar.mk
 
 ## Platform detection.
@@ -390,9 +394,6 @@ edoc:
 	@CHANGED_ERL="$(SOURCES_FULL_PATH)" $(ROOT)/scripts/edocify.escript
 	@CHANGED="$(SOURCES_FULL_PATH)" $(ROOT)/scripts/state-of-edoc.escript
 
-ifndef DOCS_INDEX
-	DOCS_INDEX := doc/dev.yml
-endif
 docs_index: pr_template
 	@ERL_LIBS="$(DEPS_DIR):$(CORE_DIR)" $(ROOT)/scripts/build-application-doc-index.escript $(ROOT) $(CURDIR)
 
