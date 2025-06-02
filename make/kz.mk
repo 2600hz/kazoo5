@@ -394,23 +394,11 @@ edoc:
 	@CHANGED_ERL="$(SOURCES_FULL_PATH)" $(ROOT)/scripts/edocify.escript
 	@CHANGED="$(SOURCES_FULL_PATH)" $(ROOT)/scripts/state-of-edoc.escript
 
-docs_index: pr_template
+docs_index:
 	@ERL_LIBS="$(DEPS_DIR):$(CORE_DIR)" $(ROOT)/scripts/build-application-doc-index.escript $(ROOT) $(CURDIR)
 
-$(DOCS_INDEX): pr_template
+$(DOCS_INDEX):
 	@ERL_LIBS="$(DEPS_DIR):$(CORE_DIR)" $(ROOT)/scripts/build-application-doc-index.escript $(ROOT) $(CURDIR)
-
-PR_TEMPLATE = .github/pull_request_template.md
-
-.PHONY: pr_template clean_pr_template
-pr_template: clean_pr_template $(PR_TEMPLATE)
-
-clean_pr_template:
-	@rm -f $(PR_TEMPLATE)
-
-$(PR_TEMPLATE):
-	@mkdir -p $(dir $(PR_TEMPLATE))
-	@cp -a $(ROOT)/make/pull_request_template.md $(PR_TEMPLATE)
 
 hank:
 	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(ROOT)/scripts/hank.escript $(wildcard src/*.[h|e]rl) $(wildcard src/*/*.[h|e]rl) $(wildcard include/*.hrl)

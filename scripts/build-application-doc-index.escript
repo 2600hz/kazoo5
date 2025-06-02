@@ -19,7 +19,7 @@ main([RootL, AppRoot]) ->
 
     Index = filename:join([AppRoot, "doc", "dev.yml"]),
     create_index(app_header(AppRoot), Index, Files),
-    io:format("wrote ~s~n", [Index]).
+    'ok'.
 
 create_index(App, Index, []) ->
     file:write_file(Index, ["  - '", App, "':\n"]);
