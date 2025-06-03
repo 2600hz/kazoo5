@@ -196,8 +196,8 @@ endif
 
 ## COMPILE_MOAR can contain Makefile-specific targets (see CLEAN_MOAR, compile-test)
 .PHONY: compile compile-direct compile-lean compile-timed
-compile: deps apps $(TEST_DEPS) $(COMPILE_MOAR) ebin/$(PROJECT).app json depend $(BEAMS) $(DOCS_INDEX)
-compile-direct: $(COMPILE_MOAR) ebin/$(PROJECT).app json $(BEAMS) $(DOCS_INDEX)
+compile: deps apps $(TEST_DEPS) $(COMPILE_MOAR) ebin/$(PROJECT).app json depend $(BEAMS)
+compile-direct: $(COMPILE_MOAR) ebin/$(PROJECT).app json $(BEAMS)
 
 .PHONY: recompile
 recompile: clean compile
