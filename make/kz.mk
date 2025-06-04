@@ -4,6 +4,10 @@ ifndef VERBOSE
 MAKEFLAGS += --no-print-directory
 endif
 
+ifndef DOCS_INDEX
+	DOCS_INDEX := doc/dev.yml
+endif
+
 include $(ROOT)/make/rebar.mk
 
 ## Platform detection.
@@ -192,8 +196,8 @@ endif
 
 ## COMPILE_MOAR can contain Makefile-specific targets (see CLEAN_MOAR, compile-test)
 .PHONY: compile compile-direct compile-lean compile-timed
-compile: deps apps $(TEST_DEPS) $(COMPILE_MOAR) ebin/$(PROJECT).app json depend $(BEAMS) $(DOCS_INDEX)
-compile-direct: $(COMPILE_MOAR) ebin/$(PROJECT).app json $(BEAMS) $(DOCS_INDEX)
+compile: deps apps $(TEST_DEPS) $(COMPILE_MOAR) ebin/$(PROJECT).app json depend $(BEAMS)
+compile-direct: $(COMPILE_MOAR) ebin/$(PROJECT).app json $(BEAMS)
 
 .PHONY: recompile
 recompile: clean compile
@@ -390,26 +394,11 @@ edoc:
 	@CHANGED_ERL="$(SOURCES_FULL_PATH)" $(ROOT)/scripts/edocify.escript
 	@CHANGED="$(SOURCES_FULL_PATH)" $(ROOT)/scripts/state-of-edoc.escript
 
-ifndef DOCS_INDEX
-	DOCS_INDEX := doc/dev.yml
-endif
-docs_index: pr_template
+docs_index:
 	@ERL_LIBS="$(DEPS_DIR):$(CORE_DIR)" $(ROOT)/scripts/build-application-doc-index.escript $(ROOT) $(CURDIR)
 
-$(DOCS_INDEX): pr_template
+$(DOCS_INDEX):
 	@ERL_LIBS="$(DEPS_DIR):$(CORE_DIR)" $(ROOT)/scripts/build-application-doc-index.escript $(ROOT) $(CURDIR)
-
-PR_TEMPLATE = .github/pull_request_template.md
-
-.PHONY: pr_template clean_pr_template
-pr_template: clean_pr_template $(PR_TEMPLATE)
-
-clean_pr_template:
-	@rm -f $(PR_TEMPLATE)
-
-$(PR_TEMPLATE):
-	@mkdir -p $(dir $(PR_TEMPLATE))
-	@cp -a $(ROOT)/make/pull_request_template.md $(PR_TEMPLATE)
 
 hank:
 	@ERL_LIBS=$(DEPS_DIR):$(CORE_DIR):$(APPS_DIR) $(ROOT)/scripts/hank.escript $(wildcard src/*.[h|e]rl) $(wildcard src/*/*.[h|e]rl) $(wildcard include/*.hrl)
