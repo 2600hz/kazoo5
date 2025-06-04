@@ -7,7 +7,7 @@ _kgit()
     for (( i=1; i <= COMP_CWORD; i++ )); do
         # check if we're still completing our options
         case ${COMP_WORDS[$i]} in
-            gh|git|hub)
+            gh|git|hub|glab)
                 offset=$i
                 break
                 ;;
@@ -56,6 +56,7 @@ _kgit()
         -exit-on-error
         gh
         git
+        glab
         hub
         cmd"
 
