@@ -1,8 +1,23 @@
 ## If you use SSH keys instead
 ## FETCH_AS = git@github.com:
+##
+## If you want to use https, use:
+## FETCH_AS = https://github.com/
+##
+## https only works for public repos!
+##
+## To override these it is expected you either `export` this variable
+## or set it in your `~/.bashrc` file.
 
-FETCH_AS ?= https://github.com/
-GT_FETCH_AS ?= git@gitlab.com:oomaforbin/oomacorp/
+ifeq ($(CI),)
+	FETCH_AS ?= git@github.com:
+	GT_FETCH_AS ?= git@gitlab.com:oomaforbin/oomacorp/
+else
+	FETCH_AS ?= https://github.com/
+
+	## this is going to be fine, i hope :))
+	GT_FETCH_AS ?= git@gitlab.com:oomaforbin/oomacorp/
+endif
 
 BASE_BRANCH ?= origin/5.4
 BRANCH = $(subst origin/,,$(BASE_BRANCH))
