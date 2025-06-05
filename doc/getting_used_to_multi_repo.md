@@ -8,13 +8,19 @@ Write something useful here
 
 ## Compiling in multi-repo
 
-Explain what is going on with each app Makefile and dep.mk, etc....
+Explain what is going on with each app `Makefile` and `dep.mk`, etc....
 
 ## Working with `git` in multi-repo
 
-As you work with multi-repo, especially when your code changes involves many apps or even the core, you start noticing some repetitive tasks like commit and push and updating the pull requests.
+As you work with multi-repo, especially when your code changes involve many apps or even the core, you start noticing
+some repetitive tasks like commit and push and updating the pull requests.
 
-For making these kind of task more tolerable, there is small and handy `kgit` shell script which wraps around Git command. You simply give this script the directory name of an app (or multiple apps) and the git command you want to run against them and it loop over the folders and run the command. This script can also used together with `gh` [the official GitHub CLI](https://cli.github.com) or `hub` [an unofficial GitHub CLI](https://github.com/github/hub) (which is more mature and powerful and it also wraps `git`) commands.
+For making these kinds of task more tolerable, there is small and handy `kgit` shell script which wraps around Git
+command. You simply give this script the directory name of an app (or multiple apps) and the git command you want to run
+against them, and it loops over the folders and run the command. This script can also use together with `gh`
+[the official GitHub CLI](https://cli.github.com) or `hub` [an unofficial GitHub CLI](https://github.com/github/hub) or
+`glab` [official GitLab CLI](https://docs.gitlab.com/editor_extensions/gitlab_cli/) (which is more mature and powerful
+and it also wraps `git`) commands.
 
 The script tries to not get in your way and offers running `git` and other commands like normal command.
 
@@ -39,6 +45,7 @@ Usage:
         git        Runs git command
         gh         Runs gh command (https://cli.github.com)
         hub        Runs hub command (https://github.com/github/hub)
+        glab       Runs GitLab CLI command (https://docs.gitlab.com/editor_extensions/gitlab_cli)
         cmd        Run arbitrary command
 
 Example:
@@ -82,7 +89,7 @@ Options:
     -get-root                            print path to Kazoo source directory and exit
     -show-changed                        loop over working directories and prints the name of files which are
                                              different than "$BASE_BRANCH". "master" is the default BASE_BRANCH
-                                         this does not run git/hub/gh commands
+                                         this does not run git/hub/gh/glab commands
 
 # Other Options
     -exit-on-error                       exit if command returns exit other than 0 in a directory
@@ -92,7 +99,8 @@ Options:
 ```
 
 
-It is recommended to sym-link this script to `kgit` and put it in your path. `kgit-completion.bash` provides bash completion for `kgit`. You can source this directly in your shell or add to your `~/.bashrc`.
+It is recommended to symlink this script to `kgit` and put it in your path. `kgit-completion.bash` provides bash
+completion for `kgit`. You can source this directly in your shell or add to your `~/.bashrc`.
 
 ### Some useful examples for working with `kgit`
 
@@ -175,7 +183,7 @@ Please find out usage examples for `gh` and `hub` here:
 * [`gh` Examples in use](https://cli.github.com/manual/examples)
 * [`hub` Usage examples](https://hub.github.com)
 
-### Filter the directories that kgit would run by its type
+### Filter the directories that `kgit` would run by its type
 
 If you need to run the command only for kazoo-applications, core or root:
 
@@ -196,7 +204,7 @@ kgit -kapps crossbar,ast -kapps properly git status --branch -s
 kgit -exclude-apps crossbar,ast git status --branch -s
 ```
 
-### Filter the directories that kgit would run based on its git status
+### Filter the directories that `kgit` would run based on its git status
 
 Do not mix `only-changed*` and `not-changed*` options!
 

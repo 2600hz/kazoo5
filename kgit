@@ -100,6 +100,7 @@ Usage:
         git        Runs git command
         gh         Runs gh command (https://cli.github.com)
         hub        Runs hub command (https://github.com/github/hub)
+        glab       Runs GitLab CLI command (https://docs.gitlab.com/editor_extensions/gitlab_cli)
         cmd        Run arbitrary command
 
 Example:
@@ -143,7 +144,7 @@ Options:
     -get-root                            print path to Kazoo source directory and exit
     -show-changed                        loop over working directories and prints the name of files which are
                                              different than "$BASE_BRANCH". "master" is the default BASE_BRANCH
-                                         this does not run git/hub/gh commands
+                                         this does not run git/hub/gh/glab commands
 
 # Other Options
     -exit-on-error                       exit if command returns exit other than 0 in a directory
@@ -269,6 +270,13 @@ while [ $# -gt 0 ]; do
             ;;
         gh)
             _action="gh"
+            # explicit end of options
+            # explicit_opts_end=1
+            shift
+            break
+            ;;
+        glab)
+            _action="glab"
             # explicit end of options
             # explicit_opts_end=1
             shift
@@ -407,6 +415,8 @@ check_action() {
             ;;
         gh)
             ;;
+        glab)
+            ;;
         hub)
             ;;
         *)
@@ -424,6 +434,9 @@ check_action() {
         case "$_action" in
             gh)
                 echo "Please follow instructions in https://cli.github.com to install it." >&2
+                ;;
+            glab)
+                echo "Please follow instructions in https://docs.gitlab.com/editor_extensions/gitlab_cli/#install-the-cli to install it." >&2
                 ;;
             git)
                 echo "Please install git version 2+ using your distro package manager." >&2
@@ -468,6 +481,7 @@ run_git() {
 
 loop_wait_gh() {
     local counter=1
+    # may need update this if gitlab rate limit `mr` api calls
     if [[ "${*}" =~ "pr create" ]] || [[ "${*}" =~ "issue create" ]]; then
         echo -n "Waiting 60s on stupid GitHub to avoid GraphQL limit on creation"
         while [ $counter -le 60 ]; do
@@ -649,7 +663,7 @@ run_action() {
     done
 }
 
-# let git/hub/gh fail, we can stop if user requested -exit-non-error
+# let git/hub/gh/glab fail, we can stop if user requested -exit-non-error
 set +e
 
 case "$_action" in
