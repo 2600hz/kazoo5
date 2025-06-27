@@ -329,9 +329,7 @@ compile-proper: clean-test compile-test-direct
 compile-perf: ERLC_OPTS += -pa $(DEPS_DIR)/horse/ebin -DPERF +'{parse_transform, horse_autoexport}'
 compile-perf: clean-test compile-test-direct
 
-ifndef PLT
-	PLT := $(ROOT)/.kazoo.plt
-endif
+PLT = $(ROOT)/.kazoo.plt
 
 $(PLT):
 	@$(MAKE) -C $(ROOT) build-plt

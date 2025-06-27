@@ -92,8 +92,8 @@ dep_eiconv = git https://github.com/zotonic/eiconv 1.0.0
 dep_epgsql = git https://github.com/epgsql/epgsql 7ba52768cf0ea7d084df24d4275a88eef4db13c2
 
 # used by kazoo_attachments
-# branch: 2600hz-otp-26
-dep_erlazure = git https://github.com/2600hz/erlang-erlazure.git 0b5a53e2d5e18f3dbe05a891596b607e7ca3989b
+# branch: 2600hz-kzoo-626
+dep_erlazure = git https://github.com/2600hz/erlang-erlazure.git 0b7b6a82c3b8b14ad8de515bf23a578029177749
 
 # used by kazoo_attachments and a crossbar test (cb_storage_tests)
 # branch: 2600Hz-otp-26
