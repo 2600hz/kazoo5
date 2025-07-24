@@ -22,7 +22,7 @@
  {<<"cf">>,{pkg,<<"cf">>,<<"0.3.1">>},2},
  {<<"couchbeam">>,
   {git,"https://github.com/2600hz/erlang-couchbeam",
-       {ref,"b48830cd95aa61f86c7f6479f4425e80985802da"}},
+       {ref,"b5220b5c6e3b134cd50bc48106161f2d688ec8d3"}},
   0},
  {<<"cowboy">>,
   {git,"https://github.com/2600hz/erlang-cowboy",
