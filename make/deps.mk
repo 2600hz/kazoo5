@@ -189,7 +189,7 @@ dep_cowlib = git https://github.com/2600hz/erlang-cowlib 2.13.0
 
 dep_gun = git https://github.com/2600hz/erlang-gun 2600hz-2.0.0-pre.3
 
-dep_apns = git https://github.com/2600hz/erlang-apns4erl.git 2600hz-2.4.1
+dep_apns = git https://github.com/2600hz/erlang-apns4erl.git 4b9962ae57b46e022b6fcb5149cefefdf1ca3329
 
 dep_folsom = git https://github.com/2600hz/erlang-folsom 1f3f610d1498d4ae2625178daaac5fc4f5306969
 # 2600Hz-otp-26 branch
