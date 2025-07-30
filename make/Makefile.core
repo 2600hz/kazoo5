@@ -18,10 +18,11 @@ NO_AUTOPATCH = $(DEPS)
 ## FETCH_AS = git@github.com:
 
 FETCH_AS ?= https://github.com/
+GT_FETCH_AS ?= git@gitlab.com:oomaforbin/oomacorp/
 
 BASE_BRANCH ?= origin/5.4
 BRANCH = $(subst origin/,,$(BASE_BRANCH))
 
-dep_core = git $(FETCH_AS)2600hz/kazoo-core.git $(BRANCH)
+dep_core = git $(GT_FETCH_AS)2600hz/kazoo-core.git $(BRANCH)
 
 include $(ROOT)/erlang.mk
