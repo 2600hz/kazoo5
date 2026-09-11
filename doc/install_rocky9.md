@@ -406,9 +406,136 @@ Serve `/var/www/html/monster-ui` with httpd/nginx. Log in with the credentials
 from the `create_account` step in §8. Verify Crossbar responds:
 `curl http://${IP_ADDR}:8000/v2` (a 401 `invalid_credentials` is success).
 
+## 12. Install and Configure HAProxy
+
+This config includes a redirect for the 15986 admin port to work properly with
+CouchDB v3+:
+
+    dnf install haproxy -y
+
+    mkdir -p /var/lib/haproxy/dev
+
+    cat <<'EOF' > /etc/rsyslog.d/20-haproxy.conf
+    $AddUnixListenSocket /var/lib/haproxy/dev/log
+    if $programname == 'haproxy' then /var/log/haproxy/haproxy.log
+    & stop
+    EOF
+
+    cat <<'EOF' > /etc/logrotate.d/haproxy.conf
+    /var/log/haproxy/haproxy.log {
+        daily
+        rotate 31
+        missingok
+        notifempty
+        compress
+        sharedscripts
+        postrotate
+            /bin/kill -HUP `cat /var/run/syslogd.pid 2> /dev/null` 2> /dev/null || true
+            /bin/kill -HUP `cat /var/run/rsyslogd.pid 2> /dev/null` 2> /dev/null || true
+        endscript
+    }
+    EOF
+
+    cat <<'EOF' > /etc/haproxy/haproxy.cfg
+    global
+        log /dev/log    local0 info
+        #log /dev/log   local1 notice
+        maxconn 4096
+        chroot /var/lib/haproxy
+        #stats socket /run/haproxy/admin.sock mode 660 level admin expose-fd listeners
+        stats socket    /var/lib/haproxy/haproxy.sock mode 777
+        stats timeout 30s
+        user haproxy
+        group daemon
+        daemon
+
+        # Default SSL material locations
+        ca-base /etc/ssl/certs
+        crt-base /etc/ssl/private
+
+        # See: https://ssl-config.mozilla.org/#server=haproxy&server-version=2.0.3&config=intermediate
+        ssl-default-bind-ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
+        ssl-default-bind-ciphersuites TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256
+        tune.ssl.default-dh-param 2048
+    #   THE FOLLOWING LINES FORCE TLSv1.2+ GLOBALLY
+        ssl-default-bind-options ssl-min-ver TLSv1.2 no-tls-tickets
+
+    defaults
+        log global
+        mode   http
+        option  httplog
+        option  dontlognull
+        option log-health-checks
+        option redispatch
+        option httpchk GET /_up
+        option allbackups
+        option http-server-close
+        maxconn 2000
+        retries 3
+        timeout connect 6000ms
+        timeout client  15000ms
+        timeout server  15000ms
+
+    frontend couch-data
+        bind 127.0.0.1:15984
+        default_backend couch-servers
+
+    backend couch-servers
+        balance roundrobin
+        server db1 127.0.0.1:5984 check  #for dev or AIO install
+        #server db1-z1 192.168.10.11:5984 check  #LOAD BALANCED PROD DB CLUSTER
+        #server db2-z1 192.168.10.12:5984 check
+        #server db3-z1 192.168.10.13:5984 check
+        #server db1-z2 192.168.20.11:5984 check backup
+        #server db2-z2 192.168.20.12:5984 check backup
+        #server db3-z2 192.168.20.13:5984 check backup
+        #server db1-z3 192.168.30.11:5984 check backup
+        #server db2-z3 192.168.30.12:5984 check backup
+        #server db3-z3 192.168.30.13:5984 check backup
+
+    frontend couch-admin
+        bind 127.0.0.1:15986
+        option httplog
+        default_backend couch-servers-admin
+
+    backend couch-servers-admin
+        balance roundrobin
+        http-request replace-uri ^/(.*)     /_node/_local/\1
+        server db1 127.0.0.1:5984 check  #for dev or AIO install
+        #server db1-z1 192.168.10.11:5984 check  #LOAD BALANCED PROD DB CLUSTER
+        #server db2-z1 192.168.10.12:5984 check
+        #server db3-z1 192.168.10.13:5984 check
+        #server db1-z2 192.168.20.11:5984 check backup
+        #server db2-z2 192.168.20.12:5984 check backup
+        #server db3-z2 192.168.20.13:5984 check backup
+        #server db1-z3 192.168.30.11:5984 check backup
+        #server db2-z3 192.168.30.12:5984 check backup
+        #server db3-z3 192.168.30.13:5984 check backup
+
+    listen haproxy-stats
+      bind 127.0.0.1:22002
+      #bind 10.200.101.101:22002  #you can bind stats to a non-localhost interface if desired
+      mode http
+      stats uri /
+    EOF
+
+    systemctl enable --now haproxy
+
+## 13. Increase Rsyslog Rate Limit
+
+(otherwise debug messages can be lost)
+
+    echo "Increase rate limit for rsyslog..."
+    cat <<'EOF' > /etc/rsyslog.d/00-ratelimit.conf
+    #increase rate limit to 300k messages in 60s
+    $imjournalRatelimitInterval 60
+    $imjournalRatelimitBurst 300000
+    EOF
+
+    systemctl restart rsyslog
+
 ## Open items / TODO
 
 - Verify the OTP version for the exact Kazoo release being installed.
 - Confirm whether `kazoo-kamailio prepare` is still required (current wrapper-
   based installs may not need it).
-- HAProxy config for production CouchDB clusters (15984/15986 listeners).
