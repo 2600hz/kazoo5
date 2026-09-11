@@ -214,6 +214,10 @@ host = "k1.kazoo.aio"
 On the 5984/5986 question: modern single-node CouchDB talks to Kazoo on 5984.
 5986 was the old BigCouch cluster-mgmt port (HAProxy fronted 15984/15986); you
 don't need it with CouchDB 2/3 unless you're running BigCouch-compat setups.
+If HAProxy is used on this install, change port `5984` in the Kazoo config to
+`15984`. Regardless of which DB set type is used, the HAProxy config below will
+make sure it works without issues, by redirecting requests on 15986 to 5984
+with the proper URL.
 
 FreeSWITCH needs an env file at `/etc/kazoo/freeswitch/env` when you get to
 §9:
