@@ -336,6 +336,11 @@ Notes:
 
 ## 10. Kamailio
 
+Default to the 2600Hz `kazoo-kamailio` wrapper rather than the stock `kamailio`
+service. Kamailio's internal `kazoo_db` sqlite database (registrations, BLF
+watchers) is still in use, and the wrapper puts it on a RAMdisk by default —
+which is required for more than a couple hundred handsets with BLFs.
+
 The 2600Hz repo provides the Kazoo-patched kamailio packages:
 
     sudo dnf install -y kamailio-kazoo kamailio-outbound kamailio-uuid kamailio-tcpops kamailio-presence
@@ -364,23 +369,19 @@ commented with three hashes) and set the right values, e.g.:
     # becomes:
     #!substdef "!MY_IP_ADDRESS!203.0.113.75!g"
 
-Initialize the Kamailio/KAZOO database, then start:
+Start the wrapper service — it runs `kazoo-kamailio prepare` as a pre-command
+on every start, so no manual DB initialization is needed:
 
+    sudo systemctl enable --now kazoo-kamailio
+    sudo kazoo-kamailio status        # also: sudo netstat -tunlp | grep kamailio
+
+If you instead want the stock `kamailio` service (dev-only, not recommended for
+production), mask the wrapper first:
+
+    sudo systemctl disable --now kazoo-kamailio
+    sudo systemctl mask kazoo-kamailio
     kazoo-kamailio prepare
     sudo systemctl enable --now kamailio
-
-`kazoo-kamailio prepare` is only required when running the standard `kamailio`
-service — the `kazoo-kamailio` wrapper runs it as a pre-command before starting
-every time.
-
-If you use the `kazoo-kamailio` wrapper package from the 2600Hz repo instead,
-mask the vanilla unit first:
-
-    sudo systemctl disable --now kamailio
-    sudo systemctl mask kamailio
-    sudo systemctl enable --now kazoo-kamailio
-
-    sudo kazoo-kamailio status        # also: sudo netstat -tunlp | grep kamailio
 
 Add Kamailio to ecallmgr's SBC ACLs once Kazoo is up:
 
