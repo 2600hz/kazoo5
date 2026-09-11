@@ -69,7 +69,10 @@ Kazoo build deps (`gcc-toolset*` is EL9's equivalent of the old
 Runtime deps (fax/media etc. — the classic docs list Debian names like
 `libsox-fmt-all`; use the RPM names here):
 
-    sudo dnf install -y htmldoc sox ghostscript \
+    # htmldoc isn't in the standard Rocky 9 repos; get it from EPEL endpoints
+    wget https://packages.endpointdev.com/rhel/9/main/x86_64/htmldoc-1.9.18-1.ep9.x86_64.rpm
+    sudo dnf install htmldoc-1.9.18-1.ep9.x86_64.rpm
+    sudo dnf install -y sox ghostscript \
         ImageMagick libreoffice-writer libtiff-tools \
         wxGTK-devel wxGTK-webview zip unzip
 
