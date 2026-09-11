@@ -298,7 +298,7 @@ Then bring up the media layer and its extensions:
 Post-install housekeeping:
 
     # System media prompts, then import (or install a kazoo-sounds package)
-    git clone git@github.com:2600hz/kazoo-sounds.git ~/kazoo-sounds
+    git clone https://github.com/2600hz/kazoo-sounds.git ~/kazoo-sounds
     sudo sup kazoo_media_maintenance import_prompts ~/kazoo-sounds/kazoo-core/en/us/
 
     # It can be a good idea to refresh the installed DBs afterwards
