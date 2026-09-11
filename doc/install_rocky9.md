@@ -39,7 +39,8 @@ right up front or things fail oddly later.
 
       sudo systemctl disable --now firewalld.service
       sudo systemctl mask firewalld.service
-      # edit /etc/selinux/config: SELINUX=disabled  (reboot to apply)
+      sudo sed -i 's/\(^SELINUX=\).*/\SELINUX=disabled/' /etc/selinux/config
+      # reboot to apply
 
 ## 2. System packages
 
