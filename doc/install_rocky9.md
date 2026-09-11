@@ -50,7 +50,7 @@ Base toolchain and download helpers:
     sudo dnf config-manager --enable crb      # Rocky 9 CodeReady Builder
     sudo dnf install -y git
     sudo dnf groupinstall -y "Development Tools"
-    sudo dnf install -y libcurses-devel wget
+    sudo dnf install -y ncurses-devel
 
 Useful admin tools:
 
