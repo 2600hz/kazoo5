@@ -124,7 +124,7 @@ and pass `KERL_CONFIGURE_OPTIONS="--with-ssl=/usr/local/lib/openssl-1.1.1"`.
 ### Option B: asdf-vm
 
     wget "https://github.com/asdf-vm/asdf/releases/download/v0.16.1/asdf-v0.16.1-linux-amd64.tar.gz"
-    tar -xf asdf-v0.16.1-linux-amd64.tar.gz && sudo mv asdf /usr/bin/ && sudo chmod +x /usr/bin/asdf
+    tar -xf asdf-v0.16.1-linux-amd64.tar.gz && sudo mv asdf /usr/local/bin/ && sudo chmod +x /usr/local/bin/asdf
     # add $HOME/.asdf/shims to PATH in ~/.bash_profile
     asdf plugin add erlang
     asdf install erlang 26.2             # or whatever make/erlang_version says
