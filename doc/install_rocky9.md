@@ -76,6 +76,20 @@ Runtime deps (fax/media etc. — the classic docs list Debian names like
         ImageMagick libreoffice-writer libtiff-tools \
         wxGTK-devel wxGTK-webview zip unzip
 
+### Add 2600Hz Package Repository
+
+(Needed later for the `kazoo-freeswitch` / `kazoo-kamailio` wrapper packages in
+§9/§10.)
+
+    cat <<'EOF' > /etc/yum.repos.d/2600Hz.repo
+    [2600hz-stable]
+    name=2600Hz Stable Repo
+    baseurl=https://packages.2600hz.com/rockylinux/$releasever/stable
+    enabled=1
+    gpgcheck=0
+    sslverify=false
+    EOF
+
 ## 3. Fetch KAZOO source
 
     sudo mkdir -p /opt/kazoo
