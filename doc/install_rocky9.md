@@ -538,5 +538,3 @@ CouchDB v3+:
 ## Open items / TODO
 
 - Verify the OTP version for the exact Kazoo release being installed.
-- Confirm whether `kazoo-kamailio prepare` is still required (current wrapper-
-  based installs may not need it).
