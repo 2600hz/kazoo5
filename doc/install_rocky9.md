@@ -176,6 +176,7 @@ config = couchdb3
 [couchdb3]
 ip = "127.0.0.1"
 port = 5984
+;port = 15984  ; (if using HAProxy)
 username = admin
 password = admin
 
