@@ -151,7 +151,7 @@ regular user.
 
 ### SUP tooling
 
-    sudo ln -s /opt/kazoo/core/sup/priv/sup /usr/bin/sup
+    sudo ln -s /opt/kazoo/core/sup/priv/sup /usr/local/bin/sup
     sudo make sup_completion           # from repo root; creates sup.bash
     sudo cp sup.bash /etc/bash_completion.d/
 
