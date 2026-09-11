@@ -340,9 +340,18 @@ The 2600Hz repo provides the Kazoo-patched kamailio packages:
 
     sudo dnf install -y kamailio-kazoo kamailio-outbound kamailio-uuid kamailio-tcpops kamailio-presence
 
-The official Kamailio configs live at `/etc/kazoo/kamailio/` (clone
-`kazoo-configs-kamailio` there if installing from source). Before starting, fix
-hostname/IP in the config:
+The official Kamailio configs live at `/etc/kazoo/kamailio/`. If installing
+from source instead of the packages, fetch the configs manually:
+
+    git clone https://github.com/2600hz/kazoo-configs-kamailio.git
+    cd kazoo-configs-kamailio
+    mv kamailio /etc/kazoo/
+    cp system/sbin/kazoo-kamailio /usr/sbin/
+    cp system/systemd/kazoo-kamailio.service /etc/systemd/system/
+    cp system/rsyslog.d/10-kamailio.conf /etc/rsyslog.d/
+    cp system/logrotate.d/kamailio.conf /etc/logrotate.d/
+
+Before starting, fix hostname/IP in the config:
 
     sudo cp /etc/kazoo/kamailio/local.cfg /etc/kazoo/kamailio/local.cfg.orig
     sudo sed -i "s/kamailio\.2600hz\.com/$HOSTNAME/g" /etc/kazoo/kamailio/local.cfg
