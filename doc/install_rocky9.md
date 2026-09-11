@@ -357,10 +357,21 @@ Before starting, fix hostname/IP in the config:
     sudo sed -i "s/kamailio\.2600hz\.com/$HOSTNAME/g" /etc/kazoo/kamailio/local.cfg
     sudo sed -i "s/127\.0\.0\.1/$IP_ADDR/g" /etc/kazoo/kamailio/local.cfg
 
+Be sure to also uncomment the `#!substdef` lines in `local.cfg` (they're
+commented with three hashes) and set the right values, e.g.:
+
+    # # #!substdef "!MY_IP_ADDRESS!127.0.0.1!g"
+    # becomes:
+    #!substdef "!MY_IP_ADDRESS!203.0.113.75!g"
+
 Initialize the Kamailio/KAZOO database, then start:
 
     kazoo-kamailio prepare
     sudo systemctl enable --now kamailio
+
+`kazoo-kamailio prepare` is only required when running the standard `kamailio`
+service — the `kazoo-kamailio` wrapper runs it as a pre-command before starting
+every time.
 
 If you use the `kazoo-kamailio` wrapper package from the 2600Hz repo instead,
 mask the vanilla unit first:
