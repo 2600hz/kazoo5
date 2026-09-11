@@ -69,7 +69,8 @@ Kazoo build deps (`gcc-toolset*` is EL9's equivalent of the old
 Runtime deps (fax/media etc. — the classic docs list Debian names like
 `libsox-fmt-all`; use the RPM names here):
 
-    # htmldoc isn't in the standard Rocky 9 repos; get it from EPEL endpoints
+    # htmldoc isn't in the standard Rocky 9 repos; get it from the
+    # endpointdev third-party mirror instead
     wget https://packages.endpointdev.com/rhel/9/main/x86_64/htmldoc-1.9.18-1.ep9.x86_64.rpm
     sudo dnf install htmldoc-1.9.18-1.ep9.x86_64.rpm
     sudo dnf install -y sox ghostscript \
@@ -336,12 +337,11 @@ Notes:
 
 ## 10. Kamailio
 
-Default to the 2600Hz `kazoo-kamailio` wrapper rather than the stock `kamailio`
-service. Kamailio's internal `kazoo_db` sqlite database (registrations, BLF
-watchers) is still in use, and the wrapper puts it on a RAMdisk by default —
-which is required for more than a couple hundred handsets with BLFs.
-
-The 2600Hz repo provides the Kazoo-patched kamailio packages:
+The 2600Hz repo provides the Kazoo-patched kamailio packages. Default to the
+`kazoo-kamailio` wrapper rather than the stock `kamailio` service: the wrapper
+puts the `kazoo_db` sqlite database (registrations, BLF watchers) on a RAMdisk
+by default, which is required for more than a couple hundred handsets with
+BLFs.
 
     sudo dnf install -y kamailio-kazoo kamailio-outbound kamailio-uuid kamailio-tcpops kamailio-presence
 
